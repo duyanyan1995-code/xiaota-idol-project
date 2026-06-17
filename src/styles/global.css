@@ -735,6 +735,47 @@ button:disabled {
   justify-self: center;
 }
 
+.result-modal--event-cg {
+  gap: 9px;
+}
+
+.result-modal--event-cg .character-display__frame {
+  width: min(100%, 282px);
+  aspect-ratio: 3 / 4;
+  min-height: 0;
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(35, 25, 21, 0.18);
+}
+
+.result-modal--event-cg .character-display__image {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+}
+
+.result-modal--compact-visual .character-display__frame {
+  width: min(100%, 154px);
+  min-height: 118px;
+}
+
+.result-message {
+  margin: 0;
+  color: var(--brown);
+  line-height: 1.56;
+}
+
+.result-modal .change-list {
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.result-modal .change-list span {
+  padding: 4px 7px;
+  font-size: 0.68rem;
+  line-height: 1.15;
+}
+
 .result-modal .button {
   width: 100%;
 }

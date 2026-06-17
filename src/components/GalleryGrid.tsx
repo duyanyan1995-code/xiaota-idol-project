@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { CHARACTER_IMAGES } from '../config/characterImages';
 import { GALLERY_ITEMS } from '../config/gallery';
-import type { CharacterImageKey, GalleryItem } from '../types/game';
+import { getVisualAsset } from '../config/visualAssets';
+import type { GalleryId, GalleryItem } from '../types/game';
 import { CharacterDisplay } from './CharacterDisplay';
 
 interface GalleryGridProps {
-  unlockedIds: CharacterImageKey[];
+  unlockedIds: GalleryId[];
 }
 
 export function GalleryGrid({ unlockedIds }: GalleryGridProps) {
@@ -17,7 +17,7 @@ export function GalleryGrid({ unlockedIds }: GalleryGridProps) {
       <div className="gallery-grid">
         {GALLERY_ITEMS.map((item) => {
           const isUnlocked = unlockedSet.has(item.id);
-          const image = CHARACTER_IMAGES[item.imageKey];
+          const image = getVisualAsset(item.visual.type, item.visual.key);
 
           return (
             <button
@@ -42,7 +42,10 @@ export function GalleryGrid({ unlockedIds }: GalleryGridProps) {
             aria-modal="true"
             aria-labelledby="gallery-detail-title"
           >
-            <CharacterDisplay image={CHARACTER_IMAGES[activeItem.imageKey]} caption={activeItem.name} />
+            <CharacterDisplay
+              image={getVisualAsset(activeItem.visual.type, activeItem.visual.key)}
+              caption={activeItem.name}
+            />
             <h2 id="gallery-detail-title">{activeItem.name}</h2>
             <p>{activeItem.description}</p>
             <p className="unlock-text">解锁条件：{activeItem.conditionText}</p>
@@ -55,4 +58,3 @@ export function GalleryGrid({ unlockedIds }: GalleryGridProps) {
     </>
   );
 }
-

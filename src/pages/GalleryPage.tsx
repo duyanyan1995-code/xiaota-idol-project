@@ -1,8 +1,9 @@
 import { GalleryGrid } from '../components/GalleryGrid';
-import type { CharacterImageKey } from '../types/game';
+import { GALLERY_ITEMS } from '../config/gallery';
+import type { GalleryId } from '../types/game';
 
 interface GalleryPageProps {
-  unlockedIds: CharacterImageKey[];
+  unlockedIds: GalleryId[];
   onHome: () => void;
 }
 
@@ -18,10 +19,9 @@ export function GalleryPage({ unlockedIds, onHome }: GalleryPageProps) {
       </header>
       <section className="page-heading">
         <p className="eyebrow">角色收集册</p>
-        <h1>已解锁 {unlockedIds.length} / 7</h1>
+        <h1>已解锁 {unlockedIds.length} / {GALLERY_ITEMS.length}</h1>
       </section>
       <GalleryGrid unlockedIds={unlockedIds} />
     </main>
   );
 }
-

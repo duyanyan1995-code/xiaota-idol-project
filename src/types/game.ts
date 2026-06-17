@@ -45,6 +45,44 @@ export type CharacterImageKey =
   | 'practice'
   | 'summer';
 
+export type ActionVisualKey =
+  | 'theaterTrainingAction'
+  | 'fanServiceAction'
+  | 'outsideExposureAction'
+  | 'stageFocusAction'
+  | 'imageBuildingAction'
+  | 'restAndReflectAction'
+  | 'stableOperationAction';
+
+export type EventCgKey =
+  | 'fanLetterCg'
+  | 'fanCreationCg'
+  | 'stageMistakeCg'
+  | 'extraPracticeCg'
+  | 'styleChallengeCg'
+  | 'summerInviteCg'
+  | 'lowMoodCg'
+  | 'secretHappyCg'
+  | 'dailyMomentCg';
+
+export type GalleryId = CharacterImageKey | EventCgKey;
+
+export type VisualAssetKey = CharacterImageKey | ActionVisualKey | EventCgKey;
+
+export type FeedbackVisual =
+  | {
+      type: 'actionVisual';
+      key: ActionVisualKey;
+    }
+  | {
+      type: 'eventCg';
+      key: EventCgKey;
+    }
+  | {
+      type: 'legacy';
+      key: CharacterImageKey;
+    };
+
 export type NodeGrade = 'S' | 'A' | 'B' | 'C' | 'D' | 'E';
 
 export type GameStatus = 'playing' | 'completed';
@@ -59,6 +97,7 @@ export interface PlanConfig {
   id: PlanId;
   name: string;
   description: string;
+  actionVisualKey: ActionVisualKey;
   effects: StatDeltas;
   riskTags: string[];
   feedbackText: string;
@@ -70,6 +109,7 @@ export interface PlanHistoryEntry {
   half: HalfYear;
   planId: PlanId;
   planName: string;
+  actionVisualKey?: ActionVisualKey;
   feedbackText: string;
   effects: StatDeltas;
 }
@@ -88,6 +128,8 @@ export interface RandomEventConfig {
   id: string;
   title: string;
   description: string;
+  eventCgKey: EventCgKey;
+  galleryId?: GalleryId;
   choices: RandomEventChoice[];
   weight?: number;
   triggerCondition?: (state: GameState, half: HalfYear) => boolean;
@@ -102,6 +144,8 @@ export interface EventHistoryEntry {
   choiceId: string;
   choiceLabel: string;
   resultText: string;
+  eventCgKey?: EventCgKey;
+  galleryId?: GalleryId;
   effects: StatDeltas;
   b50Bonus: number;
   electionBonus: number;
@@ -153,7 +197,7 @@ export interface YearSummary {
 }
 
 export interface GameState {
-  saveVersion: 2;
+  saveVersion: 3;
   year: number;
   phase: GamePhase;
   vocal: number;
@@ -174,7 +218,7 @@ export interface GameState {
   electionResults: ElectionResult[];
   yearSummaries: YearSummary[];
   growthLogs: GrowthLog[];
-  unlockedGallery: CharacterImageKey[];
+  unlockedGallery: GalleryId[];
   eventFlags: EventFlags;
   gameStatus: GameStatus;
 }
@@ -192,15 +236,16 @@ export interface GameFeedback {
   message: string;
   score?: number;
   grade?: NodeGrade;
+  visual?: FeedbackVisual;
   imageKey?: CharacterImageKey;
   changes: StatChange[];
   details?: string[];
 }
 
 export interface GalleryItem {
-  id: CharacterImageKey;
+  id: GalleryId;
   name: string;
-  imageKey: CharacterImageKey;
+  visual: Extract<FeedbackVisual, { type: 'legacy' | 'eventCg' }>;
   description: string;
   conditionText: string;
   isUnlocked: (state: GameState) => boolean;
@@ -216,8 +261,9 @@ export interface EndingConfig {
 }
 
 export interface CharacterImage {
-  key: CharacterImageKey;
+  key: VisualAssetKey;
   src: string;
+  plannedSrc?: string;
   alt: string;
   label: string;
 }

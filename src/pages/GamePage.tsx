@@ -1,7 +1,7 @@
 import { ActionPanel } from '../components/ActionPanel';
 import { CharacterDisplay } from '../components/CharacterDisplay';
 import { StatPanel } from '../components/StatPanel';
-import { CHARACTER_IMAGES } from '../config/characterImages';
+import { getVisualAsset } from '../config/visualAssets';
 import type {
   CharacterImageKey,
   GameFeedback,
@@ -217,19 +217,12 @@ function EventCard({
     );
   }
 
-  const eventImage = getEventImage(event.id);
-
   return (
     <section className="phase-card phase-card--event">
       <div>
         <p className="eyebrow">阶段事件</p>
         <h1>{event.title}</h1>
       </div>
-      {eventImage ? (
-        <div className="event-portrait">
-          <CharacterDisplay image={CHARACTER_IMAGES[eventImage]} compact />
-        </div>
-      ) : null}
       <p>{event.description}</p>
       <div className="choice-list">
         {event.choices.map((choice) => (
@@ -313,13 +306,18 @@ function ResultModal({
     return null;
   }
 
-  const imageKey = feedback.imageKey ?? getCrisisImage(state);
+  const visualAsset = getFeedbackVisualAsset(feedback, state);
+  const visualType = feedback.visual?.type ?? (feedback.imageKey ? 'legacy' : null);
+  const isEventCg = visualType === 'eventCg';
+  const modalClassName = `modal-card result-modal ${
+    isEventCg ? 'result-modal--event-cg' : 'result-modal--compact-visual'
+  }`;
 
   return (
     <div className="modal-backdrop" role="presentation">
-      <section className="modal-card result-modal" role="dialog" aria-modal="true">
+      <section className={modalClassName} role="dialog" aria-modal="true">
         <p className="eyebrow">结果反馈</p>
-        {imageKey ? <CharacterDisplay image={CHARACTER_IMAGES[imageKey]} compact /> : null}
+        {visualAsset ? <CharacterDisplay image={visualAsset} compact={!isEventCg} /> : null}
         <h2>{feedback.title}</h2>
         {feedback.score !== undefined ? (
           <p className="result-grade">
@@ -327,7 +325,7 @@ function ResultModal({
             {feedback.score} 分
           </p>
         ) : null}
-        <p>{feedback.message}</p>
+        <p className="result-message">{feedback.message}</p>
         {feedback.details && feedback.details.length > 0 ? (
           <div className="detail-list">
             {feedback.details.map((detail) => (
@@ -338,7 +336,14 @@ function ResultModal({
         {feedback.changes.length > 0 ? (
           <div className="change-list">
             {feedback.changes.map((change) => (
-              <span className={change.delta >= 0 ? 'change-up' : 'change-down'} key={change.key}>
+              <span
+                className={
+                  change.delta >= 0
+                    ? 'change-up stat-change-up'
+                    : 'change-down stat-change-down'
+                }
+                key={change.key}
+              >
                 {change.label} {change.delta >= 0 ? '+' : ''}
                 {change.delta}
               </span>
@@ -353,27 +358,25 @@ function ResultModal({
   );
 }
 
-function getEventImage(eventId: string): CharacterImageKey | null {
-  const imageByEvent: Partial<Record<string, CharacterImageKey>> = {
-    fanLetter: 'happy',
-    fanCreation: 'wink',
-    stageMistake: 'tired',
-    extraPractice: 'practice',
-    styleChallenge: 'happy',
-    summerInvite: 'summer',
-    lowMood: 'tired',
-    secretHappy: 'happy',
-  };
-
-  return imageByEvent[eventId] ?? null;
-}
-
 function getCrisisImage(state: GameState): CharacterImageKey | null {
   if (state.energy < 30 || state.mood < 30 || state.stress >= 85) {
     return 'tired';
   }
 
   return null;
+}
+
+function getFeedbackVisualAsset(feedback: GameFeedback, state: GameState) {
+  if (feedback.visual) {
+    return getVisualAsset(feedback.visual.type, feedback.visual.key);
+  }
+
+  if (feedback.imageKey) {
+    return getVisualAsset('legacy', feedback.imageKey);
+  }
+
+  const crisisImage = getCrisisImage(state);
+  return crisisImage ? getVisualAsset('legacy', crisisImage) : null;
 }
 
 function getCareerStageLabel(year: number): string {

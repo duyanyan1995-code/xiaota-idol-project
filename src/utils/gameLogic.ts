@@ -1,4 +1,5 @@
 import { CHARACTER_IMAGES } from '../config/characterImages';
+import { FALLBACK_EVENT, RANDOM_EVENTS } from '../config/events';
 import { GALLERY_ITEMS } from '../config/gallery';
 import { PLAN_BY_ID } from '../config/plans';
 import { calculateB50Result, calculateElectionResult } from './nodeLogic';
@@ -10,6 +11,7 @@ import type {
   GamePhase,
   GameSnapshot,
   GameState,
+  GalleryId,
   GrowthLog,
   HalfYear,
   PlanHistoryEntry,
@@ -22,7 +24,8 @@ import type {
   YearSummary,
 } from '../types/game';
 
-const SAVE_VERSION = 2;
+const SAVE_VERSION = 3;
+const SUPPORTED_SAVE_VERSIONS = [2, 3];
 
 const CONDITION_STATS = ['energy', 'mood', 'stress'] as const;
 const GROWTH_STATS = [
@@ -81,7 +84,8 @@ export function createInitialGameState(): GameState {
 }
 
 export function normalizeGameSnapshot(snapshot: GameSnapshot | null): GameSnapshot | null {
-  if (!snapshot || snapshot.state?.saveVersion !== SAVE_VERSION) {
+  const saveVersion = snapshot?.state?.saveVersion;
+  if (!snapshot || !SUPPORTED_SAVE_VERSIONS.includes(Number(saveVersion))) {
     return null;
   }
 
@@ -99,8 +103,8 @@ export function normalizeGameState(value: Partial<GameState> | null | undefined)
     ...initial,
     ...value,
     saveVersion: SAVE_VERSION,
-    planHistory: value?.planHistory ?? [],
-    eventHistory: value?.eventHistory ?? [],
+    planHistory: normalizePlanHistory(value?.planHistory ?? []),
+    eventHistory: normalizeEventHistory(value?.eventHistory ?? []),
     b50Results: value?.b50Results ?? [],
     electionResults: value?.electionResults ?? [],
     yearSummaries: value?.yearSummaries ?? [],
@@ -237,6 +241,7 @@ export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
     half,
     planId: plan.id,
     planName: plan.name,
+    actionVisualKey: plan.actionVisualKey,
     feedbackText: plan.feedbackText,
     effects: plan.effects,
   };
@@ -259,7 +264,10 @@ export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
     lastResult: {
       title: plan.name,
       message: plan.feedbackText,
-      imageKey: getPlanImageKey(plan.id),
+      visual: {
+        type: 'actionVisual',
+        key: plan.actionVisualKey,
+      },
       changes: collectChanges(before, nextState),
     },
     pendingEventId: null,
@@ -288,6 +296,8 @@ export function applyEventChoice(
     choiceId: choice.id,
     choiceLabel: choice.label,
     resultText: choice.resultText,
+    eventCgKey: event.eventCgKey,
+    galleryId: event.galleryId,
     effects: choice.effects,
     b50Bonus: choice.b50Bonus ?? 0,
     electionBonus: choice.electionBonus ?? 0,
@@ -301,6 +311,9 @@ export function applyEventChoice(
       ...(choice.flags ?? {}),
     },
     eventHistory: replaceSameYearHalfEvent(state.eventHistory, eventEntry),
+    unlockedGallery: event.galleryId
+      ? addGalleryId(state.unlockedGallery, event.galleryId)
+      : state.unlockedGallery,
     growthLogs: [...state.growthLogs, growthLog],
   });
 
@@ -310,7 +323,10 @@ export function applyEventChoice(
     lastResult: {
       title: event.title,
       message: choice.resultText,
-      imageKey: getEventImageKey(event.id),
+      visual: {
+        type: 'eventCg',
+        key: event.eventCgKey,
+      },
       changes: collectChanges(before, nextState),
     },
     pendingEventId: null,
@@ -392,9 +408,10 @@ export function getCurrentYearSummary(state: GameState): YearSummary | null {
 
 export function mergeUnlockedGallery(
   state: GameState,
-  currentUnlocked: CharacterImageKey[],
-): CharacterImageKey[] {
-  const next = new Set<CharacterImageKey>(ensureBaseGallery(currentUnlocked));
+  currentUnlocked: GalleryId[],
+): GalleryId[] {
+  const next = new Set<GalleryId>(ensureBaseGallery(currentUnlocked));
+  state.unlockedGallery.forEach((id) => next.add(id));
   GALLERY_ITEMS.forEach((item) => {
     if (item.isUnlocked(state)) {
       next.add(item.id);
@@ -404,7 +421,7 @@ export function mergeUnlockedGallery(
   return Array.from(next);
 }
 
-export function sameGalleryIds(a: CharacterImageKey[], b: CharacterImageKey[]): boolean {
+export function sameGalleryIds(a: GalleryId[], b: GalleryId[]): boolean {
   if (a.length !== b.length) {
     return false;
   }
@@ -681,39 +698,39 @@ function buildNodeDetails(eventBonus: number, modifiers: { label: string; value:
   ];
 }
 
-function getPlanImageKey(planId: PlanId): CharacterImageKey | undefined {
-  if (planId === 'fanService') {
-    return 'wink';
-  }
-
-  if (planId === 'stageFocus') {
-    return 'stage';
-  }
-
-  if (planId === 'theaterTraining') {
-    return 'practice';
-  }
-
-  return undefined;
+function normalizePlanHistory(history: PlanHistoryEntry[]): PlanHistoryEntry[] {
+  return history.map((entry) => ({
+    ...entry,
+    actionVisualKey: entry.actionVisualKey ?? PLAN_BY_ID[entry.planId]?.actionVisualKey,
+  }));
 }
 
-function getEventImageKey(eventId: string): CharacterImageKey | undefined {
-  const imageByEvent: Partial<Record<string, CharacterImageKey>> = {
-    fanLetter: 'happy',
-    fanCreation: 'wink',
-    stageMistake: 'tired',
-    extraPractice: 'practice',
-    styleChallenge: 'happy',
-    summerInvite: 'summer',
-    lowMood: 'tired',
-    secretHappy: 'happy',
-  };
+function normalizeEventHistory(history: EventHistoryEntry[]): EventHistoryEntry[] {
+  return history.map((entry) => {
+    const event = getEventConfig(entry.eventId);
 
-  return imageByEvent[eventId];
+    return {
+      ...entry,
+      eventCgKey: entry.eventCgKey ?? event?.eventCgKey,
+      galleryId: entry.galleryId ?? event?.galleryId,
+    };
+  });
 }
 
-function ensureBaseGallery(ids: CharacterImageKey[]): CharacterImageKey[] {
-  return Array.from(new Set<CharacterImageKey>(['base', ...ids]));
+function getEventConfig(eventId: string) {
+  if (eventId === FALLBACK_EVENT.id) {
+    return FALLBACK_EVENT;
+  }
+
+  return RANDOM_EVENTS.find((event) => event.id === eventId);
+}
+
+function addGalleryId(ids: GalleryId[], id: GalleryId): GalleryId[] {
+  return Array.from(new Set<GalleryId>(['base', ...ids, id]));
+}
+
+function ensureBaseGallery(ids: GalleryId[]): GalleryId[] {
+  return Array.from(new Set<GalleryId>(['base', ...ids]));
 }
 
 function clamp(value: number, min: number, max: number): number {

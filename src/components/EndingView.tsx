@@ -1,4 +1,5 @@
 import { CHARACTER_IMAGES } from '../config/characterImages';
+import { GALLERY_ITEMS } from '../config/gallery';
 import type { EndingConfig, GameState } from '../types/game';
 import { getHighestResult } from '../utils/endingLogic';
 import { CharacterDisplay } from './CharacterDisplay';
@@ -40,7 +41,7 @@ export function EndingView({ ending, state, unlockedCount }: EndingViewProps) {
           </div>
           <div>
             <span>图鉴解锁</span>
-            <strong>{unlockedCount} / 7</strong>
+            <strong>{unlockedCount} / {GALLERY_ITEMS.length}</strong>
           </div>
           <div>
             <span>完成年份</span>

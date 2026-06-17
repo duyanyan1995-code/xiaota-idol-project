@@ -5,6 +5,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     id: 'fanLetter',
     title: '粉丝来信',
     description: '收到了一封粉丝来信，小獭看完后眼睛亮亮的。',
+    eventCgKey: 'fanLetterCg',
+    galleryId: 'fanLetterCg',
     choices: [
       {
         id: 'reply',
@@ -32,6 +34,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     id: 'fanCreation',
     title: '粉丝二创出圈',
     description: '有粉丝剪的小獭舞台片段突然被更多人看见了。',
+    eventCgKey: 'fanCreationCg',
+    galleryId: 'fanCreationCg',
     choices: [
       {
         id: 'interact',
@@ -60,6 +64,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     id: 'stageMistake',
     title: '舞台小失误',
     description: '彩排时出现了一个小失误，小獭有点在意。',
+    eventCgKey: 'stageMistakeCg',
+    galleryId: 'stageMistakeCg',
     choices: [
       {
         id: 'review',
@@ -88,6 +94,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     id: 'extraPractice',
     title: '练习室加练',
     description: '小獭觉得今天还能再努力一点。',
+    eventCgKey: 'extraPracticeCg',
+    galleryId: 'extraPracticeCg',
     choices: [
       {
         id: 'continue',
@@ -118,6 +126,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     id: 'styleChallenge',
     title: '想挑战不同风格',
     description: '小獭看着新的造型提案，眼睛里闪过一点期待。',
+    eventCgKey: 'styleChallengeCg',
+    galleryId: 'styleChallengeCg',
     choices: [
       {
         id: 'tryNew',
@@ -144,6 +154,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     id: 'summerInvite',
     title: '夏日邀约',
     description: '收到了一份夏日活动邀约。',
+    eventCgKey: 'summerInviteCg',
+    galleryId: 'summerInviteCg',
     choices: [
       {
         id: 'join',
@@ -177,6 +189,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     id: 'lowMood',
     title: '心情低落',
     description: '连续忙碌之后，小獭今天有点提不起精神。',
+    eventCgKey: 'lowMoodCg',
+    galleryId: 'lowMoodCg',
     triggerCondition: (state) => state.mood < 55 || state.stress >= 65,
     choices: [
       {
@@ -205,6 +219,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     id: 'secretHappy',
     title: '被夸奖后偷偷开心',
     description: 'Staff 夸小獭今天进步很明显，她表面镇定，耳朵却红红的。',
+    eventCgKey: 'secretHappyCg',
+    galleryId: 'secretHappyCg',
     choices: [
       {
         id: 'acceptPraise',
@@ -232,6 +248,7 @@ export const FALLBACK_EVENT: RandomEventConfig = {
   id: 'dailyMoment',
   title: '普通但重要的一天',
   description: '没有特别大的事件，但小獭还是认真完成了今天的安排。',
+  eventCgKey: 'dailyMomentCg',
   choices: [
     {
       id: 'steady',
