@@ -3,24 +3,33 @@ import { HomePage } from './pages/HomePage';
 import { GamePage } from './pages/GamePage';
 import { GalleryPage } from './pages/GalleryPage';
 import { EndingPage } from './pages/EndingPage';
+import { AppShell } from './components/AppShell';
+import { CharacterDisplay } from './components/CharacterDisplay';
+import { CHARACTER_IMAGES } from './config/characterImages';
+import { GALLERY_ITEMS } from './config/gallery';
 import type {
-  ActionId,
   CharacterImageKey,
   GameFeedback,
+  GameSnapshot,
   GameState,
+  PlanId,
   RandomEventChoice,
   RandomEventConfig,
 } from './types/game';
 import {
+  advancePhase,
   applyEventChoice,
+  applyPlan,
   createInitialGameState,
-  getEndingForState,
+  isEventPhase,
   mergeUnlockedGallery,
   normalizeGameSnapshot,
-  performAction,
-  rollRandomEvent,
+  resolveB50Node,
+  resolveElectionNode,
   sameGalleryIds,
 } from './utils/gameLogic';
+import { getEventById, pickRandomEvent } from './utils/eventLogic';
+import { getEndingForState } from './utils/endingLogic';
 import {
   clearGameSnapshot,
   loadGameSnapshot,
@@ -34,13 +43,17 @@ type PageName = 'home' | 'game' | 'gallery' | 'ending';
 function App() {
   const [page, setPage] = useState<PageName>('home');
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [lastActionId, setLastActionId] = useState<ActionId | null>(null);
+  const [lastPlanId, setLastPlanId] = useState<PlanId | null>(null);
   const [lastResult, setLastResult] = useState<GameFeedback | null>(null);
   const [pendingEvent, setPendingEvent] = useState<RandomEventConfig | null>(null);
+  const [activeFeedback, setActiveFeedback] = useState<GameFeedback | null>(null);
+  const [galleryUnlockId, setGalleryUnlockId] = useState<CharacterImageKey | null>(null);
   const [unlockedGallery, setUnlockedGallery] = useState<CharacterImageKey[]>(() =>
     loadUnlockedGallery(),
   );
-  const [hasSave, setHasSave] = useState(() => Boolean(loadGameSnapshot()));
+  const [savedSnapshot, setSavedSnapshot] = useState<GameSnapshot | null>(() =>
+    loadNormalizedSnapshot(),
+  );
   const [showGuide, setShowGuide] = useState(false);
 
   const ending = useMemo(
@@ -53,60 +66,80 @@ function App() {
       return;
     }
 
-    saveGameSnapshot({
-      state: gameState,
-      lastActionId,
-      lastResult,
-    });
-    setHasSave(true);
-
     const nextUnlocked = mergeUnlockedGallery(gameState, unlockedGallery);
+    const stateForSave: GameState = {
+      ...gameState,
+      unlockedGallery: nextUnlocked,
+    };
+    const snapshotForSave: GameSnapshot = {
+      state: stateForSave,
+      lastPlanId,
+      lastResult,
+      pendingEventId: pendingEvent?.id ?? null,
+    };
+
+    saveGameSnapshot(snapshotForSave);
+    setSavedSnapshot(snapshotForSave);
+
     if (!sameGalleryIds(nextUnlocked, unlockedGallery)) {
+      const newUnlock = nextUnlocked.find(
+        (id) => id !== 'base' && !unlockedGallery.includes(id),
+      );
+      if (newUnlock) {
+        setGalleryUnlockId(newUnlock);
+      }
       setUnlockedGallery(nextUnlocked);
       saveUnlockedGallery(nextUnlocked);
     }
-  }, [gameState, lastActionId, lastResult, unlockedGallery]);
+  }, [gameState, lastPlanId, lastResult, pendingEvent, unlockedGallery]);
 
   function startNewGame() {
-    const nextState = createInitialGameState();
+    const nextState: GameState = {
+      ...createInitialGameState(),
+      unlockedGallery,
+    };
     clearGameSnapshot();
     setGameState(nextState);
-    setLastActionId(null);
+    setLastPlanId(null);
     setLastResult(null);
     setPendingEvent(null);
+    setActiveFeedback(null);
     setPage('game');
   }
 
   function continueGame() {
-    const snapshot = normalizeGameSnapshot(loadGameSnapshot());
+    const snapshot = loadNormalizedSnapshot();
     if (!snapshot) {
+      clearGameSnapshot();
+      setSavedSnapshot(null);
       return;
     }
 
     setGameState(snapshot.state);
-    setLastActionId(snapshot.lastActionId);
+    setLastPlanId(snapshot.lastPlanId);
     setLastResult(snapshot.lastResult);
-    setPendingEvent(null);
-    setPage(snapshot.state.day > 30 ? 'ending' : 'game');
+    setPendingEvent(resolvePendingEvent(snapshot));
+    setActiveFeedback(null);
+    setPage(snapshot.state.phase === 'finalEnding' ? 'ending' : 'game');
   }
 
-  function handleAction(actionId: ActionId) {
+  function handleAdvancePhase() {
     if (!gameState || pendingEvent) {
       return;
     }
 
-    const snapshot = performAction(gameState, actionId);
-    setGameState(snapshot.state);
-    setLastActionId(snapshot.lastActionId);
-    setLastResult(snapshot.lastResult);
+    const snapshot = advancePhase(gameState);
+    commitSnapshot(snapshot, null, false);
+  }
 
-    if (snapshot.state.day > 30) {
-      setPendingEvent(null);
-      setPage('ending');
+  function handlePlan(planId: PlanId) {
+    if (!gameState || pendingEvent) {
       return;
     }
 
-    setPendingEvent(rollRandomEvent());
+    const snapshot = applyPlan(gameState, planId);
+    const nextEvent = isEventPhase(snapshot.state.phase) ? pickRandomEvent(snapshot.state) : null;
+    commitSnapshot(snapshot, nextEvent, true);
   }
 
   function handleEventChoice(choice: RandomEventChoice) {
@@ -115,10 +148,22 @@ function App() {
     }
 
     const snapshot = applyEventChoice(gameState, pendingEvent, choice);
-    setGameState(snapshot.state);
-    setLastActionId(snapshot.lastActionId);
-    setLastResult(snapshot.lastResult);
-    setPendingEvent(null);
+    commitSnapshot(snapshot, null, true);
+  }
+
+  function handleResolveNode() {
+    if (!gameState || pendingEvent) {
+      return;
+    }
+
+    if (gameState.phase === 'b50') {
+      commitSnapshot(resolveB50Node(gameState), null, true);
+      return;
+    }
+
+    if (gameState.phase === 'election') {
+      commitSnapshot(resolveElectionNode(gameState), null, true);
+    }
   }
 
   function goHome() {
@@ -126,11 +171,30 @@ function App() {
     setPage('home');
   }
 
+  function commitSnapshot(
+    snapshot: GameSnapshot,
+    event: RandomEventConfig | null,
+    showFeedback: boolean,
+  ) {
+    setGameState(snapshot.state);
+    setLastPlanId(snapshot.lastPlanId);
+    setLastResult(snapshot.lastResult);
+    setPendingEvent(event);
+    setActiveFeedback(showFeedback ? snapshot.lastResult : null);
+
+    if (snapshot.state.phase === 'finalEnding') {
+      setPage('ending');
+    } else {
+      setPage('game');
+    }
+  }
+
   return (
-    <>
+    <AppShell>
       {page === 'home' ? (
         <HomePage
-          hasSave={hasSave}
+          hasSave={Boolean(savedSnapshot)}
+          savedProgress={savedSnapshot ? `Year ${savedSnapshot.state.year} / 11` : null}
           onStart={startNewGame}
           onContinue={continueGame}
           onOpenGallery={() => setPage('gallery')}
@@ -141,11 +205,15 @@ function App() {
       {page === 'game' && gameState ? (
         <GamePage
           state={gameState}
-          lastActionId={lastActionId}
+          lastPlanId={lastPlanId}
           lastResult={lastResult}
+          activeFeedback={activeFeedback}
           pendingEvent={pendingEvent}
-          onAction={handleAction}
+          onAdvancePhase={handleAdvancePhase}
+          onPlan={handlePlan}
           onEventChoice={handleEventChoice}
+          onResolveNode={handleResolveNode}
+          onCloseFeedback={() => setActiveFeedback(null)}
           onHome={goHome}
           onRestart={startNewGame}
         />
@@ -159,6 +227,7 @@ function App() {
         <EndingPage
           ending={ending}
           state={gameState}
+          unlockedCount={unlockedGallery.length}
           onHome={goHome}
           onRestart={startNewGame}
           onGallery={() => setPage('gallery')}
@@ -174,10 +243,10 @@ function App() {
             aria-labelledby="guide-title"
           >
             <p className="eyebrow">玩法说明</p>
-            <h2 id="guide-title">30 天养成挑战</h2>
+            <h2 id="guide-title">11 年偶像生涯</h2>
             <p>
-              每天选择一次行动。训练提升唱功、舞蹈和魅力，营业增加人气与粉丝，休息恢复状态。第
-              30 天之后会根据最终属性进入阶段结局。
+              每年依次选择上半年计划、处理事件、结算总选，再选择下半年计划、处理事件、结算 B50。
+              年度总结会记录这一年的路线，完成第 11 年后进入终章结算。
             </p>
             <button className="button button--primary" type="button" onClick={() => setShowGuide(false)}>
               知道了
@@ -185,9 +254,56 @@ function App() {
           </section>
         </div>
       ) : null}
-    </>
+
+      {galleryUnlockId ? (
+        <GalleryUnlockModal imageId={galleryUnlockId} onClose={() => setGalleryUnlockId(null)} />
+      ) : null}
+    </AppShell>
   );
 }
 
-export default App;
+function GalleryUnlockModal({
+  imageId,
+  onClose,
+}: {
+  imageId: CharacterImageKey;
+  onClose: () => void;
+}) {
+  const item = GALLERY_ITEMS.find((entry) => entry.id === imageId);
+  if (!item) {
+    return null;
+  }
 
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section className="modal-card result-modal" role="dialog" aria-modal="true">
+        <p className="eyebrow">图鉴解锁</p>
+        <CharacterDisplay image={CHARACTER_IMAGES[item.imageKey]} compact />
+        <h2>{item.name}</h2>
+        <p>{item.description}</p>
+        <button className="button button--primary" type="button" onClick={onClose}>
+          收下
+        </button>
+      </section>
+    </div>
+  );
+}
+
+function loadNormalizedSnapshot(): GameSnapshot | null {
+  return normalizeGameSnapshot(loadGameSnapshot());
+}
+
+function resolvePendingEvent(snapshot: GameSnapshot): RandomEventConfig | null {
+  const storedEvent = getEventById(snapshot.pendingEventId);
+  if (storedEvent) {
+    return storedEvent;
+  }
+
+  if (isEventPhase(snapshot.state.phase)) {
+    return pickRandomEvent(snapshot.state);
+  }
+
+  return null;
+}
+
+export default App;

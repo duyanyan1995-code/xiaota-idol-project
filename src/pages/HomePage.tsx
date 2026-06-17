@@ -3,6 +3,7 @@ import { CharacterDisplay } from '../components/CharacterDisplay';
 
 interface HomePageProps {
   hasSave: boolean;
+  savedProgress: string | null;
   onStart: () => void;
   onContinue: () => void;
   onOpenGallery: () => void;
@@ -11,6 +12,7 @@ interface HomePageProps {
 
 export function HomePage({
   hasSave,
+  savedProgress,
   onStart,
   onContinue,
   onOpenGallery,
@@ -22,7 +24,8 @@ export function HomePage({
         <div className="home-copy">
           <p className="eyebrow">粉丝向 Q 版偶像养成 Demo</p>
           <h1>杨小獭偶像养成计划</h1>
-          <p>安排每天的训练、营业、休息和舞台，把元气小獭一步步送向更闪亮的位置。</p>
+          <p>用 11 年陪小獭安排计划、经历事件、冲击总选和 B50，把元气一步步送向更闪亮的位置。</p>
+          {savedProgress ? <p className="save-progress">当前进度：{savedProgress}</p> : null}
         </div>
         <CharacterDisplay image={CHARACTER_IMAGES.base} caption="杨小獭" />
       </section>
@@ -44,4 +47,3 @@ export function HomePage({
     </main>
   );
 }
-

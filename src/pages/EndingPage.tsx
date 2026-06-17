@@ -4,15 +4,23 @@ import type { EndingConfig, GameState } from '../types/game';
 interface EndingPageProps {
   ending: EndingConfig;
   state: GameState;
+  unlockedCount: number;
   onHome: () => void;
   onRestart: () => void;
   onGallery: () => void;
 }
 
-export function EndingPage({ ending, state, onHome, onRestart, onGallery }: EndingPageProps) {
+export function EndingPage({
+  ending,
+  state,
+  unlockedCount,
+  onHome,
+  onRestart,
+  onGallery,
+}: EndingPageProps) {
   return (
     <main className="page ending-page">
-      <EndingView ending={ending} state={state} />
+      <EndingView ending={ending} state={state} unlockedCount={unlockedCount} />
       <section className="home-actions">
         <button className="button button--primary" type="button" onClick={onRestart}>
           再来一次
@@ -27,4 +35,3 @@ export function EndingPage({ ending, state, onHome, onRestart, onGallery }: Endi
     </main>
   );
 }
-

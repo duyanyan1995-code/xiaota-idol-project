@@ -1,33 +1,32 @@
-import { ACTIONS } from '../config/actions';
-import type { ActionId } from '../types/game';
+import { PLANS } from '../config/plans';
+import type { PlanId } from '../types/game';
 
 interface ActionPanelProps {
   disabled?: boolean;
-  onAction: (actionId: ActionId) => void;
+  onPlan: (planId: PlanId) => void;
 }
 
-export function ActionPanel({ disabled = false, onAction }: ActionPanelProps) {
+export function ActionPanel({ disabled = false, onPlan }: ActionPanelProps) {
   return (
-    <section className="panel action-panel" aria-label="每日行动">
+    <section className="panel action-panel" aria-label="半年计划">
       <div className="section-title">
-        <span>今日安排</span>
-        <small>选择一个行动推进一天</small>
+        <span>选择半年计划</span>
+        <small>选择后进入事件阶段</small>
       </div>
       <div className="action-grid">
-        {ACTIONS.map((action) => (
+        {PLANS.map((plan) => (
           <button
             className="button button--action"
             type="button"
-            key={action.id}
+            key={plan.id}
             disabled={disabled}
-            onClick={() => onAction(action.id)}
+            onClick={() => onPlan(plan.id)}
           >
-            <span>{action.name}</span>
-            <small>{action.shortName}</small>
+            <span>{plan.name}</span>
+            <small>{plan.description}</small>
           </button>
         ))}
       </div>
     </section>
   );
 }
-

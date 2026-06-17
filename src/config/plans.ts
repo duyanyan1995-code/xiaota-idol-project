@@ -1,0 +1,118 @@
+import type { PlanConfig, PlanId } from '../types/game';
+
+export const PLANS: PlanConfig[] = [
+  {
+    id: 'theaterTraining',
+    name: '剧场训练',
+    description: '把基础唱跳和舞台表现重新打磨一轮。',
+    effects: {
+      vocal: 5,
+      dance: 5,
+      performance: 4,
+      energy: -10,
+      stress: 5,
+      fans: 20,
+    },
+    riskTags: ['体力消耗', '压力上升'],
+    feedbackText: '小獭在剧场里一遍遍练习，基础实力稳稳变强了。',
+  },
+  {
+    id: 'fanService',
+    name: '粉丝营业',
+    description: '认真回应粉丝，把陪伴感和元气传递出去。',
+    effects: {
+      fans: 100,
+      fanLoyalty: 6,
+      charm: 3,
+      popularity: 2,
+      energy: -8,
+      stress: 4,
+    },
+    riskTags: ['体力消耗', '压力上升'],
+    feedbackText: '小獭给粉丝送出元气 wink，握在手心里的喜欢变多了。',
+  },
+  {
+    id: 'outsideExposure',
+    name: '外务曝光',
+    description: '参加外部活动和节目，让更多人看见小獭。',
+    effects: {
+      popularity: 8,
+      resources: 6,
+      fans: 60,
+      charm: 2,
+      energy: -12,
+      stress: 8,
+    },
+    riskTags: ['压力较高', '体力消耗'],
+    feedbackText: '外务让小獭被更多人记住，人气和资源都打开了一点。',
+  },
+  {
+    id: 'stageFocus',
+    name: '舞台专项',
+    description: '集中打磨舞台记忆点，为重要节点蓄力。',
+    effects: {
+      performance: 8,
+      dance: 4,
+      vocal: 3,
+      energy: -14,
+      stress: 6,
+      fanLoyalty: 2,
+    },
+    riskTags: ['体力消耗', '压力上升'],
+    feedbackText: '小獭把每一个走位都练到发亮，舞台表现明显更稳了。',
+  },
+  {
+    id: 'imageBuilding',
+    name: '形象经营',
+    description: '尝试造型、物料和表达方式，建立更鲜明的风格。',
+    effects: {
+      style: 7,
+      charm: 5,
+      popularity: 4,
+      fans: 40,
+      stress: 3,
+      energy: -6,
+    },
+    riskTags: ['轻度压力'],
+    feedbackText: '新的形象方向很适合小獭，可爱里多了一点闪亮的锋芒。',
+  },
+  {
+    id: 'restAndReflect',
+    name: '休整沉淀',
+    description: '放慢节奏，恢复状态，也重新整理自己的方向。',
+    effects: {
+      energy: 25,
+      mood: 12,
+      stress: -18,
+      fans: -10,
+      popularity: -1,
+    },
+    riskTags: ['曝光下降'],
+    feedbackText: '小獭好好睡了一觉，也把心里的小结轻轻解开了。',
+  },
+  {
+    id: 'stableOperation',
+    name: '稳定运营',
+    description: '不冒进也不停摆，保持训练、营业和粉丝互动的节奏。',
+    effects: {
+      vocal: 2,
+      dance: 2,
+      performance: 2,
+      charm: 2,
+      fans: 50,
+      fanLoyalty: 3,
+      energy: -6,
+      stress: 2,
+    },
+    riskTags: ['稳步推进'],
+    feedbackText: '小獭按自己的节奏稳稳前进，细小的进步也会累积成光。',
+  },
+];
+
+export const PLAN_BY_ID: Record<PlanId, PlanConfig> = PLANS.reduce(
+  (result, plan) => ({
+    ...result,
+    [plan.id]: plan,
+  }),
+  {} as Record<PlanId, PlanConfig>,
+);
