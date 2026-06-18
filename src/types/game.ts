@@ -87,6 +87,8 @@ export type GameStatus = 'playing' | 'completed';
 
 export type StatDeltas = Partial<Record<StatKey, number>>;
 
+export type StatEffectRange = Partial<Record<StatKey, [number, number]>>;
+
 export interface EventFlags {
   [key: string]: boolean;
 }
@@ -97,7 +99,11 @@ export interface PlanConfig {
   description: string;
   actionVisualKey: ActionVisualKey;
   effects: StatDeltas;
+  effectsRange: StatEffectRange;
+  primaryStats: StatKey[];
+  secondaryStats: StatKey[];
   riskTags: string[];
+  eventTags: string[];
   feedbackText: string;
 }
 
