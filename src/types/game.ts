@@ -1,10 +1,8 @@
 export type GamePhase =
-  | 'yearStart'
-  | 'firstHalfPlan'
-  | 'firstHalfEvent'
+  | 'monthStart'
+  | 'monthlyPlan'
+  | 'monthlyEvent'
   | 'election'
-  | 'secondHalfPlan'
-  | 'secondHalfEvent'
   | 'b50'
   | 'yearSummary'
   | 'finalEnding';
@@ -106,7 +104,9 @@ export interface PlanConfig {
 export interface PlanHistoryEntry {
   id: string;
   year: number;
-  half: HalfYear;
+  currentYear: number;
+  currentMonth: number;
+  half?: HalfYear;
   planId: PlanId;
   planName: string;
   actionVisualKey?: ActionVisualKey;
@@ -132,13 +132,15 @@ export interface RandomEventConfig {
   galleryId?: GalleryId;
   choices: RandomEventChoice[];
   weight?: number;
-  triggerCondition?: (state: GameState, half: HalfYear) => boolean;
+  triggerCondition?: (state: GameState) => boolean;
 }
 
 export interface EventHistoryEntry {
   id: string;
   year: number;
-  half: HalfYear;
+  currentYear: number;
+  currentMonth: number;
+  half?: HalfYear;
   eventId: string;
   eventTitle: string;
   choiceId: string;
@@ -159,6 +161,8 @@ export interface ScoreModifier {
 export interface NodeResult {
   id: string;
   year: number;
+  currentYear: number;
+  currentMonth: number;
   score: number;
   grade: NodeGrade;
   gradeText: string;
@@ -175,6 +179,8 @@ export type ElectionResult = NodeResult;
 export interface GrowthLog {
   id: string;
   year: number;
+  currentYear: number;
+  currentMonth: number;
   phase: GamePhase;
   title: string;
   description: string;
@@ -184,9 +190,9 @@ export interface GrowthLog {
 export interface YearSummary {
   id: string;
   year: number;
+  currentYear: number;
   careerStage: string;
-  firstPlanName: string;
-  secondPlanName: string;
+  planNames: string[];
   b50Grade: NodeGrade;
   b50Score: number;
   electionGrade: NodeGrade;
@@ -197,8 +203,10 @@ export interface YearSummary {
 }
 
 export interface GameState {
-  saveVersion: 3;
+  saveVersion: 4;
   year: number;
+  currentYear: number;
+  currentMonth: number;
   phase: GamePhase;
   vocal: number;
   dance: number;

@@ -18,7 +18,7 @@ export function EndingView({ ending, state, unlockedCount }: EndingViewProps) {
     <section className="ending-view">
       <CharacterDisplay image={CHARACTER_IMAGES.stage} caption="终章结算" />
       <div className="panel ending-card">
-        <p className="eyebrow">11 年偶像生涯终章</p>
+        <p className="eyebrow">2015-2025 偶像生涯终章</p>
         <h1>{ending.name}</h1>
         <p className="route-tag">{ending.routeTag}</p>
         <p>{ending.text}</p>
@@ -46,6 +46,10 @@ export function EndingView({ ending, state, unlockedCount }: EndingViewProps) {
           <div>
             <span>完成年份</span>
             <strong>{state.yearSummaries.length} / 11</strong>
+          </div>
+          <div>
+            <span>最终时间</span>
+            <strong>{state.currentYear}.{String(state.currentMonth).padStart(2, '0')}</strong>
           </div>
         </div>
         <p className="final-line">{ending.finalLine}</p>

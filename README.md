@@ -1,6 +1,6 @@
 # 杨小獭偶像养成计划 Demo
 
-一个 React + TypeScript 实现的纯前端单机偶像养成小游戏 Demo。当前版本是 V2 第一阶段的 11 年偶像生涯模式：每年选择上半年计划、处理事件、结算总选，再选择下半年计划、处理事件、结算 B50，完成年度总结后进入下一年。没有后端、登录或真实分享功能，进度和图鉴解锁状态保存在浏览器 `localStorage`。
+一个 React + TypeScript 实现的纯前端单机偶像养成小游戏 Demo。当前版本是 V3 月度循环 MVP：从 2015 年 1 月到 2025 年 12 月，每月选择一次行动、处理事件，并在配置月份结算总选或 B50，年末生成年度总结。没有后端、登录或真实分享功能，进度和图鉴解锁状态保存在浏览器 `localStorage`。
 
 ## 如何运行项目
 
@@ -17,7 +17,7 @@ npm run build
 
 ## 如何替换图片
 
-角色图片路径集中在 `src/config/characterImages.ts`。
+角色基础图片路径集中在 `src/config/characterImages.ts`，行动立绘和事件 CG 路径集中在 `src/config/visualAssets.ts`。
 
 默认读取：
 
@@ -37,7 +37,7 @@ public/images/xiaota/summer.png
 
 编辑 `src/config/plans.ts`。
 
-- `effects` 控制半年计划带来的属性变化
+- `effects` 控制本月行动带来的属性变化
 - `riskTags` 控制计划卡片的风险标签
 - `feedbackText` 控制选择计划后的反馈文案
 

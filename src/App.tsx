@@ -211,7 +211,11 @@ function App() {
       {page === 'home' ? (
         <HomePage
           hasSave={Boolean(savedSnapshot)}
-          savedProgress={savedSnapshot ? `Year ${savedSnapshot.state.year} / 11` : null}
+          savedProgress={
+            savedSnapshot
+              ? `${savedSnapshot.state.currentYear} 年 ${savedSnapshot.state.currentMonth} 月`
+              : null
+          }
           onStart={startNewGame}
           onContinue={continueGame}
           onOpenGallery={() => setPage('gallery')}
@@ -262,8 +266,8 @@ function App() {
             <p className="eyebrow">玩法说明</p>
             <h2 id="guide-title">11 年偶像生涯</h2>
             <p>
-              每年依次选择上半年计划、处理事件、结算总选，再选择下半年计划、处理事件、结算 B50。
-              年度总结会记录这一年的路线，完成第 11 年后进入终章结算。
+              从 2015 年 1 月开始，每个月安排一次行动、处理一次事件，并在配置月份结算总选或 B50。
+              年度总结会记录这一年的路线，完成 2025 年 12 月后进入终章结算。
             </p>
             <button className="button button--primary" type="button" onClick={() => setShowGuide(false)}>
               知道了
