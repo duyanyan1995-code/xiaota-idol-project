@@ -1,4 +1,4 @@
-import type { CharacterImageKey, GameSnapshot } from '../types/game';
+import type { GalleryId, GameSnapshot } from '../types/game';
 
 export const STORAGE_KEYS = {
   gameSnapshot: 'yang-xiaota-idol-demo:game-snapshot',
@@ -40,7 +40,7 @@ export function clearGameSnapshot(): void {
   window.localStorage.removeItem(STORAGE_KEYS.gameSnapshot);
 }
 
-export function loadUnlockedGallery(): CharacterImageKey[] {
+export function loadUnlockedGallery(): GalleryId[] {
   if (!isBrowser()) {
     return ['base'];
   }
@@ -51,19 +51,18 @@ export function loadUnlockedGallery(): CharacterImageKey[] {
   }
 
   try {
-    const parsed = JSON.parse(raw) as CharacterImageKey[];
+    const parsed = JSON.parse(raw) as GalleryId[];
     return parsed.includes('base') ? parsed : ['base', ...parsed];
   } catch {
     return ['base'];
   }
 }
 
-export function saveUnlockedGallery(ids: CharacterImageKey[]): void {
+export function saveUnlockedGallery(ids: GalleryId[]): void {
   if (!isBrowser()) {
     return;
   }
 
-  const uniqueIds = Array.from(new Set<CharacterImageKey>(['base', ...ids]));
+  const uniqueIds = Array.from(new Set<GalleryId>(['base', ...ids]));
   window.localStorage.setItem(STORAGE_KEYS.unlockedGallery, JSON.stringify(uniqueIds));
 }
-

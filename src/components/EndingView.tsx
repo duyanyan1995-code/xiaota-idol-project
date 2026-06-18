@@ -1,4 +1,5 @@
 import { CHARACTER_IMAGES } from '../config/characterImages';
+import { GALLERY_ITEMS } from '../config/gallery';
 import type { EndingConfig, GameState } from '../types/game';
 import { getHighestResult } from '../utils/endingLogic';
 import { CharacterDisplay } from './CharacterDisplay';
@@ -17,7 +18,7 @@ export function EndingView({ ending, state, unlockedCount }: EndingViewProps) {
     <section className="ending-view">
       <CharacterDisplay image={CHARACTER_IMAGES.stage} caption="终章结算" />
       <div className="panel ending-card">
-        <p className="eyebrow">11 年偶像生涯终章</p>
+        <p className="eyebrow">2015-2025 偶像生涯终章</p>
         <h1>{ending.name}</h1>
         <p className="route-tag">{ending.routeTag}</p>
         <p>{ending.text}</p>
@@ -40,11 +41,15 @@ export function EndingView({ ending, state, unlockedCount }: EndingViewProps) {
           </div>
           <div>
             <span>图鉴解锁</span>
-            <strong>{unlockedCount} / 7</strong>
+            <strong>{unlockedCount} / {GALLERY_ITEMS.length}</strong>
           </div>
           <div>
             <span>完成年份</span>
             <strong>{state.yearSummaries.length} / 11</strong>
+          </div>
+          <div>
+            <span>最终时间</span>
+            <strong>{state.currentYear}.{String(state.currentMonth).padStart(2, '0')}</strong>
           </div>
         </div>
         <p className="final-line">{ending.finalLine}</p>

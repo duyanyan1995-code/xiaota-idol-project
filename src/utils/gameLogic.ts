@@ -1,4 +1,13 @@
+import {
+  CAREER_END_YEAR,
+  CAREER_START_YEAR,
+  MONTHS_PER_YEAR,
+  getAnnualCalendar,
+  getCareerYear,
+  isFinalCareerMonth,
+} from '../config/annualCalendar';
 import { CHARACTER_IMAGES } from '../config/characterImages';
+import { FALLBACK_EVENT, RANDOM_EVENTS } from '../config/events';
 import { GALLERY_ITEMS } from '../config/gallery';
 import { PLAN_BY_ID } from '../config/plans';
 import { calculateB50Result, calculateElectionResult } from './nodeLogic';
@@ -10,8 +19,8 @@ import type {
   GamePhase,
   GameSnapshot,
   GameState,
+  GalleryId,
   GrowthLog,
-  HalfYear,
   PlanHistoryEntry,
   PlanId,
   RandomEventChoice,
@@ -22,7 +31,8 @@ import type {
   YearSummary,
 } from '../types/game';
 
-const SAVE_VERSION = 2;
+const SAVE_VERSION = 4;
+const SUPPORTED_SAVE_VERSIONS = [2, 3, 4];
 
 const CONDITION_STATS = ['energy', 'mood', 'stress'] as const;
 const GROWTH_STATS = [
@@ -55,7 +65,9 @@ export function createInitialGameState(): GameState {
   return {
     saveVersion: SAVE_VERSION,
     year: 1,
-    phase: 'yearStart',
+    currentYear: CAREER_START_YEAR,
+    currentMonth: 1,
+    phase: 'monthStart',
     vocal: 10,
     dance: 10,
     performance: 10,
@@ -81,7 +93,8 @@ export function createInitialGameState(): GameState {
 }
 
 export function normalizeGameSnapshot(snapshot: GameSnapshot | null): GameSnapshot | null {
-  if (!snapshot || snapshot.state?.saveVersion !== SAVE_VERSION) {
+  const saveVersion = snapshot?.state?.saveVersion;
+  if (!snapshot || !SUPPORTED_SAVE_VERSIONS.includes(Number(saveVersion))) {
     return null;
   }
 
@@ -95,16 +108,23 @@ export function normalizeGameSnapshot(snapshot: GameSnapshot | null): GameSnapsh
 
 export function normalizeGameState(value: Partial<GameState> | null | undefined): GameState {
   const initial = createInitialGameState();
+  const currentYear = normalizeCurrentYear(value);
+  const currentMonth = normalizeCurrentMonth(value);
+  const phase = normalizePhase((value as { phase?: string } | null | undefined)?.phase);
   const merged: GameState = {
     ...initial,
     ...value,
     saveVersion: SAVE_VERSION,
-    planHistory: value?.planHistory ?? [],
-    eventHistory: value?.eventHistory ?? [],
-    b50Results: value?.b50Results ?? [],
-    electionResults: value?.electionResults ?? [],
-    yearSummaries: value?.yearSummaries ?? [],
-    growthLogs: value?.growthLogs ?? [],
+    year: getCareerYear(currentYear),
+    currentYear,
+    currentMonth,
+    phase,
+    planHistory: normalizePlanHistory(value?.planHistory ?? []),
+    eventHistory: normalizeEventHistory(value?.eventHistory ?? []),
+    b50Results: normalizeNodeResults(value?.b50Results ?? []),
+    electionResults: normalizeNodeResults(value?.electionResults ?? []),
+    yearSummaries: normalizeYearSummaries(value?.yearSummaries ?? []),
+    growthLogs: normalizeGrowthLogs(value?.growthLogs ?? []),
     unlockedGallery: ensureBaseGallery(value?.unlockedGallery ?? initial.unlockedGallery),
     eventFlags: value?.eventFlags ?? {},
     gameStatus: value?.gameStatus ?? 'playing',
@@ -149,11 +169,11 @@ export function getCharacterImage(
 }
 
 export function isPlanPhase(phase: GamePhase): boolean {
-  return phase === 'firstHalfPlan' || phase === 'secondHalfPlan';
+  return phase === 'monthlyPlan';
 }
 
 export function isEventPhase(phase: GamePhase): boolean {
-  return phase === 'firstHalfEvent' || phase === 'secondHalfEvent';
+  return phase === 'monthlyEvent';
 }
 
 export function advancePhase(state: GameState): GameSnapshot {
@@ -162,19 +182,19 @@ export function advancePhase(state: GameState): GameSnapshot {
   let title = '阶段推进';
   let message = '小獭整理好状态，准备进入下一阶段。';
 
-  if (state.phase === 'yearStart') {
+  if (state.phase === 'monthStart') {
     nextState = clampGameState({
       ...state,
-      phase: 'firstHalfPlan',
+      phase: 'monthlyPlan',
       eventFlags: {
         ...state.eventFlags,
         summerActive: false,
       },
     });
-    title = `第 ${state.year} 年开始`;
-    message = '选择上半年计划，决定这一年的第一段养成方向。';
+    title = `${state.currentYear} 年 ${state.currentMonth} 月`;
+    message = '选择本月行动，决定这个月的小獭如何积累。';
   } else if (state.phase === 'yearSummary') {
-    if (state.year >= 11) {
+    if (isFinalCareerMonth(state.currentYear, state.currentMonth)) {
       nextState = clampGameState({
         ...state,
         phase: 'finalEnding',
@@ -187,17 +207,9 @@ export function advancePhase(state: GameState): GameSnapshot {
       title = '十一年终章';
       message = '小獭的 11 年偶像生涯走到了终章结算。';
     } else {
-      nextState = clampGameState({
-        ...state,
-        year: state.year + 1,
-        phase: 'yearStart',
-        eventFlags: {
-          ...state.eventFlags,
-          summerActive: false,
-        },
-      });
-      title = `进入第 ${state.year + 1} 年`;
-      message = '新的一年开始了，小獭还会继续向舞台靠近。';
+      nextState = advanceToNextMonth(state);
+      title = `${nextState.currentYear} 年 ${nextState.currentMonth} 月`;
+      message = '新的月份开始了，小獭还会继续向舞台靠近。';
     }
   }
 
@@ -214,11 +226,10 @@ export function advancePhase(state: GameState): GameSnapshot {
 }
 
 export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
-  const half = getHalfFromPlanPhase(state.phase);
   const plan = PLAN_BY_ID[planId];
 
-  if (!half || !plan) {
-    return makeNoopSnapshot(state, '当前阶段不能选择计划。');
+  if (state.phase !== 'monthlyPlan' || !plan) {
+    return makeNoopSnapshot(state, '当前阶段不能选择行动。');
   }
 
   const before = state;
@@ -230,13 +241,14 @@ export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
     },
   };
   const afterDeltas = applyDeltas(stateBeforeDeltas, plan.effects);
-  const nextPhase: GamePhase = half === 'first' ? 'firstHalfEvent' : 'secondHalfEvent';
   const historyEntry: PlanHistoryEntry = {
-    id: `plan-${state.year}-${half}`,
+    id: `plan-${state.currentYear}-${state.currentMonth}`,
     year: state.year,
-    half,
+    currentYear: state.currentYear,
+    currentMonth: state.currentMonth,
     planId: plan.id,
     planName: plan.name,
+    actionVisualKey: plan.actionVisualKey,
     feedbackText: plan.feedbackText,
     effects: plan.effects,
   };
@@ -248,8 +260,8 @@ export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
   );
   const nextState = clampGameState({
     ...afterDeltas,
-    phase: nextPhase,
-    planHistory: replaceSameYearHalfPlan(state.planHistory, historyEntry),
+    phase: 'monthlyEvent',
+    planHistory: replaceSameMonthPlan(state.planHistory, historyEntry),
     growthLogs: [...state.growthLogs, growthLog],
   });
 
@@ -259,7 +271,10 @@ export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
     lastResult: {
       title: plan.name,
       message: plan.feedbackText,
-      imageKey: getPlanImageKey(plan.id),
+      visual: {
+        type: 'actionVisual',
+        key: plan.actionVisualKey,
+      },
       changes: collectChanges(before, nextState),
     },
     pendingEventId: null,
@@ -271,38 +286,42 @@ export function applyEventChoice(
   event: RandomEventConfig,
   choice: RandomEventChoice,
 ): GameSnapshot {
-  const half = getHalfFromEventPhase(state.phase);
-  if (!half) {
+  if (state.phase !== 'monthlyEvent') {
     return makeNoopSnapshot(state, '当前阶段不能处理事件。');
   }
 
   const before = state;
   const afterDeltas = applyDeltas(state, choice.effects);
-  const nextPhase: GamePhase = half === 'first' ? 'election' : 'b50';
   const eventEntry: EventHistoryEntry = {
-    id: `event-${state.year}-${half}`,
+    id: `event-${state.currentYear}-${state.currentMonth}`,
     year: state.year,
-    half,
+    currentYear: state.currentYear,
+    currentMonth: state.currentMonth,
     eventId: event.id,
     eventTitle: event.title,
     choiceId: choice.id,
     choiceLabel: choice.label,
     resultText: choice.resultText,
+    eventCgKey: event.eventCgKey,
+    galleryId: event.galleryId,
     effects: choice.effects,
     b50Bonus: choice.b50Bonus ?? 0,
     electionBonus: choice.electionBonus ?? 0,
   };
   const growthLog = createGrowthLog(state, event.title, choice.resultText, choice.effects);
-  const nextState = clampGameState({
+  const stateWithEvent = clampGameState({
     ...afterDeltas,
-    phase: nextPhase,
     eventFlags: {
       ...afterDeltas.eventFlags,
       ...(choice.flags ?? {}),
     },
-    eventHistory: replaceSameYearHalfEvent(state.eventHistory, eventEntry),
+    eventHistory: replaceSameMonthEvent(state.eventHistory, eventEntry),
+    unlockedGallery: event.galleryId
+      ? addGalleryId(state.unlockedGallery, event.galleryId)
+      : state.unlockedGallery,
     growthLogs: [...state.growthLogs, growthLog],
   });
+  const nextState = resolveAfterMonthActivity(stateWithEvent);
 
   return {
     state: nextState,
@@ -310,7 +329,10 @@ export function applyEventChoice(
     lastResult: {
       title: event.title,
       message: choice.resultText,
-      imageKey: getEventImageKey(event.id),
+      visual: {
+        type: 'eventCg',
+        key: event.eventCgKey,
+      },
       changes: collectChanges(before, nextState),
     },
     pendingEventId: null,
@@ -328,15 +350,12 @@ export function resolveB50Node(state: GameState): GameSnapshot {
   const growthLog = createGrowthLog(state, 'B50 舞台记忆节点', result.message, result.rewards);
   const stateWithResult = clampGameState({
     ...afterRewards,
-    phase: 'yearSummary',
     b50Results: replaceSameYearNodeResult(state.b50Results, result),
     growthLogs: [...state.growthLogs, growthLog],
   });
-  const summary = buildYearSummary(stateWithResult);
-  const nextState = clampGameState({
-    ...stateWithResult,
-    yearSummaries: replaceSameYearSummary(stateWithResult.yearSummaries, summary),
-  });
+  const nextState = isYearEndMonth(stateWithResult)
+    ? buildYearSummaryState(stateWithResult)
+    : advanceToNextMonth(stateWithResult);
 
   return {
     state: nextState,
@@ -363,12 +382,12 @@ export function resolveElectionNode(state: GameState): GameSnapshot {
   const result = calculateElectionResult(state);
   const afterRewards = applyDeltas(state, result.rewards);
   const growthLog = createGrowthLog(state, '年度人气总选节点', result.message, result.rewards);
-  const nextState = clampGameState({
+  const stateWithResult = clampGameState({
     ...afterRewards,
-    phase: 'secondHalfPlan',
     electionResults: replaceSameYearNodeResult(state.electionResults, result),
     growthLogs: [...state.growthLogs, growthLog],
   });
+  const nextState = resolveAfterNode(stateWithResult);
 
   return {
     state: nextState,
@@ -387,14 +406,15 @@ export function resolveElectionNode(state: GameState): GameSnapshot {
 }
 
 export function getCurrentYearSummary(state: GameState): YearSummary | null {
-  return state.yearSummaries.find((summary) => summary.year === state.year) ?? null;
+  return state.yearSummaries.find((summary) => summary.currentYear === state.currentYear) ?? null;
 }
 
 export function mergeUnlockedGallery(
   state: GameState,
-  currentUnlocked: CharacterImageKey[],
-): CharacterImageKey[] {
-  const next = new Set<CharacterImageKey>(ensureBaseGallery(currentUnlocked));
+  currentUnlocked: GalleryId[],
+): GalleryId[] {
+  const next = new Set<GalleryId>(ensureBaseGallery(currentUnlocked));
+  state.unlockedGallery.forEach((id) => next.add(id));
   GALLERY_ITEMS.forEach((item) => {
     if (item.isUnlocked(state)) {
       next.add(item.id);
@@ -404,7 +424,7 @@ export function mergeUnlockedGallery(
   return Array.from(next);
 }
 
-export function sameGalleryIds(a: CharacterImageKey[], b: CharacterImageKey[]): boolean {
+export function sameGalleryIds(a: GalleryId[], b: GalleryId[]): boolean {
   if (a.length !== b.length) {
     return false;
   }
@@ -415,12 +435,10 @@ export function sameGalleryIds(a: CharacterImageKey[], b: CharacterImageKey[]): 
 
 export function getPhaseLabel(phase: GamePhase): string {
   const labels: Record<GamePhase, string> = {
-    yearStart: '年度开始',
-    firstHalfPlan: '上半年计划',
-    firstHalfEvent: '上半年事件',
+    monthStart: '月份开始',
+    monthlyPlan: '本月行动',
+    monthlyEvent: '本月事件',
     election: '年度人气总选',
-    secondHalfPlan: '下半年计划',
-    secondHalfEvent: '下半年事件',
     b50: 'B50 舞台记忆',
     yearSummary: '年度总结',
     finalEnding: '终章结算',
@@ -429,62 +447,117 @@ export function getPhaseLabel(phase: GamePhase): string {
   return labels[phase];
 }
 
-function getHalfFromPlanPhase(phase: GamePhase): HalfYear | null {
-  if (phase === 'firstHalfPlan') {
-    return 'first';
-  }
-
-  if (phase === 'secondHalfPlan') {
-    return 'second';
-  }
-
-  return null;
+export function getMonthLabel(state: GameState): string {
+  return `${state.currentYear} 年 ${state.currentMonth} 月`;
 }
 
-function getHalfFromEventPhase(phase: GamePhase): HalfYear | null {
-  if (phase === 'firstHalfEvent') {
-    return 'first';
+function resolveAfterMonthActivity(state: GameState): GameState {
+  if (shouldResolveElection(state)) {
+    return clampGameState({
+      ...state,
+      phase: 'election',
+    });
   }
 
-  if (phase === 'secondHalfEvent') {
-    return 'second';
+  return resolveAfterNode(state);
+}
+
+function resolveAfterNode(state: GameState): GameState {
+  if (shouldResolveB50(state)) {
+    return clampGameState({
+      ...state,
+      phase: 'b50',
+    });
   }
 
-  return null;
+  if (isYearEndMonth(state)) {
+    return buildYearSummaryState(state);
+  }
+
+  return advanceToNextMonth(state);
+}
+
+function shouldResolveElection(state: GameState): boolean {
+  const calendar = getAnnualCalendar(state.currentYear);
+  return (
+    calendar.electionMonth === state.currentMonth &&
+    !hasNodeResult(state.electionResults, state.currentYear)
+  );
+}
+
+function shouldResolveB50(state: GameState): boolean {
+  const calendar = getAnnualCalendar(state.currentYear);
+  return (
+    calendar.b50Month === state.currentMonth &&
+    !hasNodeResult(state.b50Results, state.currentYear)
+  );
+}
+
+function hasNodeResult(history: { currentYear: number; year: number }[], currentYear: number): boolean {
+  return history.some((item) => item.currentYear === currentYear);
+}
+
+function isYearEndMonth(state: GameState): boolean {
+  return state.currentMonth === MONTHS_PER_YEAR;
+}
+
+function advanceToNextMonth(state: GameState): GameState {
+  const isDecember = state.currentMonth >= MONTHS_PER_YEAR;
+  const nextYear = isDecember ? state.currentYear + 1 : state.currentYear;
+  const nextMonth = isDecember ? 1 : state.currentMonth + 1;
+
+  return clampGameState({
+    ...state,
+    currentYear: nextYear,
+    currentMonth: nextMonth,
+    phase: 'monthStart',
+    eventFlags: {
+      ...state.eventFlags,
+      summerActive: false,
+    },
+  });
+}
+
+function buildYearSummaryState(state: GameState): GameState {
+  const summary = buildYearSummary(state);
+  return clampGameState({
+    ...state,
+    phase: 'yearSummary',
+    yearSummaries: replaceSameYearSummary(state.yearSummaries, summary),
+  });
 }
 
 function buildYearSummary(state: GameState): YearSummary {
-  const firstPlan = state.planHistory.find(
-    (entry) => entry.year === state.year && entry.half === 'first',
+  const yearlyPlans = state.planHistory.filter(
+    (entry) => entry.currentYear === state.currentYear,
   );
-  const secondPlan = state.planHistory.find(
-    (entry) => entry.year === state.year && entry.half === 'second',
+  const b50Result = state.b50Results.find((result) => result.currentYear === state.currentYear);
+  const electionResult = state.electionResults.find(
+    (result) => result.currentYear === state.currentYear,
   );
-  const b50Result = state.b50Results.find((result) => result.year === state.year);
-  const electionResult = state.electionResults.find((result) => result.year === state.year);
   const eventTitles = state.eventHistory
-    .filter((event) => event.year === state.year)
+    .filter((event) => event.currentYear === state.currentYear)
     .map((event) => event.eventTitle);
 
   return {
-    id: `summary-${state.year}`,
+    id: `summary-${state.currentYear}`,
     year: state.year,
+    currentYear: state.currentYear,
     careerStage: getCareerStage(state.year),
-    firstPlanName: firstPlan?.planName ?? '未选择',
-    secondPlanName: secondPlan?.planName ?? '未选择',
+    planNames: yearlyPlans.map((plan) => `${plan.currentMonth}月 ${plan.planName}`),
     b50Grade: b50Result?.grade ?? 'E',
     b50Score: b50Result?.score ?? 0,
     electionGrade: electionResult?.grade ?? 'E',
     electionScore: electionResult?.score ?? 0,
     eventTitles,
-    growthSummary: summarizeGrowthLogs(state.growthLogs, state.year),
+    growthSummary: summarizeGrowthLogs(state.growthLogs, state.currentYear),
     routeHint: getRouteHint(state),
   };
 }
 
-function summarizeGrowthLogs(logs: GrowthLog[], year: number): StatChange[] {
+function summarizeGrowthLogs(logs: GrowthLog[], currentYear: number): StatChange[] {
   const totals = logs
-    .filter((log) => log.year === year)
+    .filter((log) => log.currentYear === currentYear)
     .reduce<Partial<Record<StatKey, number>>>((result, log) => {
       Object.entries(log.deltas).forEach(([key, value]) => {
         if (value === undefined) {
@@ -569,6 +642,10 @@ function applyDeltas(state: GameState, deltas: StatDeltas): GameState {
 function clampGameState(state: GameState): GameState {
   const next = { ...state };
 
+  next.currentYear = clamp(Math.round(next.currentYear), CAREER_START_YEAR, CAREER_END_YEAR);
+  next.currentMonth = clamp(Math.round(next.currentMonth), 1, MONTHS_PER_YEAR);
+  next.year = getCareerYear(next.currentYear);
+
   CONDITION_STATS.forEach((key) => {
     next[key] = clamp(Math.round(next[key]), 0, 100);
   });
@@ -578,7 +655,6 @@ function clampGameState(state: GameState): GameState {
   });
 
   next.fans = Math.max(0, Math.round(next.fans));
-  next.year = clamp(Math.round(next.year), 1, 11);
   next.unlockedGallery = ensureBaseGallery(next.unlockedGallery);
 
   return next;
@@ -618,8 +694,10 @@ function createGrowthLog(
   deltas: StatDeltas,
 ): GrowthLog {
   return {
-    id: `growth-${state.year}-${state.phase}-${state.growthLogs.length + 1}`,
+    id: `growth-${state.currentYear}-${state.currentMonth}-${state.phase}-${state.growthLogs.length + 1}`,
     year: state.year,
+    currentYear: state.currentYear,
+    currentMonth: state.currentMonth,
     phase: state.phase,
     title,
     description,
@@ -640,32 +718,38 @@ function makeNoopSnapshot(state: GameState, message: string): GameSnapshot {
   };
 }
 
-function replaceSameYearHalfPlan(
+function replaceSameMonthPlan(
   history: PlanHistoryEntry[],
   entry: PlanHistoryEntry,
 ): PlanHistoryEntry[] {
   return [
-    ...history.filter((item) => item.year !== entry.year || item.half !== entry.half),
+    ...history.filter(
+      (item) =>
+        item.currentYear !== entry.currentYear || item.currentMonth !== entry.currentMonth,
+    ),
     entry,
   ];
 }
 
-function replaceSameYearHalfEvent(
+function replaceSameMonthEvent(
   history: EventHistoryEntry[],
   entry: EventHistoryEntry,
 ): EventHistoryEntry[] {
   return [
-    ...history.filter((item) => item.year !== entry.year || item.half !== entry.half),
+    ...history.filter(
+      (item) =>
+        item.currentYear !== entry.currentYear || item.currentMonth !== entry.currentMonth,
+    ),
     entry,
   ];
 }
 
-function replaceSameYearNodeResult<T extends { year: number }>(history: T[], entry: T): T[] {
-  return [...history.filter((item) => item.year !== entry.year), entry];
+function replaceSameYearNodeResult<T extends { currentYear: number }>(history: T[], entry: T): T[] {
+  return [...history.filter((item) => item.currentYear !== entry.currentYear), entry];
 }
 
 function replaceSameYearSummary(history: YearSummary[], entry: YearSummary): YearSummary[] {
-  return [...history.filter((item) => item.year !== entry.year), entry];
+  return [...history.filter((item) => item.currentYear !== entry.currentYear), entry];
 }
 
 function buildNodeDetails(eventBonus: number, modifiers: { label: string; value: number }[]): string[] {
@@ -681,41 +765,137 @@ function buildNodeDetails(eventBonus: number, modifiers: { label: string; value:
   ];
 }
 
-function getPlanImageKey(planId: PlanId): CharacterImageKey | undefined {
-  if (planId === 'fanService') {
-    return 'wink';
+function normalizeCurrentYear(value: Partial<GameState> | null | undefined): number {
+  if (typeof value?.currentYear === 'number') {
+    return clamp(Math.round(value.currentYear), CAREER_START_YEAR, CAREER_END_YEAR);
   }
 
-  if (planId === 'stageFocus') {
-    return 'stage';
-  }
-
-  if (planId === 'theaterTraining') {
-    return 'practice';
-  }
-
-  return undefined;
+  return clamp(
+    CAREER_START_YEAR + clamp(Math.round(value?.year ?? 1), 1, 11) - 1,
+    CAREER_START_YEAR,
+    CAREER_END_YEAR,
+  );
 }
 
-function getEventImageKey(eventId: string): CharacterImageKey | undefined {
-  const imageByEvent: Partial<Record<string, CharacterImageKey>> = {
-    fanLetter: 'happy',
-    fanCreation: 'wink',
-    stageMistake: 'tired',
-    extraPractice: 'practice',
-    styleChallenge: 'happy',
-    summerInvite: 'summer',
-    lowMood: 'tired',
-    secretHappy: 'happy',
-  };
+function normalizeCurrentMonth(value: Partial<GameState> | null | undefined): number {
+  if (typeof value?.currentMonth === 'number') {
+    return clamp(Math.round(value.currentMonth), 1, MONTHS_PER_YEAR);
+  }
 
-  return imageByEvent[eventId];
+  const legacyPhase = (value as { phase?: string } | null | undefined)?.phase;
+  if (legacyPhase === 'secondHalfPlan' || legacyPhase === 'secondHalfEvent' || legacyPhase === 'b50' || legacyPhase === 'yearSummary') {
+    return 12;
+  }
+
+  if (legacyPhase === 'election') {
+    return 7;
+  }
+
+  return 1;
 }
 
-function ensureBaseGallery(ids: CharacterImageKey[]): CharacterImageKey[] {
-  return Array.from(new Set<CharacterImageKey>(['base', ...ids]));
+function normalizePhase(phase: string | undefined): GamePhase {
+  if (
+    phase === 'monthStart' ||
+    phase === 'monthlyPlan' ||
+    phase === 'monthlyEvent' ||
+    phase === 'election' ||
+    phase === 'b50' ||
+    phase === 'yearSummary' ||
+    phase === 'finalEnding'
+  ) {
+    return phase;
+  }
+
+  if (phase === 'firstHalfPlan' || phase === 'secondHalfPlan') {
+    return 'monthlyPlan';
+  }
+
+  if (phase === 'firstHalfEvent' || phase === 'secondHalfEvent') {
+    return 'monthlyEvent';
+  }
+
+  if (phase === 'yearStart') {
+    return 'monthStart';
+  }
+
+  return 'monthStart';
+}
+
+function normalizePlanHistory(history: PlanHistoryEntry[]): PlanHistoryEntry[] {
+  return history.map((entry) => {
+    const currentYear = entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1;
+    const currentMonth = entry.currentMonth ?? (entry.half === 'second' ? 7 : 1);
+
+    return {
+      ...entry,
+      currentYear,
+      currentMonth,
+      actionVisualKey: entry.actionVisualKey ?? PLAN_BY_ID[entry.planId]?.actionVisualKey,
+    };
+  });
+}
+
+function normalizeEventHistory(history: EventHistoryEntry[]): EventHistoryEntry[] {
+  return history.map((entry) => {
+    const event = getEventConfig(entry.eventId);
+    const currentYear = entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1;
+    const currentMonth = entry.currentMonth ?? (entry.half === 'second' ? 7 : 1);
+
+    return {
+      ...entry,
+      currentYear,
+      currentMonth,
+      eventCgKey: entry.eventCgKey ?? event?.eventCgKey,
+      galleryId: entry.galleryId ?? event?.galleryId,
+    };
+  });
+}
+
+function normalizeNodeResults<T extends { year: number; currentYear: number; currentMonth: number }>(
+  history: T[],
+): T[] {
+  return history.map((entry) => ({
+    ...entry,
+    currentYear: entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1,
+    currentMonth: entry.currentMonth ?? 12,
+  }));
+}
+
+function normalizeYearSummaries(history: YearSummary[]): YearSummary[] {
+  return history.map((entry) => ({
+    ...entry,
+    currentYear: entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1,
+    planNames: entry.planNames ?? [],
+  }));
+}
+
+function normalizeGrowthLogs(history: GrowthLog[]): GrowthLog[] {
+  return history.map((entry) => ({
+    ...entry,
+    currentYear: entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1,
+    currentMonth: entry.currentMonth ?? 1,
+    phase: normalizePhase((entry as { phase?: string }).phase),
+  }));
+}
+
+function getEventConfig(eventId: string) {
+  if (eventId === FALLBACK_EVENT.id) {
+    return FALLBACK_EVENT;
+  }
+
+  return RANDOM_EVENTS.find((event) => event.id === eventId);
+}
+
+function addGalleryId(ids: GalleryId[], id: GalleryId): GalleryId[] {
+  return Array.from(new Set<GalleryId>(['base', ...ids, id]));
+}
+
+function ensureBaseGallery(ids: GalleryId[]): GalleryId[] {
+  return Array.from(new Set<GalleryId>(['base', ...ids]));
 }
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
+

@@ -8,10 +8,10 @@ interface ActionPanelProps {
 
 export function ActionPanel({ disabled = false, onPlan }: ActionPanelProps) {
   return (
-    <section className="panel action-panel" aria-label="半年计划">
+    <section className="panel action-panel" aria-label="本月行动">
       <div className="section-title">
-        <span>选择半年计划</span>
-        <small>选择后进入事件阶段</small>
+        <span>选择本月行动</span>
+        <small>选择后进入事件判断</small>
       </div>
       <div className="action-grid">
         {PLANS.map((plan) => (

@@ -5,13 +5,13 @@ import { GalleryPage } from './pages/GalleryPage';
 import { EndingPage } from './pages/EndingPage';
 import { AppShell } from './components/AppShell';
 import { CharacterDisplay } from './components/CharacterDisplay';
-import { CHARACTER_IMAGES } from './config/characterImages';
 import { GALLERY_ITEMS } from './config/gallery';
+import { getVisualAsset } from './config/visualAssets';
 import type {
-  CharacterImageKey,
   GameFeedback,
   GameSnapshot,
   GameState,
+  GalleryId,
   PlanId,
   RandomEventChoice,
   RandomEventConfig,
@@ -47,8 +47,9 @@ function App() {
   const [lastResult, setLastResult] = useState<GameFeedback | null>(null);
   const [pendingEvent, setPendingEvent] = useState<RandomEventConfig | null>(null);
   const [activeFeedback, setActiveFeedback] = useState<GameFeedback | null>(null);
-  const [galleryUnlockId, setGalleryUnlockId] = useState<CharacterImageKey | null>(null);
-  const [unlockedGallery, setUnlockedGallery] = useState<CharacterImageKey[]>(() =>
+  const [galleryUnlockId, setGalleryUnlockId] = useState<GalleryId | null>(null);
+  const [queuedGalleryUnlocks, setQueuedGalleryUnlocks] = useState<GalleryId[]>([]);
+  const [unlockedGallery, setUnlockedGallery] = useState<GalleryId[]>(() =>
     loadUnlockedGallery(),
   );
   const [savedSnapshot, setSavedSnapshot] = useState<GameSnapshot | null>(() =>
@@ -82,16 +83,28 @@ function App() {
     setSavedSnapshot(snapshotForSave);
 
     if (!sameGalleryIds(nextUnlocked, unlockedGallery)) {
-      const newUnlock = nextUnlocked.find(
+      const newUnlocks = nextUnlocked.filter(
         (id) => id !== 'base' && !unlockedGallery.includes(id),
       );
-      if (newUnlock) {
-        setGalleryUnlockId(newUnlock);
+      if (newUnlocks.length > 0) {
+        setQueuedGalleryUnlocks((current) =>
+          Array.from(new Set<GalleryId>([...current, ...newUnlocks])),
+        );
       }
       setUnlockedGallery(nextUnlocked);
       saveUnlockedGallery(nextUnlocked);
     }
   }, [gameState, lastPlanId, lastResult, pendingEvent, unlockedGallery]);
+
+  useEffect(() => {
+    if (activeFeedback || galleryUnlockId || queuedGalleryUnlocks.length === 0) {
+      return;
+    }
+
+    const [nextUnlock, ...restUnlocks] = queuedGalleryUnlocks;
+    setGalleryUnlockId(nextUnlock);
+    setQueuedGalleryUnlocks(restUnlocks);
+  }, [activeFeedback, galleryUnlockId, queuedGalleryUnlocks]);
 
   function startNewGame() {
     const nextState: GameState = {
@@ -104,6 +117,8 @@ function App() {
     setLastResult(null);
     setPendingEvent(null);
     setActiveFeedback(null);
+    setGalleryUnlockId(null);
+    setQueuedGalleryUnlocks([]);
     setPage('game');
   }
 
@@ -120,6 +135,8 @@ function App() {
     setLastResult(snapshot.lastResult);
     setPendingEvent(resolvePendingEvent(snapshot));
     setActiveFeedback(null);
+    setGalleryUnlockId(null);
+    setQueuedGalleryUnlocks([]);
     setPage(snapshot.state.phase === 'finalEnding' ? 'ending' : 'game');
   }
 
@@ -194,7 +211,11 @@ function App() {
       {page === 'home' ? (
         <HomePage
           hasSave={Boolean(savedSnapshot)}
-          savedProgress={savedSnapshot ? `Year ${savedSnapshot.state.year} / 11` : null}
+          savedProgress={
+            savedSnapshot
+              ? `${savedSnapshot.state.currentYear} 年 ${savedSnapshot.state.currentMonth} 月`
+              : null
+          }
           onStart={startNewGame}
           onContinue={continueGame}
           onOpenGallery={() => setPage('gallery')}
@@ -245,8 +266,8 @@ function App() {
             <p className="eyebrow">玩法说明</p>
             <h2 id="guide-title">11 年偶像生涯</h2>
             <p>
-              每年依次选择上半年计划、处理事件、结算总选，再选择下半年计划、处理事件、结算 B50。
-              年度总结会记录这一年的路线，完成第 11 年后进入终章结算。
+              从 2015 年 1 月开始，每个月安排一次行动、处理一次事件，并在配置月份结算总选或 B50。
+              年度总结会记录这一年的路线，完成 2025 年 12 月后进入终章结算。
             </p>
             <button className="button button--primary" type="button" onClick={() => setShowGuide(false)}>
               知道了
@@ -266,7 +287,7 @@ function GalleryUnlockModal({
   imageId,
   onClose,
 }: {
-  imageId: CharacterImageKey;
+  imageId: GalleryId;
   onClose: () => void;
 }) {
   const item = GALLERY_ITEMS.find((entry) => entry.id === imageId);
@@ -278,7 +299,7 @@ function GalleryUnlockModal({
     <div className="modal-backdrop" role="presentation">
       <section className="modal-card result-modal" role="dialog" aria-modal="true">
         <p className="eyebrow">图鉴解锁</p>
-        <CharacterDisplay image={CHARACTER_IMAGES[item.imageKey]} compact />
+        <CharacterDisplay image={getVisualAsset(item.visual.type, item.visual.key)} compact />
         <h2>{item.name}</h2>
         <p>{item.description}</p>
         <button className="button button--primary" type="button" onClick={onClose}>

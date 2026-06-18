@@ -1,4 +1,4 @@
-import type { B50Result, ElectionResult, GameState, HalfYear, NodeGrade, ScoreModifier, StatDeltas } from '../types/game';
+import type { B50Result, ElectionResult, GameState, NodeGrade, ScoreModifier, StatDeltas } from '../types/game';
 
 const B50_GRADE_TEXT: Record<NodeGrade, string> = {
   S: '传世名场面',
@@ -37,7 +37,7 @@ const ELECTION_REWARDS: Record<NodeGrade, StatDeltas> = {
 };
 
 export function calculateB50Result(state: GameState): B50Result {
-  const eventBonus = getEventBonus(state, state.year, 'second', 'b50Bonus');
+  const eventBonus = getEventBonus(state, 'b50Bonus');
   const modifiers = getB50Modifiers(state);
   const modifierTotal = sumModifiers(modifiers);
   const rawScore =
@@ -54,18 +54,20 @@ export function calculateB50Result(state: GameState): B50Result {
   return {
     id: `b50-${state.year}`,
     year: state.year,
+    currentYear: state.currentYear,
+    currentMonth: state.currentMonth,
     score,
     grade,
     gradeText: B50_GRADE_TEXT[grade],
     eventBonus,
     modifiers,
     rewards: B50_REWARDS[grade],
-    message: `第 ${state.year} 年的舞台记忆节点获得 ${grade} 级：${B50_GRADE_TEXT[grade]}。`,
+    message: `${state.currentYear} 年的舞台记忆节点获得 ${grade} 级：${B50_GRADE_TEXT[grade]}。`,
   };
 }
 
 export function calculateElectionResult(state: GameState): ElectionResult {
-  const eventBonus = getEventBonus(state, state.year, 'first', 'electionBonus');
+  const eventBonus = getEventBonus(state, 'electionBonus');
   const modifiers = getElectionModifiers(state);
   const modifierTotal = sumModifiers(modifiers);
   const fansNormalized = clamp(state.fans / 60, 0, 100);
@@ -83,13 +85,15 @@ export function calculateElectionResult(state: GameState): ElectionResult {
   return {
     id: `election-${state.year}`,
     year: state.year,
+    currentYear: state.currentYear,
+    currentMonth: state.currentMonth,
     score,
     grade,
     gradeText: ELECTION_GRADE_TEXT[grade],
     eventBonus,
     modifiers,
     rewards: ELECTION_REWARDS[grade],
-    message: `第 ${state.year} 年的年度人气节点获得 ${grade} 级：${ELECTION_GRADE_TEXT[grade]}。`,
+    message: `${state.currentYear} 年的年度人气节点获得 ${grade} 级：${ELECTION_GRADE_TEXT[grade]}。`,
   };
 }
 
@@ -113,12 +117,10 @@ function getElectionModifiers(state: GameState): ScoreModifier[] {
 
 function getEventBonus(
   state: GameState,
-  year: number,
-  half: HalfYear,
   key: 'b50Bonus' | 'electionBonus',
 ): number {
   return state.eventHistory
-    .filter((event) => event.year === year && event.half === half)
+    .filter((event) => event.currentYear === state.currentYear)
     .reduce((total, event) => total + event[key], 0);
 }
 

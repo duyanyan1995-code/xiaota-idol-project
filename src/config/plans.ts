@@ -5,6 +5,7 @@ export const PLANS: PlanConfig[] = [
     id: 'theaterTraining',
     name: '剧场训练',
     description: '把基础唱跳和舞台表现重新打磨一轮。',
+    actionVisualKey: 'theaterTrainingAction',
     effects: {
       vocal: 5,
       dance: 5,
@@ -20,6 +21,7 @@ export const PLANS: PlanConfig[] = [
     id: 'fanService',
     name: '粉丝营业',
     description: '认真回应粉丝，把陪伴感和元气传递出去。',
+    actionVisualKey: 'fanServiceAction',
     effects: {
       fans: 100,
       fanLoyalty: 6,
@@ -35,6 +37,7 @@ export const PLANS: PlanConfig[] = [
     id: 'outsideExposure',
     name: '外务曝光',
     description: '参加外部活动和节目，让更多人看见小獭。',
+    actionVisualKey: 'outsideExposureAction',
     effects: {
       popularity: 8,
       resources: 6,
@@ -50,6 +53,7 @@ export const PLANS: PlanConfig[] = [
     id: 'stageFocus',
     name: '舞台专项',
     description: '集中打磨舞台记忆点，为重要节点蓄力。',
+    actionVisualKey: 'stageFocusAction',
     effects: {
       performance: 8,
       dance: 4,
@@ -65,6 +69,7 @@ export const PLANS: PlanConfig[] = [
     id: 'imageBuilding',
     name: '形象经营',
     description: '尝试造型、物料和表达方式，建立更鲜明的风格。',
+    actionVisualKey: 'imageBuildingAction',
     effects: {
       style: 7,
       charm: 5,
@@ -80,6 +85,7 @@ export const PLANS: PlanConfig[] = [
     id: 'restAndReflect',
     name: '休整沉淀',
     description: '放慢节奏，恢复状态，也重新整理自己的方向。',
+    actionVisualKey: 'restAndReflectAction',
     effects: {
       energy: 25,
       mood: 12,
@@ -94,6 +100,7 @@ export const PLANS: PlanConfig[] = [
     id: 'stableOperation',
     name: '稳定运营',
     description: '不冒进也不停摆，保持训练、营业和粉丝互动的节奏。',
+    actionVisualKey: 'stableOperationAction',
     effects: {
       vocal: 2,
       dance: 2,

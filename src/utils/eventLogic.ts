@@ -1,17 +1,5 @@
 import { FALLBACK_EVENT, RANDOM_EVENTS } from '../config/events';
-import type { GamePhase, GameState, HalfYear, RandomEventConfig } from '../types/game';
-
-export function getHalfFromEventPhase(phase: GamePhase): HalfYear | null {
-  if (phase === 'firstHalfEvent') {
-    return 'first';
-  }
-
-  if (phase === 'secondHalfEvent') {
-    return 'second';
-  }
-
-  return null;
-}
+import type { GameState, RandomEventConfig } from '../types/game';
 
 export function getEventById(eventId: string | null | undefined): RandomEventConfig | null {
   if (!eventId) {
@@ -26,13 +14,12 @@ export function getEventById(eventId: string | null | undefined): RandomEventCon
 }
 
 export function pickRandomEvent(state: GameState): RandomEventConfig {
-  const half = getHalfFromEventPhase(state.phase);
-  if (!half) {
+  if (state.phase !== 'monthlyEvent') {
     return FALLBACK_EVENT;
   }
 
   const availableEvents = RANDOM_EVENTS.filter(
-    (event) => !event.triggerCondition || event.triggerCondition(state, half),
+    (event) => !event.triggerCondition || event.triggerCondition(state),
   );
 
   if (availableEvents.length === 0) {
@@ -42,4 +29,3 @@ export function pickRandomEvent(state: GameState): RandomEventConfig {
   const index = Math.floor(Math.random() * availableEvents.length);
   return availableEvents[index];
 }
-
