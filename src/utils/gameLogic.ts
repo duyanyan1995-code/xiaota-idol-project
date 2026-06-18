@@ -240,7 +240,8 @@ export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
       summerActive: false,
     },
   };
-  const afterDeltas = applyDeltas(stateBeforeDeltas, plan.effects);
+  const actualEffects = rollPlanEffects(plan);
+  const afterDeltas = applyDeltas(stateBeforeDeltas, actualEffects);
   const historyEntry: PlanHistoryEntry = {
     id: `plan-${state.currentYear}-${state.currentMonth}`,
     year: state.year,
@@ -250,13 +251,13 @@ export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
     planName: plan.name,
     actionVisualKey: plan.actionVisualKey,
     feedbackText: plan.feedbackText,
-    effects: plan.effects,
+    effects: actualEffects,
   };
   const growthLog = createGrowthLog(
     state,
     `${plan.name}`,
     plan.feedbackText,
-    plan.effects,
+    actualEffects,
   );
   const nextState = clampGameState({
     ...afterDeltas,
@@ -639,6 +640,39 @@ function applyDeltas(state: GameState, deltas: StatDeltas): GameState {
   });
 }
 
+function rollPlanEffects(plan: { effects: StatDeltas; effectsRange?: Partial<Record<StatKey, [number, number]>> }): StatDeltas {
+  const rangeKeys = Object.keys(plan.effectsRange ?? {}) as StatKey[];
+  const fallbackKeys = Object.keys(plan.effects) as StatKey[];
+  const keys = Array.from(new Set<StatKey>([...fallbackKeys, ...rangeKeys]));
+
+  return keys.reduce<StatDeltas>((result, key) => {
+    const range = plan.effectsRange?.[key];
+    const fallback = plan.effects[key];
+
+    if (range) {
+      return {
+        ...result,
+        [key]: randomIntInRange(range[0], range[1]),
+      };
+    }
+
+    if (fallback !== undefined) {
+      return {
+        ...result,
+        [key]: fallback,
+      };
+    }
+
+    return result;
+  }, {});
+}
+
+function randomIntInRange(min: number, max: number): number {
+  const low = Math.ceil(Math.min(min, max));
+  const high = Math.floor(Math.max(min, max));
+  return Math.floor(Math.random() * (high - low + 1)) + low;
+}
+
 function clampGameState(state: GameState): GameState {
   const next = { ...state };
 
@@ -898,4 +932,3 @@ function ensureBaseGallery(ids: GalleryId[]): GalleryId[] {
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
-
