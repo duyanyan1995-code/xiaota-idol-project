@@ -207,6 +207,8 @@ export interface RandomEventConfig {
   baseWeight: number;
   choices: RandomEventChoice[];
   weight?: number;
+  requiresAttention?: boolean;
+  shouldPause?: boolean;
   triggerCondition?: (state: GameState) => boolean;
 }
 

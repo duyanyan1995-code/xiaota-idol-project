@@ -586,6 +586,119 @@ button:disabled {
   background: rgba(255, 216, 111, 0.28);
 }
 
+.monthly-summary {
+  display: grid;
+  gap: 8px;
+}
+
+.monthly-summary__header {
+  display: grid;
+  gap: 8px;
+  align-items: start;
+  min-width: 0;
+}
+
+.monthly-summary__header h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.22rem;
+  line-height: 1.12;
+}
+
+.monthly-summary__header span,
+.monthly-summary__line {
+  color: var(--caramel);
+  font-size: 0.74rem;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.inline-result {
+  display: grid;
+  gap: 8px;
+  align-items: center;
+  border-radius: 15px;
+  padding: 8px;
+  background: rgba(255, 244, 214, 0.78);
+}
+
+.inline-result--action {
+  grid-template-columns: 74px 1fr;
+}
+
+.inline-result--action .character-display__frame {
+  width: 74px;
+  min-height: 70px;
+  border-radius: 14px;
+}
+
+.inline-result--action .character-display__image {
+  max-height: 70px;
+}
+
+.inline-result strong {
+  display: block;
+  color: var(--ink);
+  font-size: 0.84rem;
+  line-height: 1.22;
+}
+
+.inline-result p {
+  margin: 2px 0 0;
+  color: var(--brown);
+  font-size: 0.74rem;
+  line-height: 1.42;
+}
+
+.inline-result--important {
+  background: rgba(255, 184, 167, 0.3);
+}
+
+.summary-count-list {
+  display: grid;
+  gap: 5px;
+}
+
+.summary-count-list > span,
+.monthly-summary__changes > span {
+  color: rgba(90, 56, 39, 0.62);
+  font-size: 0.66rem;
+  font-weight: 950;
+}
+
+.summary-count-list div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.summary-count-list em {
+  border-radius: 999px;
+  padding: 4px 7px;
+  color: var(--brown);
+  background: rgba(255, 216, 111, 0.3);
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.monthly-summary__changes {
+  display: grid;
+  gap: 4px;
+}
+
+.monthly-summary__stop {
+  margin: 0;
+  border-radius: 13px;
+  padding: 7px 8px;
+  color: #8c312a;
+  background: rgba(255, 184, 167, 0.28);
+  font-size: 0.74rem;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
 .phase-card {
   display: flex;
   flex: 1;
@@ -598,6 +711,16 @@ button:disabled {
   background: var(--paper);
   box-shadow: var(--shadow);
   overflow: hidden;
+}
+
+.phase-card--flow {
+  display: grid;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.phase-card--flow .button--primary {
+  margin-top: 4px;
 }
 
 .phase-card h1 {
@@ -615,6 +738,10 @@ button:disabled {
 
 .phase-card .button--primary {
   margin-top: auto;
+}
+
+.phase-card .button--ghost {
+  margin-top: 0;
 }
 
 .phase-card--plan {
@@ -717,6 +844,13 @@ button:disabled {
   border: 0;
   background: transparent;
   box-shadow: none;
+}
+
+.button--auto-advance {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 8px 12px;
+  font-size: 0.78rem;
 }
 
 .action-panel {

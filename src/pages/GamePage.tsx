@@ -1,5 +1,6 @@
 import { ActionPanel } from '../components/ActionPanel';
 import { CharacterDisplay } from '../components/CharacterDisplay';
+import { MonthlySummary } from '../components/MonthlySummary';
 import { StatPanel } from '../components/StatPanel';
 import { StatChangeList } from '../components/StatChangeList';
 import { YearTimeline } from '../components/YearTimeline';
@@ -14,6 +15,7 @@ import type {
   RandomEventConfig,
   YearSummary,
 } from '../types/game';
+import type { FlowPanelState } from '../types/flow';
 import {
   getCurrentYearSummary,
   getMonthLabel,
@@ -28,12 +30,16 @@ interface GamePageProps {
   lastPlanId: PlanId | null;
   lastResult: GameFeedback | null;
   activeFeedback: GameFeedback | null;
+  flowPanel: FlowPanelState | null;
+  isAutoAdvancing: boolean;
   pendingEvent: RandomEventConfig | null;
   onAdvancePhase: () => void;
   onPlan: (planId: PlanId) => void;
+  onAutoAdvance: () => void;
   onEventChoice: (choice: RandomEventChoice) => void;
   onResolveNode: () => void;
   onCloseFeedback: () => void;
+  onContinueFlow: () => void;
   onHome: () => void;
   onRestart: () => void;
 }
@@ -43,33 +49,44 @@ export function GamePage({
   lastPlanId,
   lastResult,
   activeFeedback,
+  flowPanel,
+  isAutoAdvancing,
   pendingEvent,
   onAdvancePhase,
   onPlan,
+  onAutoAdvance,
   onEventChoice,
   onResolveNode,
   onCloseFeedback,
+  onContinueFlow,
   onHome,
   onRestart,
 }: GamePageProps) {
   const yearSummary = getCurrentYearSummary(state);
+  const recentChanges = activeFeedback?.changes ?? flowPanel?.summary.changes ?? null;
 
   return (
     <main className="page game-page">
       <TopStatusBar state={state} onHome={onHome} onRestart={onRestart} />
       <YearTimeline state={state} />
-      <StatPanel state={state} recentChanges={activeFeedback?.changes ?? null} />
-      <PhaseCard
-        state={state}
-        lastPlanId={lastPlanId}
-        lastResult={lastResult}
-        pendingEvent={pendingEvent}
-        yearSummary={yearSummary}
-        onAdvancePhase={onAdvancePhase}
-        onPlan={onPlan}
-        onEventChoice={onEventChoice}
-        onResolveNode={onResolveNode}
-      />
+      <StatPanel state={state} recentChanges={recentChanges} />
+      {flowPanel ? (
+        <MonthlySummary panel={flowPanel} onContinue={onContinueFlow} />
+      ) : (
+        <PhaseCard
+          state={state}
+          lastPlanId={lastPlanId}
+          lastResult={lastResult}
+          pendingEvent={pendingEvent}
+          yearSummary={yearSummary}
+          isAutoAdvancing={isAutoAdvancing}
+          onAdvancePhase={onAdvancePhase}
+          onPlan={onPlan}
+          onAutoAdvance={onAutoAdvance}
+          onEventChoice={onEventChoice}
+          onResolveNode={onResolveNode}
+        />
+      )}
       <ResultModal feedback={activeFeedback} state={state} onClose={onCloseFeedback} />
     </main>
   );
@@ -106,8 +123,10 @@ function PhaseCard({
   yearSummary,
   lastPlanId,
   lastResult,
+  isAutoAdvancing,
   onAdvancePhase,
   onPlan,
+  onAutoAdvance,
   onEventChoice,
   onResolveNode,
 }: {
@@ -116,8 +135,10 @@ function PhaseCard({
   yearSummary: YearSummary | null;
   lastPlanId: PlanId | null;
   lastResult: GameFeedback | null;
+  isAutoAdvancing: boolean;
   onAdvancePhase: () => void;
   onPlan: (planId: PlanId) => void;
+  onAutoAdvance: () => void;
   onEventChoice: (choice: RandomEventChoice) => void;
   onResolveNode: () => void;
 }) {
@@ -127,8 +148,11 @@ function PhaseCard({
         <p className="eyebrow">月份开始</p>
         <h1>{getMonthLabel(state)}</h1>
         <p>新的偶像日程开始了。这个月要安排一次行动，再看看会发生什么事件。</p>
-        <button className="button button--primary" type="button" onClick={onAdvancePhase}>
+        <button className="button button--primary" type="button" disabled={isAutoAdvancing} onClick={onAdvancePhase}>
           安排本月行动
+        </button>
+        <button className="button button--ghost" type="button" disabled={isAutoAdvancing} onClick={onAutoAdvance}>
+          {isAutoAdvancing ? '推进中...' : '自动推进到下个关键节点'}
         </button>
       </section>
     );
@@ -139,7 +163,15 @@ function PhaseCard({
       <section className="phase-card phase-card--plan">
         <h1>本月行动</h1>
         <p className="plan-subtitle">选择一个方向陪小獭度过这个月</p>
-        <ActionPanel state={state} disabled={false} onPlan={onPlan} />
+        <ActionPanel state={state} disabled={isAutoAdvancing} onPlan={onPlan} />
+        <button
+          className="button button--ghost button--auto-advance"
+          type="button"
+          disabled={isAutoAdvancing}
+          onClick={onAutoAdvance}
+        >
+          {isAutoAdvancing ? '推进中...' : '自动推进到下个关键节点'}
+        </button>
       </section>
     );
   }
