@@ -32,7 +32,11 @@ export type PlanId =
   | 'stageFocus'
   | 'imageBuilding'
   | 'restAndReflect'
-  | 'stableOperation';
+  | 'stableOperation'
+  | 'specialSoloWork'
+  | 'specialIntensiveTraining'
+  | 'specialBirthdaySupport'
+  | 'specialStyleShift';
 
 export type CharacterImageKey =
   | 'base'
@@ -50,7 +54,11 @@ export type ActionVisualKey =
   | 'stageFocusAction'
   | 'imageBuildingAction'
   | 'restAndReflectAction'
-  | 'stableOperationAction';
+  | 'stableOperationAction'
+  | 'specialSoloWorkAction'
+  | 'specialIntensiveTrainingAction'
+  | 'specialBirthdaySupportAction'
+  | 'specialStyleShiftAction';
 
 export type EventCgKey =
   | 'fanLetterCg'
@@ -63,9 +71,31 @@ export type EventCgKey =
   | 'secretHappyCg'
   | 'dailyMomentCg';
 
-export type GalleryId = CharacterImageKey | EventCgKey;
+export type EndingId =
+  | 'idolPeak'
+  | 'kamiSeven'
+  | 'top16Core'
+  | 'theaterLegend'
+  | 'stageMemory'
+  | 'fanBond'
+  | 'outsideBreakthrough'
+  | 'steadyOperation'
+  | 'regretGraduation';
 
-export type VisualAssetKey = CharacterImageKey | ActionVisualKey | EventCgKey;
+export type EndingCgKey =
+  | 'idolPeakEndingCg'
+  | 'kamiSevenEndingCg'
+  | 'top16CoreEndingCg'
+  | 'theaterLegendEndingCg'
+  | 'stageMemoryEndingCg'
+  | 'fanBondEndingCg'
+  | 'outsideBreakthroughEndingCg'
+  | 'steadyOperationEndingCg'
+  | 'regretGraduationEndingCg';
+
+export type GalleryId = CharacterImageKey | EventCgKey | EndingCgKey;
+
+export type VisualAssetKey = CharacterImageKey | ActionVisualKey | EventCgKey | EndingCgKey;
 
 export type FeedbackVisual =
   | {
@@ -77,6 +107,10 @@ export type FeedbackVisual =
       key: EventCgKey;
     }
   | {
+      type: 'endingCg';
+      key: EndingCgKey;
+    }
+  | {
       type: 'legacy';
       key: CharacterImageKey;
     };
@@ -85,9 +119,33 @@ export type NodeGrade = 'S' | 'A' | 'B' | 'C' | 'D' | 'E';
 
 export type GameStatus = 'playing' | 'completed';
 
+export type ElectionTier = 'outside' | 'top48' | 'top32' | 'top16' | 'kami7' | 'center';
+
+export type B50Tier = 'notRanked' | 'ranked' | 'middle' | 'high' | 'highlight' | 'legend';
+
+export type NodeTier = ElectionTier | B50Tier;
+
+export type EventRarity = 'common' | 'rare' | 'superRare';
+
+export type EventTone = 'positive' | 'negative' | 'mixed';
+
+export type RouteId = 'stage' | 'fan' | 'outside' | 'style' | 'stable' | 'recovery';
+
 export type StatDeltas = Partial<Record<StatKey, number>>;
 
 export type StatEffectRange = Partial<Record<StatKey, [number, number]>>;
+
+export type PlanUnlockCondition =
+  | { type: 'statAtLeast'; stat: StatKey; value: number }
+  | { type: 'statAtMost'; stat: StatKey; value: number }
+  | { type: 'yearAtLeast'; year: number }
+  | { type: 'monthIn'; months: number[] }
+  | { type: 'planCountAtLeast'; planId: PlanId; count: number; withinYear?: boolean }
+  | { type: 'eventSeen'; eventId: string }
+  | { type: 'eventTagSeen'; tag: string; tone?: EventTone }
+  | { type: 'electionTierAtLeast'; tier: ElectionTier }
+  | { type: 'b50TierAtLeast'; tier: B50Tier }
+  | { type: 'routeScoreAtLeast'; route: RouteId; value: number };
 
 export interface EventFlags {
   [key: string]: boolean;
@@ -104,6 +162,13 @@ export interface PlanConfig {
   secondaryStats: StatKey[];
   riskTags: string[];
   eventTags: string[];
+  routeTags?: RouteId[];
+  unlockConditions?: PlanUnlockCondition[];
+  unlockConditionMode?: 'all' | 'any';
+  lockedReason?: string;
+  isSpecialAction?: boolean;
+  availableMonths?: number[];
+  availableStages?: GamePhase[];
   feedbackText: string;
 }
 
@@ -134,8 +199,12 @@ export interface RandomEventConfig {
   id: string;
   title: string;
   description: string;
-  eventCgKey: EventCgKey;
+  eventCgKey?: EventCgKey;
   galleryId?: GalleryId;
+  rarity: EventRarity;
+  tone: EventTone;
+  triggerTags: string[];
+  baseWeight: number;
   choices: RandomEventChoice[];
   weight?: number;
   triggerCondition?: (state: GameState) => boolean;
@@ -172,8 +241,13 @@ export interface NodeResult {
   score: number;
   grade: NodeGrade;
   gradeText: string;
+  tier?: NodeTier;
+  rankLabel?: string;
   eventBonus: number;
   modifiers: ScoreModifier[];
+  mainFactors?: string[];
+  bonusFactors?: string[];
+  penaltyFactors?: string[];
   rewards: StatDeltas;
   message: string;
 }
@@ -252,6 +326,7 @@ export interface GameFeedback {
   grade?: NodeGrade;
   visual?: FeedbackVisual;
   imageKey?: CharacterImageKey;
+  suppressFallbackVisual?: boolean;
   changes: StatChange[];
   details?: string[];
 }
@@ -259,18 +334,23 @@ export interface GameFeedback {
 export interface GalleryItem {
   id: GalleryId;
   name: string;
-  visual: Extract<FeedbackVisual, { type: 'legacy' | 'eventCg' }>;
+  category: 'character' | 'event' | 'ending';
+  visual: Extract<FeedbackVisual, { type: 'legacy' | 'eventCg' | 'endingCg' }>;
   description: string;
   conditionText: string;
   isUnlocked: (state: GameState) => boolean;
 }
 
 export interface EndingConfig {
-  id: string;
+  id: EndingId;
   name: string;
+  title: string;
   routeTag: string;
   text: string;
   finalLine: string;
+  endingCgKey: EndingCgKey;
+  galleryId: GalleryId;
+  priority: number;
   isMatched: (state: GameState) => boolean;
 }
 
@@ -280,6 +360,7 @@ export interface CharacterImage {
   plannedSrc?: string;
   alt: string;
   label: string;
+  placeholderText?: string;
 }
 
 export interface GameSnapshot {

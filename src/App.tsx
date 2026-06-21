@@ -24,12 +24,14 @@ import {
   isEventPhase,
   mergeUnlockedGallery,
   normalizeGameSnapshot,
+  resolveNoEventAfterPlan,
   resolveB50Node,
   resolveElectionNode,
   sameGalleryIds,
 } from './utils/gameLogic';
-import { getEventById, pickRandomEvent } from './utils/eventLogic';
+import { getEventById, pickMonthlyEvent } from './utils/eventLogic';
 import { getEndingForState } from './utils/endingLogic';
+import { formatYearMonth } from './utils/dateDisplay';
 import {
   clearGameSnapshot,
   loadGameSnapshot,
@@ -155,8 +157,27 @@ function App() {
     }
 
     const snapshot = applyPlan(gameState, planId);
-    const nextEvent = isEventPhase(snapshot.state.phase) ? pickRandomEvent(snapshot.state) : null;
-    commitSnapshot(snapshot, nextEvent, true);
+    if (!isEventPhase(snapshot.state.phase)) {
+      commitSnapshot(snapshot, null, true);
+      return;
+    }
+
+    const eventPick = pickMonthlyEvent(snapshot.state);
+    if (eventPick.type === 'event') {
+      commitSnapshot(snapshot, eventPick.event, true);
+      return;
+    }
+
+    const noEventSnapshot = resolveNoEventAfterPlan(snapshot.state);
+    commitSnapshot(
+      {
+        ...noEventSnapshot,
+        lastPlanId: snapshot.lastPlanId,
+        lastResult: snapshot.lastResult,
+      },
+      null,
+      true,
+    );
   }
 
   function handleEventChoice(choice: RandomEventChoice) {
@@ -213,7 +234,7 @@ function App() {
           hasSave={Boolean(savedSnapshot)}
           savedProgress={
             savedSnapshot
-              ? `${savedSnapshot.state.currentYear} 年 ${savedSnapshot.state.currentMonth} 月`
+              ? formatYearMonth(savedSnapshot.state.currentYear, savedSnapshot.state.currentMonth)
               : null
           }
           onStart={startNewGame}
@@ -294,14 +315,18 @@ function GalleryUnlockModal({
   if (!item) {
     return null;
   }
+  const categoryLabel =
+    item.category === 'ending' ? '结局 CG 解锁' : item.category === 'event' ? '事件 CG 解锁' : '图鉴解锁';
+  const unlockMessage =
+    item.category === 'ending' ? `${item.name} 已加入结局相册。` : item.description;
 
   return (
     <div className="modal-backdrop" role="presentation">
       <section className="modal-card result-modal" role="dialog" aria-modal="true">
-        <p className="eyebrow">图鉴解锁</p>
+        <p className="eyebrow">{categoryLabel}</p>
         <CharacterDisplay image={getVisualAsset(item.visual.type, item.visual.key)} compact />
         <h2>{item.name}</h2>
-        <p>{item.description}</p>
+        <p>{unlockMessage}</p>
         <button className="button button--primary" type="button" onClick={onClose}>
           收下
         </button>
@@ -321,7 +346,8 @@ function resolvePendingEvent(snapshot: GameSnapshot): RandomEventConfig | null {
   }
 
   if (isEventPhase(snapshot.state.phase)) {
-    return pickRandomEvent(snapshot.state);
+    const eventPick = pickMonthlyEvent(snapshot.state);
+    return eventPick.type === 'event' ? eventPick.event : getEventById('dailyMoment');
   }
 
   return null;

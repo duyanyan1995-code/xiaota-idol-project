@@ -8,28 +8,67 @@ interface GalleryGridProps {
   unlockedIds: GalleryId[];
 }
 
+const GALLERY_CATEGORIES: Array<{
+  id: GalleryItem['category'];
+  title: string;
+  description: string;
+}> = [
+  {
+    id: 'character',
+    title: '小獭状态',
+    description: '日常状态和旧版形象记录',
+  },
+  {
+    id: 'event',
+    title: '事件回忆',
+    description: '完成剧情事件后解锁的回忆 CG',
+  },
+  {
+    id: 'ending',
+    title: '结局相册',
+    description: '达成终章结局后收录的结局 CG',
+  },
+];
+
 export function GalleryGrid({ unlockedIds }: GalleryGridProps) {
   const [activeItem, setActiveItem] = useState<GalleryItem | null>(null);
   const unlockedSet = new Set(unlockedIds);
 
   return (
     <>
-      <div className="gallery-grid">
-        {GALLERY_ITEMS.map((item) => {
-          const isUnlocked = unlockedSet.has(item.id);
-          const image = getVisualAsset(item.visual.type, item.visual.key);
+      <div className="gallery-sections">
+        {GALLERY_CATEGORIES.map((category) => {
+          const items = GALLERY_ITEMS.filter((item) => item.category === category.id);
+          if (items.length === 0) {
+            return null;
+          }
 
           return (
-            <button
-              className={`gallery-card ${isUnlocked ? '' : 'gallery-card--locked'}`}
-              type="button"
-              key={item.id}
-              onClick={() => (isUnlocked ? setActiveItem(item) : undefined)}
-            >
-              <CharacterDisplay image={image} compact />
-              <strong>{isUnlocked ? item.name : '未解锁'}</strong>
-              <span>{isUnlocked ? '点击查看详情' : item.conditionText}</span>
-            </button>
+            <section className="gallery-section" key={category.id}>
+              <header className="gallery-section__header">
+                <h2>{category.title}</h2>
+                <span>{category.description}</span>
+              </header>
+              <div className="gallery-grid">
+                {items.map((item) => {
+                  const isUnlocked = unlockedSet.has(item.id);
+                  const image = getVisualAsset(item.visual.type, item.visual.key);
+
+                  return (
+                    <button
+                      className={`gallery-card ${isUnlocked ? '' : 'gallery-card--locked'}`}
+                      type="button"
+                      key={item.id}
+                      onClick={() => (isUnlocked ? setActiveItem(item) : undefined)}
+                    >
+                      <CharacterDisplay image={image} compact />
+                      <strong>{isUnlocked ? item.name : '未解锁'}</strong>
+                      <span>{isUnlocked ? '点击查看详情' : item.conditionText}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
           );
         })}
       </div>

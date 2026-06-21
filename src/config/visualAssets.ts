@@ -3,6 +3,7 @@ import type {
   ActionVisualKey,
   CharacterImage,
   CharacterImageKey,
+  EndingCgKey,
   EventCgKey,
   FeedbackVisual,
 } from '../types/game';
@@ -51,6 +52,30 @@ export const ACTION_VISUALS: Record<ActionVisualKey, CharacterImage> = {
     '/images/xiaota/actions/stable-operation.png',
     CHARACTER_IMAGES.base,
     '稳定运营行动立绘',
+  ),
+  specialSoloWorkAction: makeFallbackVisual(
+    'specialSoloWorkAction',
+    '/images/xiaota/actions/special-solo-work.png',
+    CHARACTER_IMAGES.happy,
+    '个人外务行动立绘',
+  ),
+  specialIntensiveTrainingAction: makeFallbackVisual(
+    'specialIntensiveTrainingAction',
+    '/images/xiaota/actions/special-intensive-training.png',
+    CHARACTER_IMAGES.practice,
+    '高强度集训行动立绘',
+  ),
+  specialBirthdaySupportAction: makeFallbackVisual(
+    'specialBirthdaySupportAction',
+    '/images/xiaota/actions/special-birthday-support.png',
+    CHARACTER_IMAGES.wink,
+    '生日应援筹备行动立绘',
+  ),
+  specialStyleShiftAction: makeFallbackVisual(
+    'specialStyleShiftAction',
+    '/images/xiaota/actions/special-style-shift.png',
+    CHARACTER_IMAGES.happy,
+    '风格转型行动立绘',
   ),
 };
 
@@ -111,6 +136,54 @@ export const EVENT_CGS: Record<EventCgKey, CharacterImage> = {
   ),
 };
 
+export const ENDING_CGS: Record<EndingCgKey, CharacterImage> = {
+  idolPeakEndingCg: makeEndingCg(
+    'idolPeakEndingCg',
+    '/images/xiaota/endings/idol-peak.png',
+    '偶像顶点结局 CG',
+  ),
+  kamiSevenEndingCg: makeEndingCg(
+    'kamiSevenEndingCg',
+    '/images/xiaota/endings/kami-seven.png',
+    '神七高位结局 CG',
+  ),
+  top16CoreEndingCg: makeEndingCg(
+    'top16CoreEndingCg',
+    '/images/xiaota/endings/top16-core.png',
+    'TOP16 稳定核心结局 CG',
+  ),
+  theaterLegendEndingCg: makeEndingCg(
+    'theaterLegendEndingCg',
+    '/images/xiaota/endings/theater-legend.png',
+    '剧场传说结局 CG',
+  ),
+  stageMemoryEndingCg: makeEndingCg(
+    'stageMemoryEndingCg',
+    '/images/xiaota/endings/stage-memory.png',
+    '舞台记忆结局 CG',
+  ),
+  fanBondEndingCg: makeEndingCg(
+    'fanBondEndingCg',
+    '/images/xiaota/endings/fan-bond.png',
+    '粉丝羁绊结局 CG',
+  ),
+  outsideBreakthroughEndingCg: makeEndingCg(
+    'outsideBreakthroughEndingCg',
+    '/images/xiaota/endings/outside-breakthrough.png',
+    '外务突破结局 CG',
+  ),
+  steadyOperationEndingCg: makeEndingCg(
+    'steadyOperationEndingCg',
+    '/images/xiaota/endings/steady-operation.png',
+    '稳定运营结局 CG',
+  ),
+  regretGraduationEndingCg: makeEndingCg(
+    'regretGraduationEndingCg',
+    '/images/xiaota/endings/regret-graduation.png',
+    '遗憾毕业结局 CG',
+  ),
+};
+
 export function getVisualAsset(
   type: FeedbackVisual['type'],
   key: FeedbackVisual['key'],
@@ -121,6 +194,10 @@ export function getVisualAsset(
 
   if (type === 'eventCg') {
     return EVENT_CGS[key as EventCgKey];
+  }
+
+  if (type === 'endingCg') {
+    return ENDING_CGS[key as EndingCgKey];
   }
 
   return LEGACY_CHARACTER_IMAGES[key as CharacterImageKey];
@@ -144,10 +221,21 @@ function makeVisual(
 }
 
 function makeFallbackVisual(
-  key: EventCgKey,
+  key: ActionVisualKey | EventCgKey,
   plannedSrc: string,
   fallback: CharacterImage,
   label: string,
 ): CharacterImage {
   return makeVisual(key, fallback.src, fallback, label, plannedSrc);
+}
+
+function makeEndingCg(key: EndingCgKey, src: string, label: string): CharacterImage {
+  return {
+    key,
+    src,
+    plannedSrc: src,
+    alt: label,
+    label,
+    placeholderText: '结局 CG 待接入',
+  };
 }

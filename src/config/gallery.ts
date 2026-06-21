@@ -1,9 +1,12 @@
-import type { EventCgKey, GalleryItem, GameState } from '../types/game';
+import { ENDINGS, FALLBACK_ENDING } from './endings';
+import type { EndingCgKey, EventCgKey, GalleryItem, GameState } from '../types/game';
+import { getEndingForState } from '../utils/endingLogic';
 
 export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 'base',
     name: '初始主形象',
+    category: 'character',
     visual: {
       type: 'legacy',
       key: 'base',
@@ -15,6 +18,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 'happy',
     name: '开心版',
+    category: 'character',
     visual: {
       type: 'legacy',
       key: 'happy',
@@ -26,6 +30,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 'tired',
     name: '疲惫版',
+    category: 'character',
     visual: {
       type: 'legacy',
       key: 'tired',
@@ -37,6 +42,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 'wink',
     name: 'wink 营业版',
+    category: 'character',
     visual: {
       type: 'legacy',
       key: 'wink',
@@ -49,6 +55,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 'stage',
     name: '舞台服版',
+    category: 'character',
     visual: {
       type: 'legacy',
       key: 'stage',
@@ -60,6 +67,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 'practice',
     name: '练习服版',
+    category: 'character',
     visual: {
       type: 'legacy',
       key: 'practice',
@@ -74,6 +82,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 'summer',
     name: '夏日版',
+    category: 'character',
     visual: {
       type: 'legacy',
       key: 'summer',
@@ -130,6 +139,14 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     '被夸奖后偷偷开心的小獭，把这句话藏进了练习本。',
     '完成“被夸奖后偷偷开心”事件',
   ),
+  ...[...ENDINGS, FALLBACK_ENDING].map((ending) =>
+    createEndingCgGalleryItem(
+      ending.endingCgKey,
+      `${ending.name} CG`,
+      ending.text,
+      `达成“${ending.title}”`,
+    ),
+  ),
 ];
 
 function createEventCgGalleryItem(
@@ -141,6 +158,7 @@ function createEventCgGalleryItem(
   return {
     id,
     name,
+    category: 'event',
     visual: {
       type: 'eventCg',
       key: id,
@@ -153,4 +171,25 @@ function createEventCgGalleryItem(
 
 function hasCompletedEventCg(state: GameState, id: EventCgKey): boolean {
   return state.eventHistory.some((event) => event.galleryId === id);
+}
+
+function createEndingCgGalleryItem(
+  id: EndingCgKey,
+  name: string,
+  description: string,
+  conditionText: string,
+): GalleryItem {
+  return {
+    id,
+    name,
+    category: 'ending',
+    visual: {
+      type: 'endingCg',
+      key: id,
+    },
+    description,
+    conditionText,
+    isUnlocked: (state) =>
+      state.gameStatus === 'completed' && getEndingForState(state).galleryId === id,
+  };
 }
