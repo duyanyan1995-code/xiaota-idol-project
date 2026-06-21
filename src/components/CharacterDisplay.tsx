@@ -25,8 +25,14 @@ export function CharacterDisplay({ image, caption, compact = false }: CharacterD
             onError={() => setHasError(true)}
           />
         ) : (
-          <div className="character-display__fallback" role="img" aria-label={image.alt}>
-            <span>杨小獭</span>
+          <div
+            className={`character-display__fallback ${
+              image.placeholderText ? 'character-display__fallback--placeholder' : ''
+            }`}
+            role="img"
+            aria-label={image.alt}
+          >
+            <span>{image.placeholderText ?? '杨小獭'}</span>
             <small>{image.label}</small>
           </div>
         )}
@@ -35,4 +41,3 @@ export function CharacterDisplay({ image, caption, compact = false }: CharacterD
     </figure>
   );
 }
-

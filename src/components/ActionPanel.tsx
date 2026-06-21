@@ -1,5 +1,22 @@
 import { PLANS } from '../config/plans';
-import type { PlanConfig, PlanId, StatKey } from '../types/game';
+import type { GameState, PlanConfig, PlanId, StatKey } from '../types/game';
+import { getPlanAvailability } from '../utils/unlockLogic';
+
+const MAX_VISIBLE_STATS = 3;
+
+const SHORT_DESCRIPTIONS: Record<PlanId, string> = {
+  theaterTraining: '打磨基础唱跳与舞台表现',
+  fanService: '回应粉丝，维持陪伴感',
+  outsideExposure: '参加外部活动，扩大认知',
+  stageFocus: '集中打磨舞台记忆点',
+  imageBuilding: '建立风格与辨识度',
+  restAndReflect: '恢复体力和心情',
+  stableOperation: '低风险地稳定成长',
+  specialSoloWork: '独立外务，扩大认知',
+  specialIntensiveTraining: '短期冲刺基础能力',
+  specialBirthdaySupport: '凝聚生日应援心意',
+  specialStyleShift: '尝试更鲜明的风格',
+};
 
 const STAT_LABELS: Record<StatKey, string> = {
   vocal: '唱功',
@@ -17,38 +34,101 @@ const STAT_LABELS: Record<StatKey, string> = {
 };
 
 interface ActionPanelProps {
+  state: GameState;
   disabled?: boolean;
   onPlan: (planId: PlanId) => void;
 }
 
-export function ActionPanel({ disabled = false, onPlan }: ActionPanelProps) {
+export function ActionPanel({ state, disabled = false, onPlan }: ActionPanelProps) {
+  const planAvailability = PLANS.map((plan) => getPlanAvailability(plan, state));
+  const basePlans = planAvailability.filter(({ plan }) => !plan.isSpecialAction);
+  const specialPlans = planAvailability.filter(({ plan }) => plan.isSpecialAction);
+
   return (
     <section className="panel action-panel" aria-label="本月行动">
-      <div className="section-title">
-        <span>选择本月行动</span>
-        <small>选择后进入事件判断</small>
-      </div>
       <div className="action-grid">
-        {PLANS.map((plan) => (
-          <button
-            className="button button--action"
-            type="button"
-            key={plan.id}
+        {basePlans.map((item) => (
+          <ActionButton
+            availability={item}
             disabled={disabled}
-            onClick={() => onPlan(plan.id)}
-          >
-            <span className="action-card__name">{plan.name}</span>
-            <small className="action-card__desc">{plan.description}</small>
-            <div className="action-card__meta">
-              <TagRow label="主加" tags={plan.primaryStats.map(getStatLabel)} tone="primary" />
-              <TagRow label="副加" tags={getSecondaryTags(plan)} tone="secondary" />
-              <TagRow label="风险" tags={plan.riskTags} tone="risk" />
-              <TagRow label="事件" tags={plan.eventTags} tone="event" />
-            </div>
-          </button>
+            key={item.plan.id}
+            wide={item.plan.id === 'stableOperation'}
+            onPlan={onPlan}
+          />
         ))}
       </div>
+      <div className="special-action-group" aria-label="特殊行动">
+        <div className="special-action-group__title">
+          <span>特殊行动</span>
+          <small>满足条件后开放</small>
+        </div>
+        <div className="special-action-grid">
+          {specialPlans.map((item) => (
+            <ActionButton
+              availability={item}
+              disabled={disabled}
+              key={item.plan.id}
+              onPlan={onPlan}
+              special
+            />
+          ))}
+        </div>
+      </div>
     </section>
+  );
+}
+
+function ActionButton({
+  availability,
+  disabled,
+  wide = false,
+  special = false,
+  onPlan,
+}: {
+  availability: ReturnType<typeof getPlanAvailability>;
+  disabled: boolean;
+  wide?: boolean;
+  special?: boolean;
+  onPlan: (planId: PlanId) => void;
+}) {
+  const { plan, unlocked, lockedReason } = availability;
+  const isDisabled = disabled || !unlocked;
+  const classNames = [
+    'button button--action',
+    wide ? 'button--action-wide' : '',
+    special ? 'button--action-special' : '',
+    !unlocked ? 'button--action-locked' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <button
+      className={classNames}
+      type="button"
+      disabled={isDisabled}
+      onClick={() => {
+        if (unlocked) {
+          onPlan(plan.id);
+        }
+      }}
+    >
+      <span className="action-card__name">{plan.name}</span>
+      <small className="action-card__desc">{SHORT_DESCRIPTIONS[plan.id]}</small>
+      <div className="action-card__meta">
+        <span className="action-card__label">可能提升</span>
+        <span className="action-card__tags">
+          {getBoostTags(plan).map((tag) => (
+            <span className="action-tag action-tag--stat" key={tag}>
+              {tag}
+            </span>
+          ))}
+        </span>
+      </div>
+      {!unlocked && lockedReason ? (
+        <small className="action-card__locked">未解锁：{lockedReason}</small>
+      ) : null}
+    </button>
   );
 }
 
@@ -56,33 +136,9 @@ function getStatLabel(key: StatKey): string {
   return STAT_LABELS[key];
 }
 
-function getSecondaryTags(plan: PlanConfig): string[] {
-  if (plan.secondaryStats.length === 0) {
-    return ['无明显副加'];
-  }
+function getBoostTags(plan: PlanConfig): string[] {
+  const orderedStats = [...plan.primaryStats, ...plan.secondaryStats];
+  const uniqueStats = Array.from(new Set<StatKey>(orderedStats));
 
-  return plan.secondaryStats.map(getStatLabel);
-}
-
-function TagRow({
-  label,
-  tags,
-  tone,
-}: {
-  label: string;
-  tags: string[];
-  tone: 'primary' | 'secondary' | 'risk' | 'event';
-}) {
-  return (
-    <div className="action-card__row">
-      <span className="action-card__label">{label}</span>
-      <span className="action-card__tags">
-        {tags.map((tag) => (
-          <span className={`action-tag action-tag--${tone}`} key={tag}>
-            {tag}
-          </span>
-        ))}
-      </span>
-    </div>
-  );
+  return uniqueStats.slice(0, MAX_VISIBLE_STATS).map(getStatLabel);
 }

@@ -2,11 +2,260 @@ import type { RandomEventConfig } from '../types/game';
 
 export const RANDOM_EVENTS: RandomEventConfig[] = [
   {
+    id: 'publicShowReview',
+    title: '公演小复盘',
+    description: '公演结束后，小獭和大家一起复盘了几个细节。',
+    rarity: 'common',
+    tone: 'positive',
+    triggerTags: ['练习', '舞台', '日常'],
+    baseWeight: 10,
+    choices: [
+      {
+        id: 'markDetails',
+        label: '记下细节',
+        resultText: '她把需要注意的地方认真写下，下一次舞台会更稳。',
+        effects: {
+          performance: 2,
+          dance: 1,
+          stress: 1,
+        },
+        b50Bonus: 1,
+      },
+      {
+        id: 'thankTeam',
+        label: '感谢队友',
+        resultText: '小獭认真向队友道谢，舞台上的默契多了一点。',
+        effects: {
+          mood: 3,
+          fanLoyalty: 1,
+        },
+      },
+    ],
+  },
+  {
+    id: 'trainingFatigue',
+    title: '训练疲劳',
+    description: '连续练习后，小獭的肩膀有点发紧。',
+    rarity: 'common',
+    tone: 'negative',
+    triggerTags: ['练习', '透支', '压力'],
+    baseWeight: 9,
+    choices: [
+      {
+        id: 'stretch',
+        label: '拉伸放松',
+        resultText: '小獭放慢节奏做了拉伸，疲劳没有继续堆起来。',
+        effects: {
+          energy: 4,
+          stress: -2,
+        },
+      },
+      {
+        id: 'finishSet',
+        label: '完成这组',
+        resultText: '她还是把最后一组练完了，成长有一点，但状态更吃紧。',
+        effects: {
+          vocal: 1,
+          dance: 1,
+          energy: -5,
+          stress: 4,
+        },
+      },
+    ],
+  },
+  {
+    id: 'fanSmallInteraction',
+    title: '粉丝小互动',
+    description: '营业间隙，有粉丝认真说起最近被小獭鼓励到了。',
+    rarity: 'common',
+    tone: 'positive',
+    triggerTags: ['粉丝', '营业', '应援'],
+    baseWeight: 10,
+    choices: [
+      {
+        id: 'respondWarmly',
+        label: '温柔回应',
+        resultText: '小獭把这份喜欢好好接住，粉丝之间的陪伴感更强了。',
+        effects: {
+          fanLoyalty: 2,
+          mood: 2,
+        },
+        electionBonus: 1,
+      },
+      {
+        id: 'rememberName',
+        label: '记住名字',
+        resultText: '她悄悄记住了对方的名字，下一次见面会更亲近。',
+        effects: {
+          fanLoyalty: 3,
+          charm: 1,
+        },
+      },
+    ],
+  },
+  {
+    id: 'scheduleInterlude',
+    title: '行程小插曲',
+    description: '今天的行程中间出现了一点小变化。',
+    rarity: 'common',
+    tone: 'mixed',
+    triggerTags: ['日常', '外务', '恢复'],
+    baseWeight: 8,
+    choices: [
+      {
+        id: 'adjustPace',
+        label: '调整节奏',
+        resultText: '小獭顺着变化重新安排节奏，状态没有被打乱。',
+        effects: {
+          mood: 2,
+          stress: -1,
+        },
+      },
+      {
+        id: 'keepSchedule',
+        label: '按计划推进',
+        resultText: '她稳稳完成了原计划，只是体力消耗比预想多一点。',
+        effects: {
+          popularity: 1,
+          energy: -3,
+        },
+      },
+    ],
+  },
+  {
+    id: 'stageRhythmSlip',
+    title: '舞台节奏失衡',
+    description: '排练时节奏一度乱掉，小獭有些着急。',
+    rarity: 'rare',
+    tone: 'negative',
+    triggerTags: ['舞台', 'B50', '透支'],
+    baseWeight: 7,
+    choices: [
+      {
+        id: 'slowReview',
+        label: '慢速复盘',
+        resultText: '她把节奏拆开重来，虽然累，但舞台理解更清楚了。',
+        effects: {
+          performance: 3,
+          energy: -4,
+          stress: 3,
+        },
+        b50Bonus: 2,
+      },
+      {
+        id: 'pausePractice',
+        label: '暂停一下',
+        resultText: '小獭先把呼吸稳住，压力慢慢降了下来。',
+        effects: {
+          mood: 3,
+          stress: -5,
+        },
+      },
+    ],
+  },
+  {
+    id: 'supportFatigue',
+    title: '应援疲劳',
+    description: '粉丝群里最近有点疲惫，小獭也感受到了这份压力。',
+    rarity: 'rare',
+    tone: 'negative',
+    triggerTags: ['粉丝', '应援', '压力'],
+    baseWeight: 6,
+    choices: [
+      {
+        id: 'slowCompanion',
+        label: '慢慢陪伴',
+        resultText: '小獭没有催促大家，只是稳稳把陪伴传递回去。',
+        effects: {
+          fanLoyalty: 3,
+          mood: 2,
+        },
+      },
+      {
+        id: 'pushSupport',
+        label: '努力动员',
+        resultText: '动员带来了一点热度，但压力也更明显。',
+        effects: {
+          popularity: 2,
+          fans: 20,
+          stress: 5,
+        },
+        electionBonus: 2,
+      },
+    ],
+  },
+  {
+    id: 'outsideBuzz',
+    title: '外务小出圈',
+    description: '一段外务片段被路人转发，小獭被更多人看见了。',
+    rarity: 'rare',
+    tone: 'positive',
+    triggerTags: ['外务', '曝光', '舆论'],
+    baseWeight: 7,
+    choices: [
+      {
+        id: 'followTopic',
+        label: '顺势营业',
+        resultText: '小獭顺着话题认真营业，新的关注变成了真实好感。',
+        effects: {
+          popularity: 4,
+          charm: 2,
+          fans: 35,
+          stress: 2,
+        },
+        electionBonus: 2,
+      },
+      {
+        id: 'stayNatural',
+        label: '自然一点',
+        resultText: '她保持自然表达，路人对这份松弛感印象不错。',
+        effects: {
+          popularity: 3,
+          mood: 2,
+        },
+      },
+    ],
+  },
+  {
+    id: 'styleDiscussion',
+    title: '风格讨论',
+    description: '新的物料让粉丝开始讨论小獭更适合哪种风格。',
+    rarity: 'rare',
+    tone: 'mixed',
+    triggerTags: ['风格', '形象', '舆论'],
+    baseWeight: 7,
+    choices: [
+      {
+        id: 'clarifyStyle',
+        label: '明确风格',
+        resultText: '小獭更清楚自己想呈现的样子，辨识度提升了。',
+        effects: {
+          style: 4,
+          charm: 2,
+          stress: 2,
+        },
+      },
+      {
+        id: 'listenMore',
+        label: '多听意见',
+        resultText: '她认真听取不同反馈，粉丝也感到自己被看见。',
+        effects: {
+          fanLoyalty: 2,
+          mood: 2,
+        },
+      },
+    ],
+  },
+  {
     id: 'fanLetter',
     title: '粉丝来信',
     description: '收到了一封粉丝来信，小獭看完后眼睛亮亮的。',
     eventCgKey: 'fanLetterCg',
     galleryId: 'fanLetterCg',
+    rarity: 'rare',
+    tone: 'positive',
+    triggerTags: ['粉丝', '应援', '营业'],
+    baseWeight: 8,
     choices: [
       {
         id: 'reply',
@@ -36,6 +285,10 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     description: '有粉丝剪的小獭舞台片段突然被更多人看见了。',
     eventCgKey: 'fanCreationCg',
     galleryId: 'fanCreationCg',
+    rarity: 'superRare',
+    tone: 'positive',
+    triggerTags: ['粉丝', '创作', '应援'],
+    baseWeight: 8,
     choices: [
       {
         id: 'interact',
@@ -66,6 +319,10 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     description: '彩排时出现了一个小失误，小獭有点在意。',
     eventCgKey: 'stageMistakeCg',
     galleryId: 'stageMistakeCg',
+    rarity: 'rare',
+    tone: 'negative',
+    triggerTags: ['舞台', '练习', '透支'],
+    baseWeight: 7,
     choices: [
       {
         id: 'review',
@@ -96,6 +353,10 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     description: '小獭觉得今天还能再努力一点。',
     eventCgKey: 'extraPracticeCg',
     galleryId: 'extraPracticeCg',
+    rarity: 'rare',
+    tone: 'mixed',
+    triggerTags: ['练习', '舞台'],
+    baseWeight: 8,
     choices: [
       {
         id: 'continue',
@@ -128,6 +389,10 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     description: '小獭看着新的造型提案，眼睛里闪过一点期待。',
     eventCgKey: 'styleChallengeCg',
     galleryId: 'styleChallengeCg',
+    rarity: 'superRare',
+    tone: 'positive',
+    triggerTags: ['风格', '形象', '舆论'],
+    baseWeight: 7,
     choices: [
       {
         id: 'tryNew',
@@ -156,6 +421,10 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     description: '收到了一份夏日活动邀约。',
     eventCgKey: 'summerInviteCg',
     galleryId: 'summerInviteCg',
+    rarity: 'superRare',
+    tone: 'positive',
+    triggerTags: ['外务', '曝光', '粉丝'],
+    baseWeight: 6,
     choices: [
       {
         id: 'join',
@@ -191,6 +460,10 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     description: '连续忙碌之后，小獭今天有点提不起精神。',
     eventCgKey: 'lowMoodCg',
     galleryId: 'lowMoodCg',
+    rarity: 'rare',
+    tone: 'negative',
+    triggerTags: ['透支', '压力', '恢复'],
+    baseWeight: 10,
     triggerCondition: (state) => state.mood < 55 || state.stress >= 65,
     choices: [
       {
@@ -221,6 +494,10 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     description: 'Staff 夸小獭今天进步很明显，她表面镇定，耳朵却红红的。',
     eventCgKey: 'secretHappyCg',
     galleryId: 'secretHappyCg',
+    rarity: 'superRare',
+    tone: 'positive',
+    triggerTags: ['日常', '粉丝', '恢复'],
+    baseWeight: 7,
     choices: [
       {
         id: 'acceptPraise',
@@ -248,7 +525,10 @@ export const FALLBACK_EVENT: RandomEventConfig = {
   id: 'dailyMoment',
   title: '普通但重要的一天',
   description: '没有特别大的事件，但小獭还是认真完成了今天的安排。',
-  eventCgKey: 'dailyMomentCg',
+  rarity: 'common',
+  tone: 'mixed',
+  triggerTags: ['日常', '恢复'],
+  baseWeight: 1,
   choices: [
     {
       id: 'steady',

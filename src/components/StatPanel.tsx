@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import type { GameState, GrowthStat } from '../types/game';
+import type { GameState, GrowthStat, StatChange, StatKey } from '../types/game';
+import { getRouteSummaryLabel } from '../utils/routeLogic';
+import { formatDeltaValue, getStatChangeTone } from '../utils/statDisplay';
 
 interface StatPanelProps {
   state: GameState;
+  recentChanges?: StatChange[] | null;
 }
 
 const growthStats: { key: GrowthStat; label: string }[] = [
@@ -16,35 +19,20 @@ const growthStats: { key: GrowthStat; label: string }[] = [
   { key: 'style', label: '风格' },
 ];
 
-export function StatPanel({ state }: StatPanelProps) {
+export function StatPanel({ state, recentChanges = null }: StatPanelProps) {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
     <>
       <section className="quick-status" aria-label="关键状态">
-        <div>
-          <span>体力</span>
-          <strong>{state.energy}</strong>
-        </div>
-        <div>
-          <span>心情</span>
-          <strong>{state.mood}</strong>
-        </div>
-        <div>
-          <span>压力</span>
-          <strong>{state.stress}</strong>
-        </div>
-        <div>
-          <span>粉丝</span>
-          <strong>{state.fans}</strong>
-        </div>
-        <div>
-          <span>人气</span>
-          <strong>{state.popularity}</strong>
-        </div>
+        <QuickStatusItem label="体力" value={state.energy} statKey="energy" changes={recentChanges} />
+        <QuickStatusItem label="心情" value={state.mood} statKey="mood" changes={recentChanges} />
+        <QuickStatusItem label="压力" value={state.stress} statKey="stress" changes={recentChanges} />
+        <QuickStatusItem label="粉丝" value={state.fans} statKey="fans" changes={recentChanges} />
+        <QuickStatusItem label="人气" value={state.popularity} statKey="popularity" changes={recentChanges} />
         <button className="status-route" type="button" onClick={() => setShowDetails(true)}>
-          <span>路线</span>
-          <strong>{getRouteLabel(state)}</strong>
+          <span>倾向</span>
+          <strong>{getRouteSummaryLabel(state)}</strong>
         </button>
       </section>
 
@@ -72,6 +60,33 @@ export function StatPanel({ state }: StatPanelProps) {
   );
 }
 
+function QuickStatusItem({
+  label,
+  value,
+  statKey,
+  changes,
+}: {
+  label: string;
+  value: number;
+  statKey: StatKey;
+  changes: StatChange[] | null;
+}) {
+  const change = changes?.find((item) => item.key === statKey && item.delta !== 0);
+  const tone = change ? getStatChangeTone(change.key, change.delta) : null;
+
+  return (
+    <div className="quick-status__card">
+      <span>{label}</span>
+      <strong>{value}</strong>
+      {change && tone ? (
+        <em className={`quick-status__delta quick-status__delta--${tone} stat-pulse`}>
+          {formatDeltaValue(change.delta)}
+        </em>
+      ) : null}
+    </div>
+  );
+}
+
 function DetailItem({ label, value }: { label: string; value: number }) {
   return (
     <div>
@@ -79,19 +94,4 @@ function DetailItem({ label, value }: { label: string; value: number }) {
       <strong>{value}</strong>
     </div>
   );
-}
-
-function getRouteLabel(state: GameState): string {
-  if (state.stress >= 70) {
-    return '注意状态';
-  }
-
-  const routes = [
-    { value: state.performance, label: '舞台' },
-    { value: state.fanLoyalty, label: '陪伴' },
-    { value: state.popularity, label: '人气' },
-    { value: state.style, label: '风格' },
-  ];
-
-  return routes.sort((a, b) => b.value - a.value)[0].label;
 }

@@ -2,7 +2,11 @@ import { ENDINGS, FALLBACK_ENDING } from '../config/endings';
 import type { GameState, NodeResult } from '../types/game';
 
 export function getEndingForState(state: GameState) {
-  return ENDINGS.find((ending) => ending.isMatched(state)) ?? FALLBACK_ENDING;
+  return (
+    [...ENDINGS]
+      .sort((a, b) => b.priority - a.priority)
+      .find((ending) => ending.isMatched(state)) ?? FALLBACK_ENDING
+  );
 }
 
 export function getHighestResult(results: NodeResult[]): NodeResult | null {

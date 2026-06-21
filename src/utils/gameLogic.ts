@@ -11,6 +11,8 @@ import { FALLBACK_EVENT, RANDOM_EVENTS } from '../config/events';
 import { GALLERY_ITEMS } from '../config/gallery';
 import { PLAN_BY_ID } from '../config/plans';
 import { calculateB50Result, calculateElectionResult } from './nodeLogic';
+import { formatMonthlyActionLabel, formatYearMonth } from './dateDisplay';
+import { getPlanLockedReason, isPlanUnlocked } from './unlockLogic';
 import type {
   CharacterImage,
   CharacterImageKey,
@@ -21,6 +23,7 @@ import type {
   GameState,
   GalleryId,
   GrowthLog,
+  NodeResult,
   PlanHistoryEntry,
   PlanId,
   RandomEventChoice,
@@ -191,7 +194,7 @@ export function advancePhase(state: GameState): GameSnapshot {
         summerActive: false,
       },
     });
-    title = `${state.currentYear} 年 ${state.currentMonth} 月`;
+    title = formatYearMonth(state.currentYear, state.currentMonth);
     message = '选择本月行动，决定这个月的小獭如何积累。';
   } else if (state.phase === 'yearSummary') {
     if (isFinalCareerMonth(state.currentYear, state.currentMonth)) {
@@ -208,7 +211,7 @@ export function advancePhase(state: GameState): GameSnapshot {
       message = '小獭的 11 年偶像生涯走到了终章结算。';
     } else {
       nextState = advanceToNextMonth(state);
-      title = `${nextState.currentYear} 年 ${nextState.currentMonth} 月`;
+      title = formatYearMonth(nextState.currentYear, nextState.currentMonth);
       message = '新的月份开始了，小獭还会继续向舞台靠近。';
     }
   }
@@ -230,6 +233,10 @@ export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
 
   if (state.phase !== 'monthlyPlan' || !plan) {
     return makeNoopSnapshot(state, '当前阶段不能选择行动。');
+  }
+
+  if (!isPlanUnlocked(plan, state)) {
+    return makeNoopSnapshot(state, getPlanLockedReason(plan, state));
   }
 
   const before = state;
@@ -282,6 +289,19 @@ export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
   };
 }
 
+export function resolveNoEventAfterPlan(state: GameState): GameSnapshot {
+  if (state.phase !== 'monthlyEvent') {
+    return makeNoopSnapshot(state, '当前阶段不能跳过事件。');
+  }
+
+  return {
+    state: resolveAfterMonthActivity(state),
+    lastPlanId: null,
+    lastResult: null,
+    pendingEventId: null,
+  };
+}
+
 export function applyEventChoice(
   state: GameState,
   event: RandomEventConfig,
@@ -330,10 +350,13 @@ export function applyEventChoice(
     lastResult: {
       title: event.title,
       message: choice.resultText,
-      visual: {
-        type: 'eventCg',
-        key: event.eventCgKey,
-      },
+      visual: event.eventCgKey
+        ? {
+            type: 'eventCg',
+            key: event.eventCgKey,
+          }
+        : undefined,
+      suppressFallbackVisual: !event.eventCgKey,
       changes: collectChanges(before, nextState),
     },
     pendingEventId: null,
@@ -368,7 +391,7 @@ export function resolveB50Node(state: GameState): GameSnapshot {
       grade: result.grade,
       imageKey: result.score >= 60 ? 'stage' : undefined,
       changes: collectChanges(before, nextState),
-      details: buildNodeDetails(result.eventBonus, result.modifiers),
+      details: buildNodeDetails(result),
     },
     pendingEventId: null,
   };
@@ -400,7 +423,7 @@ export function resolveElectionNode(state: GameState): GameSnapshot {
       grade: result.grade,
       imageKey: result.score >= 60 ? 'happy' : undefined,
       changes: collectChanges(before, nextState),
-      details: buildNodeDetails(result.eventBonus, result.modifiers),
+      details: buildNodeDetails(result),
     },
     pendingEventId: null,
   };
@@ -439,8 +462,8 @@ export function getPhaseLabel(phase: GamePhase): string {
     monthStart: '月份开始',
     monthlyPlan: '本月行动',
     monthlyEvent: '本月事件',
-    election: '年度人气总选',
-    b50: 'B50 舞台记忆',
+    election: '本月总选',
+    b50: '本月 B50',
     yearSummary: '年度总结',
     finalEnding: '终章结算',
   };
@@ -449,7 +472,7 @@ export function getPhaseLabel(phase: GamePhase): string {
 }
 
 export function getMonthLabel(state: GameState): string {
-  return `${state.currentYear} 年 ${state.currentMonth} 月`;
+  return formatYearMonth(state.currentYear, state.currentMonth);
 }
 
 function resolveAfterMonthActivity(state: GameState): GameState {
@@ -545,7 +568,7 @@ function buildYearSummary(state: GameState): YearSummary {
     year: state.year,
     currentYear: state.currentYear,
     careerStage: getCareerStage(state.year),
-    planNames: yearlyPlans.map((plan) => `${plan.currentMonth}月 ${plan.planName}`),
+    planNames: yearlyPlans.map((plan) => formatMonthlyActionLabel(plan.currentMonth, plan.planName)),
     b50Grade: b50Result?.grade ?? 'E',
     b50Score: b50Result?.score ?? 0,
     electionGrade: electionResult?.grade ?? 'E',
@@ -786,17 +809,17 @@ function replaceSameYearSummary(history: YearSummary[], entry: YearSummary): Yea
   return [...history.filter((item) => item.currentYear !== entry.currentYear), entry];
 }
 
-function buildNodeDetails(eventBonus: number, modifiers: { label: string; value: number }[]): string[] {
-  const details = [`事件加成 ${eventBonus >= 0 ? '+' : ''}${eventBonus}`];
+function buildNodeDetails(result: NodeResult): string[] {
+  const details = [
+    result.rankLabel ? `档位 ${result.rankLabel}` : null,
+    `事件加成 ${result.eventBonus >= 0 ? '+' : ''}${result.eventBonus}`,
+    ...result.modifiers.map((modifier) => `${modifier.label} ${modifier.value >= 0 ? '+' : ''}${modifier.value}`),
+    ...(result.mainFactors ?? []).map((factor) => `贡献：${factor}`),
+    ...(result.bonusFactors ?? []).map((factor) => `加成：${factor}`),
+    ...(result.penaltyFactors ?? []).map((factor) => `拖累：${factor}`),
+  ].filter(Boolean) as string[];
 
-  if (modifiers.length === 0) {
-    return [...details, '状态修正 0'];
-  }
-
-  return [
-    ...details,
-    ...modifiers.map((modifier) => `${modifier.label} ${modifier.value >= 0 ? '+' : ''}${modifier.value}`),
-  ];
+  return details.length > 0 ? details : ['状态修正 0'];
 }
 
 function normalizeCurrentYear(value: Partial<GameState> | null | undefined): number {

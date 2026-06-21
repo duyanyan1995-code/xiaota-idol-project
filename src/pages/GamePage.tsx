@@ -1,6 +1,9 @@
 import { ActionPanel } from '../components/ActionPanel';
 import { CharacterDisplay } from '../components/CharacterDisplay';
+import { MonthlySummary } from '../components/MonthlySummary';
 import { StatPanel } from '../components/StatPanel';
+import { StatChangeList } from '../components/StatChangeList';
+import { YearTimeline } from '../components/YearTimeline';
 import { isFinalCareerMonth } from '../config/annualCalendar';
 import { getVisualAsset } from '../config/visualAssets';
 import type {
@@ -12,24 +15,31 @@ import type {
   RandomEventConfig,
   YearSummary,
 } from '../types/game';
+import type { FlowPanelState } from '../types/flow';
 import {
   getCurrentYearSummary,
   getMonthLabel,
   getPhaseLabel,
   isEventPhase,
 } from '../utils/gameLogic';
+import { formatGameYearLabel } from '../utils/dateDisplay';
+import { getFeedbackNodeResultLabel, getNodeResultLabel } from '../utils/resultDisplay';
 
 interface GamePageProps {
   state: GameState;
   lastPlanId: PlanId | null;
   lastResult: GameFeedback | null;
   activeFeedback: GameFeedback | null;
+  flowPanel: FlowPanelState | null;
+  isAutoAdvancing: boolean;
   pendingEvent: RandomEventConfig | null;
   onAdvancePhase: () => void;
   onPlan: (planId: PlanId) => void;
+  onAutoAdvance: () => void;
   onEventChoice: (choice: RandomEventChoice) => void;
   onResolveNode: () => void;
   onCloseFeedback: () => void;
+  onContinueFlow: () => void;
   onHome: () => void;
   onRestart: () => void;
 }
@@ -39,32 +49,44 @@ export function GamePage({
   lastPlanId,
   lastResult,
   activeFeedback,
+  flowPanel,
+  isAutoAdvancing,
   pendingEvent,
   onAdvancePhase,
   onPlan,
+  onAutoAdvance,
   onEventChoice,
   onResolveNode,
   onCloseFeedback,
+  onContinueFlow,
   onHome,
   onRestart,
 }: GamePageProps) {
   const yearSummary = getCurrentYearSummary(state);
+  const recentChanges = activeFeedback?.changes ?? flowPanel?.summary.changes ?? null;
 
   return (
     <main className="page game-page">
       <TopStatusBar state={state} onHome={onHome} onRestart={onRestart} />
-      <StatPanel state={state} />
-      <PhaseCard
-        state={state}
-        lastPlanId={lastPlanId}
-        lastResult={lastResult}
-        pendingEvent={pendingEvent}
-        yearSummary={yearSummary}
-        onAdvancePhase={onAdvancePhase}
-        onPlan={onPlan}
-        onEventChoice={onEventChoice}
-        onResolveNode={onResolveNode}
-      />
+      <YearTimeline state={state} />
+      <StatPanel state={state} recentChanges={recentChanges} />
+      {flowPanel ? (
+        <MonthlySummary panel={flowPanel} onContinue={onContinueFlow} />
+      ) : (
+        <PhaseCard
+          state={state}
+          lastPlanId={lastPlanId}
+          lastResult={lastResult}
+          pendingEvent={pendingEvent}
+          yearSummary={yearSummary}
+          isAutoAdvancing={isAutoAdvancing}
+          onAdvancePhase={onAdvancePhase}
+          onPlan={onPlan}
+          onAutoAdvance={onAutoAdvance}
+          onEventChoice={onEventChoice}
+          onResolveNode={onResolveNode}
+        />
+      )}
       <ResultModal feedback={activeFeedback} state={state} onClose={onCloseFeedback} />
     </main>
   );
@@ -85,7 +107,7 @@ function TopStatusBar({
         首页
       </button>
       <div>
-        <strong>Year {state.year} / 11</strong>
+        <strong>{formatGameYearLabel(state.year)}</strong>
         <span>{getMonthLabel(state)} · {getPhaseLabel(state.phase)} · {getCareerStageLabel(state.year)}</span>
       </div>
       <button className="icon-button" type="button" onClick={onRestart} aria-label="重新开始">
@@ -101,8 +123,10 @@ function PhaseCard({
   yearSummary,
   lastPlanId,
   lastResult,
+  isAutoAdvancing,
   onAdvancePhase,
   onPlan,
+  onAutoAdvance,
   onEventChoice,
   onResolveNode,
 }: {
@@ -111,8 +135,10 @@ function PhaseCard({
   yearSummary: YearSummary | null;
   lastPlanId: PlanId | null;
   lastResult: GameFeedback | null;
+  isAutoAdvancing: boolean;
   onAdvancePhase: () => void;
   onPlan: (planId: PlanId) => void;
+  onAutoAdvance: () => void;
   onEventChoice: (choice: RandomEventChoice) => void;
   onResolveNode: () => void;
 }) {
@@ -122,8 +148,11 @@ function PhaseCard({
         <p className="eyebrow">月份开始</p>
         <h1>{getMonthLabel(state)}</h1>
         <p>新的偶像日程开始了。这个月要安排一次行动，再看看会发生什么事件。</p>
-        <button className="button button--primary" type="button" onClick={onAdvancePhase}>
+        <button className="button button--primary" type="button" disabled={isAutoAdvancing} onClick={onAdvancePhase}>
           安排本月行动
+        </button>
+        <button className="button button--ghost" type="button" disabled={isAutoAdvancing} onClick={onAutoAdvance}>
+          {isAutoAdvancing ? '推进中...' : '自动推进到下个关键节点'}
         </button>
       </section>
     );
@@ -132,9 +161,17 @@ function PhaseCard({
   if (state.phase === 'monthlyPlan') {
     return (
       <section className="phase-card phase-card--plan">
-        <p className="eyebrow">本月行动</p>
-        <h1>这个月让小獭做什么？</h1>
-        <ActionPanel disabled={false} onPlan={onPlan} />
+        <h1>本月行动</h1>
+        <p className="plan-subtitle">选择一个方向陪小獭度过这个月</p>
+        <ActionPanel state={state} disabled={isAutoAdvancing} onPlan={onPlan} />
+        <button
+          className="button button--ghost button--auto-advance"
+          type="button"
+          disabled={isAutoAdvancing}
+          onClick={onAutoAdvance}
+        >
+          {isAutoAdvancing ? '推进中...' : '自动推进到下个关键节点'}
+        </button>
       </section>
     );
   }
@@ -174,7 +211,9 @@ function PhaseCard({
   if (state.phase === 'yearSummary') {
     return (
       <section className="phase-card phase-card--summary">
-        <YearSummaryPanel summary={yearSummary} />
+        <div className="year-summary-scroll">
+          <YearSummaryPanel state={state} summary={yearSummary} />
+        </div>
         <button className="button button--primary" type="button" onClick={onAdvancePhase}>
           {isFinalCareerMonth(state.currentYear, state.currentMonth) ? '进入终章结算' : '进入下一年'}
         </button>
@@ -232,20 +271,31 @@ function EventCard({
   );
 }
 
-function YearSummaryPanel({ summary }: { summary: YearSummary | null }) {
+function YearSummaryPanel({
+  state,
+  summary,
+}: {
+  state: GameState;
+  summary: YearSummary | null;
+}) {
   if (!summary) {
     return (
-      <>
+      <div className="year-summary-content">
         <p className="eyebrow">年度总结</p>
         <h1>这一年的记录正在整理中</h1>
-      </>
+      </div>
     );
   }
 
+  const electionResult = state.electionResults.find(
+    (result) => result.currentYear === summary.currentYear,
+  );
+  const b50Result = state.b50Results.find((result) => result.currentYear === summary.currentYear);
+
   return (
-    <>
+    <div className="year-summary-content">
       <p className="eyebrow">{summary.currentYear} 年年度总结 · {summary.careerStage}</p>
-      <h1>{summary.routeHint}</h1>
+      <h1 className="year-summary-title">{summary.routeHint}</h1>
       <div className="summary-list">
         <div>
           <span>本年行动</span>
@@ -253,15 +303,11 @@ function YearSummaryPanel({ summary }: { summary: YearSummary | null }) {
         </div>
         <div>
           <span>总选结果</span>
-          <strong>
-            {summary.electionGrade} · {summary.electionScore}
-          </strong>
+          <strong>{getNodeResultLabel(electionResult, 'election', summary.electionGrade)}</strong>
         </div>
         <div>
           <span>B50 结果</span>
-          <strong>
-            {summary.b50Grade} · {summary.b50Score}
-          </strong>
+          <strong>{getNodeResultLabel(b50Result, 'b50', summary.b50Grade)}</strong>
         </div>
       </div>
       <p className="summary-events">
@@ -272,16 +318,9 @@ function YearSummaryPanel({ summary }: { summary: YearSummary | null }) {
         事件：{summary.eventTitles.length > 0 ? summary.eventTitles.join(' / ') : '无'}
       </p>
       {summary.growthSummary.length > 0 ? (
-        <div className="change-list change-list--compact">
-          {summary.growthSummary.slice(0, 6).map((change) => (
-            <span className={change.delta >= 0 ? 'change-up' : 'change-down'} key={change.key}>
-              {change.label} {change.delta >= 0 ? '+' : ''}
-              {change.delta}
-            </span>
-          ))}
-        </div>
+        <StatChangeList changes={summary.growthSummary} compact limit={6} />
       ) : null}
-    </>
+    </div>
   );
 }
 
@@ -301,6 +340,8 @@ function ResultModal({
   const visualAsset = getFeedbackVisualAsset(feedback, state);
   const visualType = feedback.visual?.type ?? (feedback.imageKey ? 'legacy' : null);
   const isEventCg = visualType === 'eventCg';
+  const nodeResultLabel = getFeedbackNodeResultLabel(feedback);
+  const visibleDetails = (feedback.details ?? []).filter((detail) => !detail.startsWith('档位 '));
   const modalClassName = `modal-card result-modal ${
     isEventCg ? 'result-modal--event-cg' : 'result-modal--compact-visual'
   }`;
@@ -313,35 +354,18 @@ function ResultModal({
         <h2>{feedback.title}</h2>
         {feedback.score !== undefined ? (
           <p className="result-grade">
-            {feedback.grade ? `${feedback.grade} · ` : ''}
-            {feedback.score} 分
+            {nodeResultLabel ? `结果：${nodeResultLabel}` : `${feedback.score} 分`}
           </p>
         ) : null}
         <p className="result-message">{feedback.message}</p>
-        {feedback.details && feedback.details.length > 0 ? (
+        {visibleDetails.length > 0 ? (
           <div className="detail-list">
-            {feedback.details.map((detail) => (
+            {visibleDetails.map((detail) => (
               <span key={detail}>{detail}</span>
             ))}
           </div>
         ) : null}
-        {feedback.changes.length > 0 ? (
-          <div className="change-list">
-            {feedback.changes.map((change) => (
-              <span
-                className={
-                  change.delta >= 0
-                    ? 'change-up stat-change-up'
-                    : 'change-down stat-change-down'
-                }
-                key={change.key}
-              >
-                {change.label} {change.delta >= 0 ? '+' : ''}
-                {change.delta}
-              </span>
-            ))}
-          </div>
-        ) : null}
+        <StatChangeList changes={feedback.changes} />
         <button className="button button--primary" type="button" onClick={onClose}>
           继续
         </button>
@@ -365,6 +389,10 @@ function getFeedbackVisualAsset(feedback: GameFeedback, state: GameState) {
 
   if (feedback.imageKey) {
     return getVisualAsset('legacy', feedback.imageKey);
+  }
+
+  if (feedback.suppressFallbackVisual) {
+    return null;
   }
 
   const crisisImage = getCrisisImage(state);
