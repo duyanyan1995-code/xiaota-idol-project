@@ -1,4 +1,5 @@
 import { RANDOM_EVENTS } from '../config/events';
+import { STAT_CONFIG_BY_ID } from '../config/stats';
 import type { GamePhase, GameState, PlanConfig, PlanId, PlanUnlockCondition } from '../types/game';
 import { calculateRouteScores, isB50AtLeast, isElectionAtLeast } from './routeLogic';
 
@@ -141,22 +142,9 @@ function describeCondition(condition: PlanUnlockCondition): string {
 }
 
 function getStatLabel(stat: string): string {
-  const labels: Record<string, string> = {
-    vocal: '唱功',
-    dance: '舞蹈',
-    performance: '舞台表现',
-    charm: '魅力',
-    popularity: '人气',
-    fanLoyalty: '粉丝粘性',
-    resources: '资源',
-    style: '风格',
-    energy: '体力',
-    mood: '心情',
-    stress: '压力',
-    fans: '粉丝数',
-  };
-
-  return labels[stat] ?? stat;
+  return stat in STAT_CONFIG_BY_ID
+    ? STAT_CONFIG_BY_ID[stat as keyof typeof STAT_CONFIG_BY_ID].statName
+    : stat;
 }
 
 function getPlanLabel(planId: PlanId): string {

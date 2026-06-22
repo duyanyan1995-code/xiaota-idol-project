@@ -1,11 +1,13 @@
-import { PLANS } from '../config/plans';
-import type { GameState, PlanConfig, PlanId, StatKey } from '../types/game';
+import { PLAN_BY_ID, PLANS } from '../config/plans';
+import type { GameState, MonthlyActionOption, PlanConfig, PlanId, StatKey } from '../types/game';
+import { getCurrentMonthlyActionOptions } from '../utils/actionRoll';
+import { getStatLabel } from '../utils/statDisplay';
 import { getPlanAvailability } from '../utils/unlockLogic';
 
 const MAX_VISIBLE_STATS = 3;
 
 const SHORT_DESCRIPTIONS: Record<PlanId, string> = {
-  theaterTraining: '打磨基础唱跳与舞台表现',
+  theaterTraining: '打磨基础唱跳与舞台力',
   fanService: '回应粉丝，维持陪伴感',
   outsideExposure: '参加外部活动，扩大认知',
   stageFocus: '集中打磨舞台记忆点',
@@ -18,21 +20,6 @@ const SHORT_DESCRIPTIONS: Record<PlanId, string> = {
   specialStyleShift: '尝试更鲜明的风格',
 };
 
-const STAT_LABELS: Record<StatKey, string> = {
-  vocal: '唱功',
-  dance: '舞蹈',
-  performance: '舞台表现',
-  fanLoyalty: '粉丝粘性',
-  charm: '魅力',
-  popularity: '人气',
-  fans: '粉丝数',
-  energy: '体力',
-  mood: '心情',
-  stress: '压力',
-  resources: '资源',
-  style: '风格',
-};
-
 interface ActionPanelProps {
   state: GameState;
   disabled?: boolean;
@@ -40,39 +27,22 @@ interface ActionPanelProps {
 }
 
 export function ActionPanel({ state, disabled = false, onPlan }: ActionPanelProps) {
-  const planAvailability = PLANS.map((plan) => getPlanAvailability(plan, state));
-  const basePlans = planAvailability.filter(({ plan }) => !plan.isSpecialAction);
-  const specialPlans = planAvailability.filter(({ plan }) => plan.isSpecialAction);
+  const monthlyOptions = getCurrentMonthlyActionOptions(state);
+  const displayOptions =
+    monthlyOptions.length > 0 ? monthlyOptions : buildFallbackMonthlyOptions(state);
 
   return (
     <section className="panel action-panel" aria-label="本月行动">
       <div className="action-grid">
-        {basePlans.map((item) => (
+        {displayOptions.map((option) => (
           <ActionButton
-            availability={item}
+            availability={getPlanAvailability(PLAN_BY_ID[option.planId], state)}
             disabled={disabled}
-            key={item.plan.id}
-            wide={item.plan.id === 'stableOperation'}
+            key={option.id}
             onPlan={onPlan}
+            option={option}
           />
         ))}
-      </div>
-      <div className="special-action-group" aria-label="特殊行动">
-        <div className="special-action-group__title">
-          <span>特殊行动</span>
-          <small>满足条件后开放</small>
-        </div>
-        <div className="special-action-grid">
-          {specialPlans.map((item) => (
-            <ActionButton
-              availability={item}
-              disabled={disabled}
-              key={item.plan.id}
-              onPlan={onPlan}
-              special
-            />
-          ))}
-        </div>
       </div>
     </section>
   );
@@ -81,22 +51,18 @@ export function ActionPanel({ state, disabled = false, onPlan }: ActionPanelProp
 function ActionButton({
   availability,
   disabled,
-  wide = false,
-  special = false,
   onPlan,
+  option,
 }: {
   availability: ReturnType<typeof getPlanAvailability>;
   disabled: boolean;
-  wide?: boolean;
-  special?: boolean;
   onPlan: (planId: PlanId) => void;
+  option: MonthlyActionOption;
 }) {
   const { plan, unlocked, lockedReason } = availability;
   const isDisabled = disabled || !unlocked;
   const classNames = [
     'button button--action',
-    wide ? 'button--action-wide' : '',
-    special ? 'button--action-special' : '',
     !unlocked ? 'button--action-locked' : '',
   ]
     .filter(Boolean)
@@ -114,9 +80,10 @@ function ActionButton({
       }}
     >
       <span className="action-card__name">{plan.name}</span>
-      <small className="action-card__desc">{SHORT_DESCRIPTIONS[plan.id]}</small>
+      <small className="action-card__desc">{option.variantText}</small>
+      <small className="action-card__note">{SHORT_DESCRIPTIONS[plan.id]}</small>
       <div className="action-card__meta">
-        <span className="action-card__label">可能提升</span>
+        <span className="action-card__label">主要影响</span>
         <span className="action-card__tags">
           {getBoostTags(plan).map((tag) => (
             <span className="action-tag action-tag--stat" key={tag}>
@@ -132,13 +99,23 @@ function ActionButton({
   );
 }
 
-function getStatLabel(key: StatKey): string {
-  return STAT_LABELS[key];
-}
-
 function getBoostTags(plan: PlanConfig): string[] {
   const orderedStats = [...plan.primaryStats, ...plan.secondaryStats];
   const uniqueStats = Array.from(new Set<StatKey>(orderedStats));
 
   return uniqueStats.slice(0, MAX_VISIBLE_STATS).map(getStatLabel);
+}
+
+function buildFallbackMonthlyOptions(state: GameState): MonthlyActionOption[] {
+  return PLANS.filter((plan) => plan.actionPoolId && !plan.isSpecialAction)
+    .slice(0, 4)
+    .map((plan) => ({
+      id: `fallback-action-option-${state.currentYear}-${state.currentMonth}-${plan.id}`,
+      year: state.year,
+      currentYear: state.currentYear,
+      currentMonth: state.currentMonth,
+      planId: plan.id,
+      actionPoolId: plan.actionPoolId!,
+      variantText: plan.variantPool?.[0] ?? plan.name,
+    }));
 }

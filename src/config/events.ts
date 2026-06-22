@@ -15,9 +15,9 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '记下细节',
         resultText: '她把需要注意的地方认真写下，下一次舞台会更稳。',
         effects: {
-          performance: 2,
+          stagePower: 2,
           dance: 1,
-          stress: 1,
+          pressure: 1,
         },
         b50Bonus: 1,
       },
@@ -27,7 +27,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         resultText: '小獭认真向队友道谢，舞台上的默契多了一点。',
         effects: {
           mood: 3,
-          fanLoyalty: 1,
+          supportPower: 1,
         },
       },
     ],
@@ -46,8 +46,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '拉伸放松',
         resultText: '小獭放慢节奏做了拉伸，疲劳没有继续堆起来。',
         effects: {
-          energy: 4,
-          stress: -2,
+          stamina: 4,
+          pressure: -2,
         },
       },
       {
@@ -57,8 +57,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         effects: {
           vocal: 1,
           dance: 1,
-          energy: -5,
-          stress: 4,
+          stamina: -5,
+          pressure: 4,
         },
       },
     ],
@@ -77,7 +77,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '温柔回应',
         resultText: '小獭把这份喜欢好好接住，粉丝之间的陪伴感更强了。',
         effects: {
-          fanLoyalty: 2,
+          supportPower: 2,
           mood: 2,
         },
         electionBonus: 1,
@@ -87,7 +87,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '记住名字',
         resultText: '她悄悄记住了对方的名字，下一次见面会更亲近。',
         effects: {
-          fanLoyalty: 3,
+          supportPower: 3,
           charm: 1,
         },
       },
@@ -108,7 +108,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         resultText: '小獭顺着变化重新安排节奏，状态没有被打乱。',
         effects: {
           mood: 2,
-          stress: -1,
+          pressure: -1,
         },
       },
       {
@@ -116,8 +116,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '按计划推进',
         resultText: '她稳稳完成了原计划，只是体力消耗比预想多一点。',
         effects: {
-          popularity: 1,
-          energy: -3,
+          influence: 1,
+          stamina: -3,
         },
       },
     ],
@@ -136,9 +136,9 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '慢速复盘',
         resultText: '她把节奏拆开重来，虽然累，但舞台理解更清楚了。',
         effects: {
-          performance: 3,
-          energy: -4,
-          stress: 3,
+          stagePower: 3,
+          stamina: -4,
+          pressure: 3,
         },
         b50Bonus: 2,
       },
@@ -148,7 +148,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         resultText: '小獭先把呼吸稳住，压力慢慢降了下来。',
         effects: {
           mood: 3,
-          stress: -5,
+          pressure: -5,
         },
       },
     ],
@@ -167,7 +167,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '慢慢陪伴',
         resultText: '小獭没有催促大家，只是稳稳把陪伴传递回去。',
         effects: {
-          fanLoyalty: 3,
+          supportPower: 3,
           mood: 2,
         },
       },
@@ -176,9 +176,9 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '努力动员',
         resultText: '动员带来了一点热度，但压力也更明显。',
         effects: {
-          popularity: 2,
-          fans: 20,
-          stress: 5,
+          influence: 2,
+          fanCount: 20,
+          pressure: 5,
         },
         electionBonus: 2,
       },
@@ -198,10 +198,10 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '顺势营业',
         resultText: '小獭顺着话题认真营业，新的关注变成了真实好感。',
         effects: {
-          popularity: 4,
+          influence: 4,
           charm: 2,
-          fans: 35,
-          stress: 2,
+          fanCount: 35,
+          pressure: 2,
         },
         electionBonus: 2,
       },
@@ -210,7 +210,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '自然一点',
         resultText: '她保持自然表达，路人对这份松弛感印象不错。',
         effects: {
-          popularity: 3,
+          influence: 3,
           mood: 2,
         },
       },
@@ -230,9 +230,9 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '明确风格',
         resultText: '小獭更清楚自己想呈现的样子，辨识度提升了。',
         effects: {
-          style: 4,
+          operation: 4,
           charm: 2,
-          stress: 2,
+          pressure: 2,
         },
       },
       {
@@ -240,7 +240,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '多听意见',
         resultText: '她认真听取不同反馈，粉丝也感到自己被看见。',
         effects: {
-          fanLoyalty: 2,
+          supportPower: 2,
           mood: 2,
         },
       },
@@ -263,8 +263,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         resultText: '小獭认真写下回复，心里被温柔填满了。',
         effects: {
           mood: 8,
-          fans: 20,
-          fanLoyalty: 3,
+          fanCount: 20,
+          supportPower: 3,
         },
         electionBonus: 2,
       },
@@ -274,7 +274,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         resultText: '小獭把来信收进小盒子，偷偷开心了一整天。',
         effects: {
           mood: 5,
-          fanLoyalty: 1,
+          supportPower: 1,
         },
       },
     ],
@@ -295,10 +295,10 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '温柔互动',
         resultText: '小獭认真感谢粉丝，新的路人也被这份可爱吸引了。',
         effects: {
-          popularity: 4,
-          fans: 80,
-          fanLoyalty: 3,
-          stress: 4,
+          influence: 4,
+          fanCount: 80,
+          supportPower: 3,
+          pressure: 4,
         },
         electionBonus: 4,
       },
@@ -308,7 +308,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         resultText: '小獭悄悄点了赞，粉丝之间的陪伴感更强了。',
         effects: {
           mood: 4,
-          fanLoyalty: 4,
+          supportPower: 4,
         },
       },
     ],
@@ -329,10 +329,10 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '复盘问题',
         resultText: '小獭把动作重新拆开练习，舞台稳定度提升了。',
         effects: {
-          performance: 4,
+          stagePower: 4,
           dance: 2,
-          energy: -5,
-          stress: 3,
+          stamina: -5,
+          pressure: 3,
         },
         b50Bonus: 3,
       },
@@ -342,7 +342,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         resultText: '被好好安慰后，小獭又找回了笑容。',
         effects: {
           mood: 8,
-          stress: -4,
+          pressure: -4,
         },
       },
     ],
@@ -365,9 +365,9 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         effects: {
           vocal: 3,
           dance: 3,
-          performance: 2,
-          energy: -8,
-          stress: 5,
+          stagePower: 2,
+          stamina: -8,
+          pressure: 5,
         },
         b50Bonus: 2,
       },
@@ -376,9 +376,9 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '及时休息',
         resultText: '小獭乖乖补充体力，状态轻轻回升。',
         effects: {
-          energy: 8,
+          stamina: 8,
           mood: 3,
-          stress: -5,
+          pressure: -5,
         },
       },
     ],
@@ -399,9 +399,9 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '大胆尝试',
         resultText: '新的风格让小獭多了一种可瓜可花的可能性。',
         effects: {
-          style: 6,
+          operation: 6,
           charm: 2,
-          stress: 4,
+          pressure: 4,
         },
       },
       {
@@ -409,8 +409,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '稳一点来',
         resultText: '小獭先把熟悉的表达做得更细，舞台感也更自然了。',
         effects: {
-          performance: 3,
-          fanLoyalty: 2,
+          stagePower: 3,
+          supportPower: 2,
         },
       },
     ],
@@ -431,10 +431,10 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '参加活动',
         resultText: '夏日活动顺利完成，小獭收获了新的关注。',
         effects: {
-          popularity: 6,
-          fans: 70,
-          energy: -10,
-          style: 3,
+          influence: 6,
+          fanCount: 70,
+          stamina: -10,
+          operation: 3,
         },
         flags: {
           summerJoined: true,
@@ -447,9 +447,9 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '暂时婉拒',
         resultText: '小獭把节奏放慢了一点，安心调整状态。',
         effects: {
-          energy: 5,
+          stamina: 5,
           mood: 2,
-          stress: -3,
+          pressure: -3,
         },
       },
     ],
@@ -464,7 +464,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
     tone: 'negative',
     triggerTags: ['透支', '压力', '恢复'],
     baseWeight: 10,
-    triggerCondition: (state) => state.mood < 55 || state.stress >= 65,
+    triggerCondition: (state) => state.mood < 55 || state.pressure >= 65,
     choices: [
       {
         id: 'talk',
@@ -472,7 +472,7 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         resultText: '被认真听见之后，小獭的心情慢慢软了下来。',
         effects: {
           mood: 10,
-          stress: -8,
+          pressure: -8,
         },
       },
       {
@@ -480,9 +480,9 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '完成排练',
         resultText: '小獭撑着完成排练，舞台经验增加了，但压力也更明显。',
         effects: {
-          performance: 3,
-          energy: -5,
-          stress: 5,
+          stagePower: 3,
+          stamina: -5,
+          pressure: 5,
         },
         b50Bonus: 1,
       },
@@ -513,8 +513,8 @@ export const RANDOM_EVENTS: RandomEventConfig[] = [
         label: '记进本子',
         resultText: '她把这句话写进练习本，像给未来的自己留下一颗星。',
         effects: {
-          performance: 2,
-          fanLoyalty: 2,
+          stagePower: 2,
+          supportPower: 2,
         },
       },
     ],
@@ -536,7 +536,7 @@ export const FALLBACK_EVENT: RandomEventConfig = {
       resultText: '平凡的一天也有小小积累，小獭把状态保持住了。',
       effects: {
         mood: 2,
-        fanLoyalty: 1,
+        supportPower: 1,
       },
     },
     {
@@ -544,8 +544,8 @@ export const FALLBACK_EVENT: RandomEventConfig = {
       label: '早点休息',
       resultText: '小獭早早睡下，第二天醒来时眼睛又亮了起来。',
       effects: {
-        energy: 6,
-        stress: -3,
+        stamina: 6,
+        pressure: -3,
       },
     },
   ],

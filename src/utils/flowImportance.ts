@@ -45,11 +45,11 @@ export function getEventPauseReason(event: RandomEventConfig, state: GameState):
 }
 
 export function getCriticalGameStateReason(state: GameState): string | null {
-  if (state.energy <= 20) {
+  if (state.stamina <= 20) {
     return '体力危机，需要停下来照顾小獭';
   }
 
-  if (state.stress >= 80) {
+  if (state.pressure >= 80) {
     return '压力过高，需要停下来调整节奏';
   }
 

@@ -37,7 +37,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     },
     description: '努力到有点累的小獭，需要被好好照顾。',
     conditionText: '体力低于 30',
-    isUnlocked: (state) => state.energy < 30,
+    isUnlocked: (state) => state.stamina < 30,
   },
   {
     id: 'wink',

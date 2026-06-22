@@ -187,7 +187,7 @@ function PhaseCard({
       <section className="phase-card">
         <p className="eyebrow">配置月份节点</p>
         <h1>总选 / 年度人气</h1>
-        <p>结算本年度到当前月份积累的粉丝支持。评分参考粉丝数、粉丝黏性、人气、魅力、资源和事件加成。</p>
+        <p>结算本年度到当前月份积累的粉丝支持。评分参考粉丝数、核心应援力、影响力、魅力、资源和事件加成。</p>
         <button className="button button--primary" type="button" onClick={onResolveNode}>
           结算总选
         </button>
@@ -200,7 +200,7 @@ function PhaseCard({
       <section className="phase-card">
         <p className="eyebrow">配置月份节点</p>
         <h1>B50 / 舞台记忆</h1>
-        <p>结算本年度积累的舞台记忆。评分参考舞台表现、唱功、舞蹈、粉丝黏性、人气和事件加成。</p>
+        <p>结算本年度积累的舞台记忆。评分参考舞台力、唱功、舞蹈、核心应援力、影响力和事件加成。</p>
         <button className="button button--primary" type="button" onClick={onResolveNode}>
           结算 B50
         </button>
@@ -375,7 +375,7 @@ function ResultModal({
 }
 
 function getCrisisImage(state: GameState): CharacterImageKey | null {
-  if (state.energy < 30 || state.mood < 30 || state.stress >= 85) {
+  if (state.stamina < 30 || state.mood < 30 || state.pressure >= 85) {
     return 'tired';
   }
 

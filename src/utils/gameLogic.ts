@@ -10,9 +10,23 @@ import { CHARACTER_IMAGES } from '../config/characterImages';
 import { FALLBACK_EVENT, RANDOM_EVENTS } from '../config/events';
 import { GALLERY_ITEMS } from '../config/gallery';
 import { PLAN_BY_ID } from '../config/plans';
+import {
+  DEFAULT_WORK_GRADE,
+  LEGACY_STAT_KEY_MAP,
+  STAT_CONFIGS,
+  STAT_CONFIG_BY_ID,
+  getInitialStatValue,
+  isValidWorkGrade,
+  toCurrentStatKey,
+} from '../config/stats';
 import { calculateB50Result, calculateElectionResult } from './nodeLogic';
 import { formatMonthlyActionLabel, formatYearMonth } from './dateDisplay';
 import { getPlanLockedReason, isPlanUnlocked } from './unlockLogic';
+import {
+  ensureMonthlyActionOptions,
+  findMonthlyActionOption,
+  rollActionVariant,
+} from './actionRoll';
 import type {
   CharacterImage,
   CharacterImageKey,
@@ -23,6 +37,7 @@ import type {
   GameState,
   GalleryId,
   GrowthLog,
+  MonthlyActionOption,
   NodeResult,
   PlanHistoryEntry,
   PlanId,
@@ -34,35 +49,8 @@ import type {
   YearSummary,
 } from '../types/game';
 
-const SAVE_VERSION = 4;
-const SUPPORTED_SAVE_VERSIONS = [2, 3, 4];
-
-const CONDITION_STATS = ['energy', 'mood', 'stress'] as const;
-const GROWTH_STATS = [
-  'vocal',
-  'dance',
-  'performance',
-  'charm',
-  'popularity',
-  'fanLoyalty',
-  'resources',
-  'style',
-] as const;
-
-const STAT_LABELS: Record<StatKey, string> = {
-  vocal: '唱功',
-  dance: '舞蹈',
-  performance: '舞台表现',
-  charm: '魅力',
-  popularity: '人气',
-  fanLoyalty: '粉丝黏性',
-  resources: '资源',
-  style: '风格',
-  energy: '体力',
-  mood: '心情',
-  stress: '压力',
-  fans: '粉丝数',
-};
+const SAVE_VERSION = 6;
+const SUPPORTED_SAVE_VERSIONS = [2, 3, 4, 5, 6];
 
 export function createInitialGameState(): GameState {
   return {
@@ -71,18 +59,21 @@ export function createInitialGameState(): GameState {
     currentYear: CAREER_START_YEAR,
     currentMonth: 1,
     phase: 'monthStart',
-    vocal: 10,
-    dance: 10,
-    performance: 10,
-    charm: 12,
-    popularity: 0,
-    fans: 50,
-    fanLoyalty: 10,
-    resources: 0,
-    style: 10,
-    energy: 80,
-    mood: 75,
-    stress: 10,
+    stamina: getInitialStatValue('stamina'),
+    mood: getInitialStatValue('mood'),
+    pressure: getInitialStatValue('pressure'),
+    vocal: getInitialStatValue('vocal'),
+    dance: getInitialStatValue('dance'),
+    stagePower: getInitialStatValue('stagePower'),
+    fanCount: getInitialStatValue('fanCount'),
+    supportPower: getInitialStatValue('supportPower'),
+    influence: getInitialStatValue('influence'),
+    resource: getInitialStatValue('resource'),
+    charm: getInitialStatValue('charm'),
+    operation: getInitialStatValue('operation'),
+    fanFatigue: getInitialStatValue('fanFatigue'),
+    workGrade: DEFAULT_WORK_GRADE,
+    monthlyActionOptions: [],
     planHistory: [],
     eventHistory: [],
     b50Results: [],
@@ -104,19 +95,22 @@ export function normalizeGameSnapshot(snapshot: GameSnapshot | null): GameSnapsh
   return {
     state: normalizeGameState(snapshot.state),
     lastPlanId: snapshot.lastPlanId ?? null,
-    lastResult: snapshot.lastResult ?? null,
+    lastResult: snapshot.lastResult ? normalizeFeedback(snapshot.lastResult) : null,
     pendingEventId: snapshot.pendingEventId ?? null,
   };
 }
 
 export function normalizeGameState(value: Partial<GameState> | null | undefined): GameState {
   const initial = createInitialGameState();
+  const source = value as Record<string, unknown> | null | undefined;
   const currentYear = normalizeCurrentYear(value);
   const currentMonth = normalizeCurrentMonth(value);
   const phase = normalizePhase((value as { phase?: string } | null | undefined)?.phase);
+  const migratedStats = buildMigratedStats(source, initial);
   const merged: GameState = {
     ...initial,
     ...value,
+    ...migratedStats,
     saveVersion: SAVE_VERSION,
     year: getCareerYear(currentYear),
     currentYear,
@@ -131,16 +125,18 @@ export function normalizeGameState(value: Partial<GameState> | null | undefined)
     unlockedGallery: ensureBaseGallery(value?.unlockedGallery ?? initial.unlockedGallery),
     eventFlags: value?.eventFlags ?? {},
     gameStatus: value?.gameStatus ?? 'playing',
+    workGrade: isValidWorkGrade(source?.workGrade) ? source.workGrade : initial.workGrade,
+    monthlyActionOptions: normalizeMonthlyActionOptions(value?.monthlyActionOptions ?? []),
   };
 
-  return clampGameState(merged);
+  return ensureMonthlyActionOptions(clampGameState(merged));
 }
 
 export function getCharacterImage(
   gameState: GameState,
   lastPlanId: PlanId | null,
 ): CharacterImage {
-  if (gameState.energy < 30) {
+  if (gameState.stamina < 30) {
     return CHARACTER_IMAGES.tired;
   }
 
@@ -186,14 +182,14 @@ export function advancePhase(state: GameState): GameSnapshot {
   let message = '小獭整理好状态，准备进入下一阶段。';
 
   if (state.phase === 'monthStart') {
-    nextState = clampGameState({
+    nextState = ensureMonthlyActionOptions(clampGameState({
       ...state,
       phase: 'monthlyPlan',
       eventFlags: {
         ...state.eventFlags,
         summerActive: false,
       },
-    });
+    }));
     title = formatYearMonth(state.currentYear, state.currentMonth);
     message = '选择本月行动，决定这个月的小獭如何积累。';
   } else if (state.phase === 'yearSummary') {
@@ -240,6 +236,8 @@ export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
   }
 
   const before = state;
+  const option = findMonthlyActionOption(state, plan.id);
+  const variantText = option?.variantText ?? rollActionVariant(plan);
   const stateBeforeDeltas = {
     ...state,
     eventFlags: {
@@ -255,15 +253,18 @@ export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
     currentYear: state.currentYear,
     currentMonth: state.currentMonth,
     planId: plan.id,
+    actionPoolId: plan.actionPoolId,
     planName: plan.name,
     actionVisualKey: plan.actionVisualKey,
+    variantText,
     feedbackText: plan.feedbackText,
     effects: actualEffects,
+    postActionSummary: buildPostActionSummary(afterDeltas),
   };
   const growthLog = createGrowthLog(
     state,
-    `${plan.name}`,
-    plan.feedbackText,
+    `${plan.name}：${variantText}`,
+    `${variantText}。${plan.feedbackText}`,
     actualEffects,
   );
   const nextState = clampGameState({
@@ -278,12 +279,13 @@ export function applyPlan(state: GameState, planId: PlanId): GameSnapshot {
     lastPlanId: plan.id,
     lastResult: {
       title: plan.name,
-      message: plan.feedbackText,
+      message: `${variantText}。${plan.feedbackText}`,
       visual: {
         type: 'actionVisual',
         key: plan.actionVisualKey,
       },
       changes: collectChanges(before, nextState),
+      details: [`本月行动：${variantText}`],
     },
     pendingEventId: null,
   };
@@ -535,6 +537,7 @@ function advanceToNextMonth(state: GameState): GameState {
     currentYear: nextYear,
     currentMonth: nextMonth,
     phase: 'monthStart',
+    monthlyActionOptions: [],
     eventFlags: {
       ...state.eventFlags,
       summerActive: false,
@@ -583,7 +586,7 @@ function summarizeGrowthLogs(logs: GrowthLog[], currentYear: number): StatChange
   const totals = logs
     .filter((log) => log.currentYear === currentYear)
     .reduce<Partial<Record<StatKey, number>>>((result, log) => {
-      Object.entries(log.deltas).forEach(([key, value]) => {
+      Object.entries(normalizeDeltas(log.deltas)).forEach(([key, value]) => {
         if (value === undefined) {
           return;
         }
@@ -598,7 +601,7 @@ function summarizeGrowthLogs(logs: GrowthLog[], currentYear: number): StatChange
   return Object.entries(totals)
     .map(([key, value]) => ({
       key: key as StatKey,
-      label: STAT_LABELS[key as StatKey],
+      label: STAT_CONFIG_BY_ID[key as StatKey].statName,
       before: 0,
       after: value ?? 0,
       delta: value ?? 0,
@@ -627,22 +630,23 @@ function getCareerStage(year: number): string {
 }
 
 function getRouteHint(state: GameState): string {
-  if (state.stress >= 70) {
+  if (state.pressure >= 70) {
     return '需要注意状态，小獭已经背着不少压力了。';
   }
 
   const routes = [
-    { value: state.performance, text: '舞台实力派路线正在成形。' },
-    { value: state.fanLoyalty, text: '长期陪伴路线正在变得清晰。' },
-    { value: state.popularity, text: '人气突破路线有明显机会。' },
-    { value: state.style, text: '可瓜可花的风格路线越来越鲜明。' },
+    { value: state.stagePower, text: '舞台实力派路线正在成形。' },
+    { value: state.supportPower, text: '长期陪伴路线正在变得清晰。' },
+    { value: state.influence, text: '影响力突破路线有明显机会。' },
+    { value: state.operation, text: '可瓜可花的经营路线越来越鲜明。' },
   ];
 
   return routes.sort((a, b) => b.value - a.value)[0].text;
 }
 
 function applyDeltas(state: GameState, deltas: StatDeltas): GameState {
-  const changedValues = Object.entries(deltas).reduce<Partial<GameState>>(
+  const normalizedDeltas = normalizeDeltas(deltas);
+  const changedValues = Object.entries(normalizedDeltas).reduce<Partial<GameState>>(
     (result, [key, value]) => {
       if (value === undefined) {
         return result;
@@ -668,7 +672,7 @@ function rollPlanEffects(plan: { effects: StatDeltas; effectsRange?: Partial<Rec
   const fallbackKeys = Object.keys(plan.effects) as StatKey[];
   const keys = Array.from(new Set<StatKey>([...fallbackKeys, ...rangeKeys]));
 
-  return keys.reduce<StatDeltas>((result, key) => {
+  return normalizeDeltas(keys.reduce<StatDeltas>((result, key) => {
     const range = plan.effectsRange?.[key];
     const fallback = plan.effects[key];
 
@@ -687,7 +691,7 @@ function rollPlanEffects(plan: { effects: StatDeltas; effectsRange?: Partial<Rec
     }
 
     return result;
-  }, {});
+  }, {}));
 }
 
 function randomIntInRange(min: number, max: number): number {
@@ -703,41 +707,26 @@ function clampGameState(state: GameState): GameState {
   next.currentMonth = clamp(Math.round(next.currentMonth), 1, MONTHS_PER_YEAR);
   next.year = getCareerYear(next.currentYear);
 
-  CONDITION_STATS.forEach((key) => {
-    next[key] = clamp(Math.round(next[key]), 0, 100);
+  STAT_CONFIGS.forEach((config) => {
+    const rawValue = next[config.id];
+    const value = Number.isFinite(rawValue) ? rawValue : config.initialValue;
+    next[config.id] = clamp(Math.round(value), config.min, config.max);
   });
 
-  GROWTH_STATS.forEach((key) => {
-    next[key] = Math.max(0, Math.round(next[key]));
-  });
-
-  next.fans = Math.max(0, Math.round(next.fans));
+  next.workGrade = isValidWorkGrade(next.workGrade) ? next.workGrade : DEFAULT_WORK_GRADE;
   next.unlockedGallery = ensureBaseGallery(next.unlockedGallery);
 
   return next;
 }
 
 function collectChanges(before: GameState, after: GameState): StatChange[] {
-  const keys: StatKey[] = [
-    'energy',
-    'mood',
-    'stress',
-    'vocal',
-    'dance',
-    'performance',
-    'charm',
-    'popularity',
-    'fanLoyalty',
-    'resources',
-    'style',
-    'fans',
-  ];
+  const keys = STAT_CONFIGS.map((config) => config.id);
 
   return keys
     .filter((key) => before[key] !== after[key])
     .map((key) => ({
       key,
-      label: STAT_LABELS[key],
+      label: STAT_CONFIG_BY_ID[key].statName,
       before: before[key],
       after: after[key],
       delta: after[key] - before[key],
@@ -758,7 +747,7 @@ function createGrowthLog(
     phase: state.phase,
     title,
     description,
-    deltas,
+    deltas: normalizeDeltas(deltas),
   };
 }
 
@@ -822,6 +811,89 @@ function buildNodeDetails(result: NodeResult): string[] {
   return details.length > 0 ? details : ['状态修正 0'];
 }
 
+function buildPostActionSummary(state: GameState) {
+  return {
+    stamina: state.stamina,
+    mood: state.mood,
+    pressure: state.pressure,
+    fanCount: state.fanCount,
+    supportPower: state.supportPower,
+    influence: state.influence,
+  };
+}
+
+function buildMigratedStats(
+  source: Record<string, unknown> | null | undefined,
+  initial: GameState,
+): Pick<GameState, StatKey> {
+  return STAT_CONFIGS.reduce<Pick<GameState, StatKey>>((result, config) => {
+    result[config.id] = readMigratedNumber(source, config.id, initial[config.id]);
+    return result;
+  }, {} as Pick<GameState, StatKey>);
+}
+
+function readMigratedNumber(
+  source: Record<string, unknown> | null | undefined,
+  statKey: StatKey,
+  fallback: number,
+): number {
+  const candidateKeys = [
+    statKey,
+    ...Object.entries(LEGACY_STAT_KEY_MAP)
+      .filter(([, currentKey]) => currentKey === statKey)
+      .map(([legacyKey]) => legacyKey),
+  ];
+
+  for (const key of candidateKeys) {
+    const value = source?.[key];
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return value;
+    }
+  }
+
+  return fallback;
+}
+
+function normalizeFeedback(feedback: GameFeedback): GameFeedback {
+  return {
+    ...feedback,
+    changes: normalizeStatChanges(feedback.changes ?? []),
+  };
+}
+
+function normalizeStatChanges(changes: StatChange[]): StatChange[] {
+  return changes
+    .map((change) => {
+      const statKey = toCurrentStatKey(String(change.key));
+      if (!statKey) {
+        return null;
+      }
+
+      return {
+        ...change,
+        key: statKey,
+        label: STAT_CONFIG_BY_ID[statKey].statName,
+      };
+    })
+    .filter((change): change is StatChange => change !== null);
+}
+
+function normalizeDeltas(deltas: Partial<Record<string, number>> | null | undefined): StatDeltas {
+  return Object.entries(deltas ?? {}).reduce<StatDeltas>((result, [key, value]) => {
+    if (value === undefined || !Number.isFinite(value)) {
+      return result;
+    }
+
+    const statKey = toCurrentStatKey(key);
+    if (!statKey) {
+      return result;
+    }
+
+    result[statKey] = (result[statKey] ?? 0) + value;
+    return result;
+  }, {});
+}
+
 function normalizeCurrentYear(value: Partial<GameState> | null | undefined): number {
   if (typeof value?.currentYear === 'number') {
     return clamp(Math.round(value.currentYear), CAREER_START_YEAR, CAREER_END_YEAR);
@@ -883,14 +955,38 @@ function normalizePlanHistory(history: PlanHistoryEntry[]): PlanHistoryEntry[] {
   return history.map((entry) => {
     const currentYear = entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1;
     const currentMonth = entry.currentMonth ?? (entry.half === 'second' ? 7 : 1);
+    const plan = PLAN_BY_ID[entry.planId];
 
     return {
       ...entry,
       currentYear,
       currentMonth,
-      actionVisualKey: entry.actionVisualKey ?? PLAN_BY_ID[entry.planId]?.actionVisualKey,
+      actionPoolId: entry.actionPoolId ?? plan?.actionPoolId,
+      actionVisualKey: entry.actionVisualKey ?? plan?.actionVisualKey,
+      variantText: entry.variantText ?? plan?.name,
+      effects: normalizeDeltas(entry.effects),
     };
   });
+}
+
+function normalizeMonthlyActionOptions(options: MonthlyActionOption[]): MonthlyActionOption[] {
+  return options
+    .map((option) => {
+      const plan = PLAN_BY_ID[option.planId];
+      if (!plan?.actionPoolId) {
+        return null;
+      }
+
+      return {
+        ...option,
+        year: option.year ?? getCareerYear(option.currentYear),
+        currentYear: option.currentYear,
+        currentMonth: option.currentMonth,
+        actionPoolId: option.actionPoolId ?? plan.actionPoolId,
+        variantText: option.variantText || plan.name,
+      };
+    })
+    .filter((option): option is MonthlyActionOption => option !== null);
 }
 
 function normalizeEventHistory(history: EventHistoryEntry[]): EventHistoryEntry[] {
@@ -905,6 +1001,7 @@ function normalizeEventHistory(history: EventHistoryEntry[]): EventHistoryEntry[
       currentMonth,
       eventCgKey: entry.eventCgKey ?? event?.eventCgKey,
       galleryId: entry.galleryId ?? event?.galleryId,
+      effects: normalizeDeltas(entry.effects),
     };
   });
 }
@@ -916,6 +1013,9 @@ function normalizeNodeResults<T extends { year: number; currentYear: number; cur
     ...entry,
     currentYear: entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1,
     currentMonth: entry.currentMonth ?? 12,
+    ...(('rewards' in entry && entry.rewards)
+      ? { rewards: normalizeDeltas(entry.rewards as StatDeltas) }
+      : {}),
   }));
 }
 
@@ -924,6 +1024,7 @@ function normalizeYearSummaries(history: YearSummary[]): YearSummary[] {
     ...entry,
     currentYear: entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1,
     planNames: entry.planNames ?? [],
+    growthSummary: normalizeStatChanges(entry.growthSummary ?? []),
   }));
 }
 
@@ -933,6 +1034,7 @@ function normalizeGrowthLogs(history: GrowthLog[]): GrowthLog[] {
     currentYear: entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1,
     currentMonth: entry.currentMonth ?? 1,
     phase: normalizePhase((entry as { phase?: string }).phase),
+    deltas: normalizeDeltas(entry.deltas),
   }));
 }
 

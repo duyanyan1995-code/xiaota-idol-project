@@ -34,11 +34,11 @@ export function EndingView({ ending, state, unlockedCount }: EndingViewProps) {
         <div className="ending-stats">
           <div>
             <span>总粉丝数</span>
-            <strong>{state.fans}</strong>
+            <strong>{state.fanCount}</strong>
           </div>
           <div>
-            <span>最终人气</span>
-            <strong>{state.popularity}</strong>
+            <span>最终影响力</span>
+            <strong>{state.influence}</strong>
           </div>
           <div>
             <span>最终总选</span>

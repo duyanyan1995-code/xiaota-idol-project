@@ -1,24 +1,10 @@
+import { STAT_CONFIG_BY_ID } from '../config/stats';
 import type { StatChange, StatKey } from '../types/game';
 
 export type StatChangeTone = 'good' | 'bad' | 'neutral';
 
-export const STAT_LABELS: Record<StatKey, string> = {
-  vocal: '唱功',
-  dance: '舞蹈',
-  performance: '舞台表现',
-  charm: '魅力',
-  popularity: '人气',
-  fanLoyalty: '粉丝粘性',
-  resources: '资源',
-  style: '风格',
-  energy: '体力',
-  mood: '心情',
-  stress: '压力',
-  fans: '粉丝数',
-};
-
 export function getStatLabel(statKey: StatKey): string {
-  return STAT_LABELS[statKey];
+  return STAT_CONFIG_BY_ID[statKey].statName;
 }
 
 export function isPositiveStatChange(statKey: StatKey, delta: number): boolean {
@@ -26,7 +12,7 @@ export function isPositiveStatChange(statKey: StatKey, delta: number): boolean {
     return false;
   }
 
-  if (statKey === 'stress') {
+  if (STAT_CONFIG_BY_ID[statKey].isNegative) {
     return delta < 0;
   }
 

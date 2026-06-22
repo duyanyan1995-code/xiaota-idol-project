@@ -9,6 +9,7 @@ import {
   isEventPhase,
   resolveNoEventAfterPlan,
 } from './gameLogic';
+import { getCurrentMonthlyActionOptions } from './actionRoll';
 import { pickMonthlyEvent } from './eventLogic';
 import { getCriticalGameStateReason, getEventPauseReason, shouldPauseForEvent } from './flowImportance';
 import { getTopRoutes } from './routeLogic';
@@ -281,9 +282,14 @@ export function chooseAutoAdvancePlan(state: GameState): PlanId {
   const monthsUntilElection = getMonthsUntil(state.currentMonth, calendar.electionMonth);
   const monthsUntilB50 = getMonthsUntil(state.currentMonth, calendar.b50Month);
   const topRoute = getTopRoutes(state, 1)[0]?.id;
+  const monthlyOptions = getCurrentMonthlyActionOptions(state).filter((option) => {
+    const plan = PLAN_BY_ID[option.planId];
+    return plan && isPlanUnlocked(plan, state);
+  });
+  const monthlyPlanIds = monthlyOptions.map((option) => option.planId);
   const candidates: PlanId[] = [];
 
-  if (state.energy <= 35 || state.stress >= 70) {
+  if (state.stamina <= 35 || state.pressure >= 70) {
     candidates.push('restAndReflect', 'stableOperation', 'restAndReflect');
   }
 
@@ -306,6 +312,15 @@ export function chooseAutoAdvancePlan(state: GameState): PlanId {
   }
 
   candidates.push('stableOperation', 'theaterTraining', 'fanService');
+
+  const candidateFromMonthlyOptions = candidates.filter((planId) => monthlyPlanIds.includes(planId));
+  if (candidateFromMonthlyOptions.length > 0) {
+    return candidateFromMonthlyOptions[Math.floor(Math.random() * candidateFromMonthlyOptions.length)];
+  }
+
+  if (monthlyOptions.length > 0) {
+    return monthlyOptions[Math.floor(Math.random() * monthlyOptions.length)].planId;
+  }
 
   return pickAvailablePlan(state, candidates);
 }

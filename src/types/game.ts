@@ -9,21 +9,21 @@ export type GamePhase =
 
 export type HalfYear = 'first' | 'second';
 
-export type GrowthStat =
-  | 'vocal'
-  | 'dance'
-  | 'performance'
-  | 'charm'
-  | 'popularity'
-  | 'fanLoyalty'
-  | 'resources'
-  | 'style';
+export type ConditionStat = 'stamina' | 'mood' | 'pressure';
 
-export type ConditionStat = 'energy' | 'mood' | 'stress';
+export type StageStat = 'vocal' | 'dance' | 'stagePower';
 
-export type ResourceStat = 'fans';
+export type FanStat = 'fanCount' | 'supportPower' | 'influence' | 'resource';
 
-export type StatKey = GrowthStat | ConditionStat | ResourceStat;
+export type PersonalStat = 'charm' | 'operation';
+
+export type HiddenStat = 'fanFatigue';
+
+export type GrowthStat = StageStat | FanStat | PersonalStat | HiddenStat;
+
+export type StatKey = GrowthStat | ConditionStat;
+
+export type WorkGrade = 'C' | 'B' | 'A' | 'S';
 
 export type PlanId =
   | 'theaterTraining'
@@ -37,6 +37,15 @@ export type PlanId =
   | 'specialIntensiveTraining'
   | 'specialBirthdaySupport'
   | 'specialStyleShift';
+
+export type ActionPoolId =
+  | 'action_theater_training'
+  | 'action_fan_service'
+  | 'action_media_exposure'
+  | 'action_stage_focus'
+  | 'action_style_building'
+  | 'action_rest_reflect'
+  | 'action_steady_operation';
 
 export type CharacterImageKey =
   | 'base'
@@ -153,6 +162,7 @@ export interface EventFlags {
 
 export interface PlanConfig {
   id: PlanId;
+  actionPoolId?: ActionPoolId;
   name: string;
   description: string;
   actionVisualKey: ActionVisualKey;
@@ -169,8 +179,23 @@ export interface PlanConfig {
   isSpecialAction?: boolean;
   availableMonths?: number[];
   availableStages?: GamePhase[];
+  variantPool?: string[];
   feedbackText: string;
 }
+
+export interface MonthlyActionOption {
+  id: string;
+  year: number;
+  currentYear: number;
+  currentMonth: number;
+  planId: PlanId;
+  actionPoolId: ActionPoolId;
+  variantText: string;
+}
+
+export type ActionPostSummary = Partial<
+  Record<'stamina' | 'mood' | 'pressure' | 'fanCount' | 'supportPower' | 'influence', number>
+>;
 
 export interface PlanHistoryEntry {
   id: string;
@@ -179,10 +204,13 @@ export interface PlanHistoryEntry {
   currentMonth: number;
   half?: HalfYear;
   planId: PlanId;
+  actionPoolId?: ActionPoolId;
   planName: string;
   actionVisualKey?: ActionVisualKey;
+  variantText?: string;
   feedbackText: string;
   effects: StatDeltas;
+  postActionSummary?: ActionPostSummary;
 }
 
 export interface RandomEventChoice {
@@ -285,23 +313,26 @@ export interface YearSummary {
 }
 
 export interface GameState {
-  saveVersion: 4;
+  saveVersion: 6;
   year: number;
   currentYear: number;
   currentMonth: number;
   phase: GamePhase;
+  stamina: number;
+  mood: number;
+  pressure: number;
   vocal: number;
   dance: number;
-  performance: number;
+  stagePower: number;
+  fanCount: number;
+  supportPower: number;
+  influence: number;
+  resource: number;
   charm: number;
-  popularity: number;
-  fans: number;
-  fanLoyalty: number;
-  resources: number;
-  style: number;
-  energy: number;
-  mood: number;
-  stress: number;
+  operation: number;
+  fanFatigue: number;
+  workGrade: WorkGrade;
+  monthlyActionOptions: MonthlyActionOption[];
   planHistory: PlanHistoryEntry[];
   eventHistory: EventHistoryEntry[];
   b50Results: B50Result[];

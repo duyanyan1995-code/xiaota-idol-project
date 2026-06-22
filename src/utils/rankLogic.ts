@@ -20,21 +20,21 @@ import type {
 } from '../types/game';
 
 const B50_REWARDS: Record<NodeGrade, StatDeltas> = {
-  S: { fans: 260, popularity: 8, resources: 12, mood: 8 },
-  A: { fans: 190, popularity: 6, resources: 8, mood: 5 },
-  B: { fans: 130, popularity: 4, resources: 5, mood: 3 },
-  C: { fans: 80, popularity: 2, resources: 3 },
-  D: { fans: 40, resources: 1 },
-  E: { mood: -3, stress: 3 },
+  S: { fanCount: 260, influence: 8, resource: 12, mood: 8 },
+  A: { fanCount: 190, influence: 6, resource: 8, mood: 5 },
+  B: { fanCount: 130, influence: 4, resource: 5, mood: 3 },
+  C: { fanCount: 80, influence: 2, resource: 3 },
+  D: { fanCount: 40, resource: 1 },
+  E: { mood: -3, pressure: 3 },
 };
 
 const ELECTION_REWARDS: Record<NodeGrade, StatDeltas> = {
-  S: { fans: 360, popularity: 10, resources: 14, fanLoyalty: 6, mood: 8 },
-  A: { fans: 260, popularity: 7, resources: 10, fanLoyalty: 4, mood: 5 },
-  B: { fans: 180, popularity: 5, resources: 6, fanLoyalty: 3, mood: 3 },
-  C: { fans: 110, popularity: 3, resources: 3, fanLoyalty: 2 },
-  D: { fans: 55, popularity: 1, fanLoyalty: 1 },
-  E: { mood: -4, stress: 4 },
+  S: { fanCount: 360, influence: 10, resource: 14, supportPower: 6, mood: 8 },
+  A: { fanCount: 260, influence: 7, resource: 10, supportPower: 4, mood: 5 },
+  B: { fanCount: 180, influence: 5, resource: 6, supportPower: 3, mood: 3 },
+  C: { fanCount: 110, influence: 3, resource: 3, supportPower: 2 },
+  D: { fanCount: 55, influence: 1, supportPower: 1 },
+  E: { mood: -4, pressure: 4 },
 };
 
 const ELECTION_LABELS: Record<ElectionTier, string> = {
@@ -72,7 +72,7 @@ export function calculateElectionResult(state: GameState): ElectionResult {
   const calibration = getRankCalibrationStage(state.currentYear);
   const planStats = getYearPlanStats(state);
   const eventStats = getYearEventStats(state);
-  const fansScore = normalizeFans(state.fans, 6200);
+  const fansScore = normalizeFans(state.fanCount, 6200);
   const actionEventScore = clamp(
     planStats.fanService * 11 +
       planStats.specialBirthdaySupport * 10 +
@@ -93,8 +93,8 @@ export function calculateElectionResult(state: GameState): ElectionResult {
   const statusModifiers = getStateModifiers(state, 'election');
   const rawScore =
     fansScore * 0.35 +
-    clamp(state.fanLoyalty, 0, 100) * 0.25 +
-    clamp(state.popularity, 0, 100) * 0.2 +
+    clamp(state.supportPower, 0, 100) * 0.25 +
+    clamp(state.influence, 0, 100) * 0.2 +
     clamp(state.charm, 0, 100) * 0.1 +
     actionEventScore * 0.1 +
     eventBonus +
@@ -140,7 +140,7 @@ export function calculateB50Result(state: GameState): B50Result {
   const planStats = getYearPlanStats(state);
   const recentPlanStats = getRecentPlanStats(state, 2);
   const eventStats = getYearEventStats(state);
-  const fansScore = normalizeFans(state.fans, 5200);
+  const fansScore = normalizeFans(state.fanCount, 5200);
   const actionScore = clamp(
     planStats.stageFocus * 12 +
       planStats.specialIntensiveTraining * 11 +
@@ -162,8 +162,8 @@ export function calculateB50Result(state: GameState): B50Result {
     50 +
       eventStats.stagePositive * 10 -
       eventStats.stageNegative * 10 -
-      (state.energy < 30 ? 12 : 0) -
-      (state.stress >= 70 ? 10 : 0) +
+      (state.stamina < 30 ? 12 : 0) -
+      (state.pressure >= 70 ? 10 : 0) +
       (state.mood >= 80 ? 6 : 0),
     0,
     100,
@@ -171,8 +171,8 @@ export function calculateB50Result(state: GameState): B50Result {
   const eventBonus = getEventBonus(state, 'b50Bonus');
   const statusModifiers = getStateModifiers(state, 'b50');
   const rawScore =
-    clamp(state.performance, 0, 100) * 0.3 +
-    clamp(state.fanLoyalty, 0, 100) * 0.2 +
+    clamp(state.stagePower, 0, 100) * 0.3 +
+    clamp(state.supportPower, 0, 100) * 0.2 +
     fansScore * 0.15 +
     clamp(state.dance, 0, 100) * 0.1 +
     clamp(state.vocal, 0, 100) * 0.1 +
@@ -356,14 +356,14 @@ function meetsHighTierRequirement(
   });
 
   return (
-    state.fans >= requirement.minFans &&
-    state.fanLoyalty >= requirement.minFanLoyalty &&
-    (requirement.minPopularity === undefined || state.popularity >= requirement.minPopularity) &&
-    (requirement.minPerformance === undefined || state.performance >= requirement.minPerformance) &&
+    state.fanCount >= requirement.minFans &&
+    state.supportPower >= requirement.minFanLoyalty &&
+    (requirement.minPopularity === undefined || state.influence >= requirement.minPopularity) &&
+    (requirement.minPerformance === undefined || state.stagePower >= requirement.minPerformance) &&
     positiveEvents >= requirement.minPositiveEvents &&
     negativeEvents <= requirement.maxNegativeEvents &&
     planCountsOk &&
-    state.stress < 85
+    state.pressure < 85
   );
 }
 
@@ -458,12 +458,12 @@ function getYearEventStats(state: GameState) {
 
 function getStateModifiers(state: GameState, node: 'election' | 'b50'): ScoreModifier[] {
   const modifiers: Array<ScoreModifier | null> = [
-    state.stress >= 85 ? { label: '压力接近透支', value: node === 'election' ? -10 : -12 } : null,
-    state.stress >= 70 && state.stress < 85 ? { label: '压力偏高', value: node === 'election' ? -6 : -7 } : null,
+    state.pressure >= 85 ? { label: '压力接近透支', value: node === 'election' ? -10 : -12 } : null,
+    state.pressure >= 70 && state.pressure < 85 ? { label: '压力偏高', value: node === 'election' ? -6 : -7 } : null,
     state.mood < 30 ? { label: '心情低落', value: -8 } : null,
     state.mood >= 80 ? { label: '心情稳定', value: 4 } : null,
-    state.energy < 30 ? { label: '体力偏低', value: node === 'election' ? -4 : -7 } : null,
-    state.energy >= 75 ? { label: '状态充足', value: node === 'election' ? 2 : 3 } : null,
+    state.stamina < 30 ? { label: '体力偏低', value: node === 'election' ? -4 : -7 } : null,
+    state.stamina >= 75 ? { label: '状态充足', value: node === 'election' ? 2 : 3 } : null,
   ];
 
   return modifiers.filter(Boolean) as ScoreModifier[];
@@ -476,8 +476,8 @@ function buildElectionMainFactors(
 ): string[] {
   return compactFactors([
     fansScore >= 68 ? '粉丝数积累较强' : null,
-    state.fanLoyalty >= 65 ? '粉丝粘性稳定' : null,
-    state.popularity >= 60 ? '人气稳步提升' : null,
+    state.supportPower >= 65 ? '核心应援力稳定' : null,
+    state.influence >= 60 ? '影响力稳步提升' : null,
     state.charm >= 65 ? '形象魅力有记忆点' : null,
     planStats.fanService + planStats.specialBirthdaySupport >= 3 ? '粉丝营业和应援筹备充足' : null,
   ]);
@@ -505,9 +505,9 @@ function buildElectionPenaltyFactors(
 ): string[] {
   return compactFactors([
     fansScore < 36 ? '粉丝数仍然不足' : null,
-    state.fanLoyalty < 45 ? '粉丝粘性还不稳定' : null,
-    state.popularity < 40 ? '外部认知偏弱' : null,
-    state.stress >= 70 ? '压力偏高影响发挥' : null,
+    state.supportPower < 45 ? '核心应援力还不稳定' : null,
+    state.influence < 40 ? '外部认知偏弱' : null,
+    state.pressure >= 70 ? '压力偏高影响发挥' : null,
     state.mood < 40 ? '心情低落影响营业状态' : null,
     eventStats.negative > 0 ? '负面事件消耗支持度' : null,
   ]);
@@ -515,8 +515,8 @@ function buildElectionPenaltyFactors(
 
 function buildB50MainFactors(state: GameState, planStats: Record<PlanId, number>): string[] {
   return compactFactors([
-    state.performance >= 70 ? '舞台表现突出' : null,
-    state.fanLoyalty >= 65 ? '粉丝粘性稳定' : null,
+    state.stagePower >= 70 ? '舞台力突出' : null,
+    state.supportPower >= 65 ? '核心应援力稳定' : null,
     state.dance >= 65 ? '舞蹈基础扎实' : null,
     state.vocal >= 65 ? '唱功稳定' : null,
     planStats.stageFocus + planStats.specialIntensiveTraining >= 3 ? '舞台专项和集训次数较多' : null,
@@ -543,10 +543,10 @@ function buildB50PenaltyFactors(
   eventStats: ReturnType<typeof getYearEventStats>,
 ): string[] {
   return compactFactors([
-    state.performance < 45 ? '舞台表现积累不足' : null,
-    state.fanLoyalty < 45 ? '粉丝投票基础偏弱' : null,
-    state.energy < 35 ? '体力偏低影响舞台发挥' : null,
-    state.stress >= 70 ? '压力偏高影响稳定度' : null,
+    state.stagePower < 45 ? '舞台力积累不足' : null,
+    state.supportPower < 45 ? '粉丝投票基础偏弱' : null,
+    state.stamina < 35 ? '体力偏低影响舞台发挥' : null,
+    state.pressure >= 70 ? '压力偏高影响稳定度' : null,
     eventStats.stageNegative > 0 ? '负面舞台事件影响记忆点' : null,
   ]);
 }
@@ -584,8 +584,8 @@ function getEventBonus(
     .reduce((total, event) => total + event[key], 0);
 }
 
-function normalizeFans(fans: number, target: number): number {
-  return clamp(Math.sqrt(Math.max(0, fans)) / Math.sqrt(target) * 100, 0, 100);
+function normalizeFans(fanCount: number, target: number): number {
+  return clamp(Math.sqrt(Math.max(0, fanCount)) / Math.sqrt(target) * 100, 0, 100);
 }
 
 function electionTierToGrade(tier: ElectionTier): NodeGrade {

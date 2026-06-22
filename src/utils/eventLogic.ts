@@ -126,21 +126,21 @@ function buildBucketWeights(
     }
   });
 
-  if (state.stress >= 70) {
+  if (state.pressure >= 70) {
     weights.commonNegative *= 1.7;
     weights.rareNegative *= 1.9;
     weights.none *= 0.85;
-  } else if (state.stress <= 25) {
+  } else if (state.pressure <= 25) {
     weights.commonNegative *= 0.7;
     weights.rareNegative *= 0.6;
     weights.none *= 1.08;
   }
 
-  if (state.energy <= 30) {
+  if (state.stamina <= 30) {
     weights.commonNegative *= 1.55;
     weights.rareNegative *= 1.75;
     weights.none *= 0.9;
-  } else if (state.energy >= 75) {
+  } else if (state.stamina >= 75) {
     weights.commonNegative *= 0.82;
     weights.rareNegative *= 0.78;
   }
@@ -218,19 +218,19 @@ function getEventWeight(
     weight *= 1.65;
   }
 
-  if (state.stress >= 70 && hasAnyTag(event.triggerTags, PRESSURE_TAGS)) {
+  if (state.pressure >= 70 && hasAnyTag(event.triggerTags, PRESSURE_TAGS)) {
     weight *= event.tone === 'negative' ? 1.65 : 1.25;
   }
 
-  if (state.stress <= 25 && event.tone === 'negative') {
+  if (state.pressure <= 25 && event.tone === 'negative') {
     weight *= 0.72;
   }
 
-  if (state.energy <= 30 && hasAnyTag(event.triggerTags, ['透支', '压力'])) {
+  if (state.stamina <= 30 && hasAnyTag(event.triggerTags, ['透支', '压力'])) {
     weight *= event.tone === 'negative' ? 1.65 : 1.2;
   }
 
-  if (state.energy >= 75 && event.tone === 'negative') {
+  if (state.stamina >= 75 && event.tone === 'negative') {
     weight *= 0.82;
   }
 
