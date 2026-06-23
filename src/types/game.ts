@@ -2,6 +2,8 @@ export type GamePhase =
   | 'monthStart'
   | 'monthlyPlan'
   | 'monthlyEvent'
+  | 'themeNode'
+  | 'workNode'
   | 'election'
   | 'b50'
   | 'yearSummary'
@@ -25,6 +27,10 @@ export type GrowthStat = StageStat | FanStat | PersonalStat | HiddenStat;
 export type StatKey = GrowthStat | ConditionStat;
 
 export type WorkGrade = 'C' | 'B' | 'A' | 'S';
+
+export type ThemeNodeType = 'timeline' | 'performanceWork';
+
+export type ThemeNodeImportance = 'normal' | 'key';
 
 export type PlanId =
   | 'theaterTraining'
@@ -147,6 +153,10 @@ export type EventRarity = 'common' | 'rare' | 'superRare';
 
 export type EventTone = 'positive' | 'negative' | 'mixed';
 
+export type EventType = 'positive' | 'negative' | 'risk' | 'recovery' | 'milestone';
+
+export type RiskLevel = 'warning' | 'major';
+
 export type RouteId = 'stage' | 'fan' | 'outside' | 'style' | 'stable' | 'recovery';
 
 export type StatDeltas = Partial<Record<StatKey, number>>;
@@ -225,15 +235,18 @@ export interface PlanHistoryEntry {
 export interface RandomEventChoice {
   id: string;
   label: string;
+  description?: string;
   resultText: string;
   effects: StatDeltas;
   flags?: EventFlags;
   b50Bonus?: number;
   electionBonus?: number;
+  riskLevel?: RiskLevel;
 }
 
 export interface RandomEventConfig {
   id: string;
+  type: EventType;
   title: string;
   description: string;
   eventCgKey?: EventCgKey;
@@ -244,6 +257,11 @@ export interface RandomEventConfig {
   baseWeight: number;
   choices: RandomEventChoice[];
   weight?: number;
+  cooldownMonths?: number;
+  actionTypes?: PlanId[];
+  stageRange?: [number, number];
+  riskKey?: string;
+  priority?: number;
   requiresAttention?: boolean;
   shouldPause?: boolean;
   triggerCondition?: (state: GameState) => boolean;
@@ -256,6 +274,7 @@ export interface EventHistoryEntry {
   currentMonth: number;
   half?: HalfYear;
   eventId: string;
+  eventType?: EventType;
   eventTitle: string;
   choiceId: string;
   choiceLabel: string;
@@ -265,6 +284,7 @@ export interface EventHistoryEntry {
   effects: StatDeltas;
   b50Bonus: number;
   electionBonus: number;
+  sourceActionId?: PlanId;
 }
 
 export interface ScoreModifier {
@@ -352,8 +372,55 @@ export interface Milestone {
   sourceResultId: string;
 }
 
+export interface ThemeNodeResult {
+  id: string;
+  year: number;
+  currentYear: number;
+  month: number;
+  nodeId: string;
+  title: string;
+  nodeType: 'timeline';
+  narrative: string;
+  deltas: StatDeltas;
+  sourceName?: string;
+  createdAtMonth: number;
+  potentialVisualKey?: string;
+}
+
+export interface WorkResult {
+  id: string;
+  year: number;
+  currentYear: number;
+  month: number;
+  workId: string;
+  title: string;
+  theme: string;
+  score: number;
+  grade: WorkGrade;
+  resultLabel: string;
+  narrative: string;
+  deltas: StatDeltas;
+  relatedAnnualResultIds?: string[];
+  relatedEventIds?: string[];
+  relatedActionSummary?: Record<string, number>;
+  potentialVisualKey?: string;
+  createdAtMonth: number;
+}
+
+export interface WorkMilestone {
+  id: string;
+  year: number;
+  currentYear: number;
+  type: 'work';
+  title: string;
+  description: string;
+  sourceWorkResultId: string;
+  grade: WorkGrade;
+  potentialVisualKey?: string;
+}
+
 export interface GameState {
-  saveVersion: 7;
+  saveVersion: 9;
   year: number;
   currentYear: number;
   currentMonth: number;
@@ -372,13 +439,21 @@ export interface GameState {
   operation: number;
   fanFatigue: number;
   workGrade: WorkGrade;
+  pendingEventId: string | null;
   monthlyActionOptions: MonthlyActionOption[];
   planHistory: PlanHistoryEntry[];
   eventHistory: EventHistoryEntry[];
+  eventCooldowns: Record<string, number>;
+  riskWarningCounts: Record<string, number>;
   b50Results: B50Result[];
   electionResults: ElectionResult[];
   annualResults: AnnualResult[];
   milestones: Milestone[];
+  themeNodeResults: ThemeNodeResult[];
+  workResults: WorkResult[];
+  workMilestones: WorkMilestone[];
+  pendingThemeNodeResult: ThemeNodeResult | null;
+  pendingWorkResult: WorkResult | null;
   yearSummaries: YearSummary[];
   growthLogs: GrowthLog[];
   unlockedGallery: GalleryId[];

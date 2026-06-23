@@ -24,6 +24,12 @@ import { formatMonthlyActionLabel, formatYearMonth } from './dateDisplay';
 import { isB50AtLeast, isElectionAtLeast } from './routeLogic';
 import { getPlanLockedReason, isPlanUnlocked } from './unlockLogic';
 import {
+  buildThemeNodeResult,
+  buildWorkMilestones,
+  buildWorkResult,
+  getThemeNodeConfigForState,
+} from './workLogic';
+import {
   ensureMonthlyActionOptions,
   findMonthlyActionOption,
   rollActionVariant,
@@ -52,11 +58,14 @@ import type {
   StatChange,
   StatDeltas,
   StatKey,
+  ThemeNodeResult,
+  WorkMilestone,
+  WorkResult,
   YearSummary,
 } from '../types/game';
 
-const SAVE_VERSION = 7;
-const SUPPORTED_SAVE_VERSIONS = [2, 3, 4, 5, 6, 7];
+const SAVE_VERSION = 9;
+const SUPPORTED_SAVE_VERSIONS = [2, 3, 4, 5, 6, 7, 8, 9];
 
 export function createInitialGameState(): GameState {
   return {
@@ -79,13 +88,21 @@ export function createInitialGameState(): GameState {
     operation: getInitialStatValue('operation'),
     fanFatigue: getInitialStatValue('fanFatigue'),
     workGrade: DEFAULT_WORK_GRADE,
+    pendingEventId: null,
     monthlyActionOptions: [],
     planHistory: [],
     eventHistory: [],
+    eventCooldowns: {},
+    riskWarningCounts: {},
     b50Results: [],
     electionResults: [],
     annualResults: [],
     milestones: [],
+    themeNodeResults: [],
+    workResults: [],
+    workMilestones: [],
+    pendingThemeNodeResult: null,
+    pendingWorkResult: null,
     yearSummaries: [],
     growthLogs: [],
     unlockedGallery: ['base'],
@@ -99,12 +116,17 @@ export function normalizeGameSnapshot(snapshot: GameSnapshot | null): GameSnapsh
   if (!snapshot || !SUPPORTED_SAVE_VERSIONS.includes(Number(saveVersion))) {
     return null;
   }
+  const stateWithPendingEvent = {
+    ...snapshot.state,
+    pendingEventId: snapshot.pendingEventId ?? snapshot.state.pendingEventId ?? null,
+  };
+  const state = normalizeGameState(stateWithPendingEvent);
 
   return {
-    state: normalizeGameState(snapshot.state),
+    state,
     lastPlanId: snapshot.lastPlanId ?? null,
     lastResult: snapshot.lastResult ? normalizeFeedback(snapshot.lastResult) : null,
-    pendingEventId: snapshot.pendingEventId ?? null,
+    pendingEventId: snapshot.pendingEventId ?? state.pendingEventId ?? null,
   };
 }
 
@@ -130,10 +152,18 @@ export function normalizeGameState(value: Partial<GameState> | null | undefined)
     electionResults: normalizeNodeResults(value?.electionResults ?? []),
     annualResults: normalizeAnnualResults(value?.annualResults ?? []),
     milestones: normalizeMilestones(value?.milestones ?? []),
+    themeNodeResults: normalizeThemeNodeResults(value?.themeNodeResults ?? []),
+    workResults: normalizeWorkResults(value?.workResults ?? []),
+    workMilestones: normalizeWorkMilestones(value?.workMilestones ?? []),
+    pendingThemeNodeResult: normalizeNullableThemeNodeResult(value?.pendingThemeNodeResult ?? null),
+    pendingWorkResult: normalizeNullableWorkResult(value?.pendingWorkResult ?? null),
     yearSummaries: normalizeYearSummaries(value?.yearSummaries ?? []),
     growthLogs: normalizeGrowthLogs(value?.growthLogs ?? []),
     unlockedGallery: ensureBaseGallery(value?.unlockedGallery ?? initial.unlockedGallery),
     eventFlags: value?.eventFlags ?? {},
+    pendingEventId: typeof value?.pendingEventId === 'string' ? value.pendingEventId : null,
+    eventCooldowns: normalizeNumberRecord(value?.eventCooldowns),
+    riskWarningCounts: normalizeNumberRecord(value?.riskWarningCounts),
     gameStatus: phase === 'flamePrelude' ? 'playing' : value?.gameStatus ?? 'playing',
     workGrade: isValidWorkGrade(source?.workGrade) ? source.workGrade : initial.workGrade,
     monthlyActionOptions: normalizeMonthlyActionOptions(value?.monthlyActionOptions ?? []),
@@ -221,6 +251,21 @@ export function advancePhase(state: GameState): GameSnapshot {
       title = formatYearMonth(nextState.currentYear, nextState.currentMonth);
       message = '新的月份开始了，小獭还会继续向舞台靠近。';
     }
+  } else if (state.phase === 'themeNode' || state.phase === 'workNode') {
+    const stateAfterThemeNode = clampGameState({
+      ...state,
+      pendingThemeNodeResult: null,
+      pendingWorkResult: null,
+    });
+    nextState = resolveAfterThemeOrWorkNode(stateAfterThemeNode);
+    title = getPhaseLabel(nextState.phase);
+    message = nextState.phase === 'election'
+      ? '年度主题节点已经记录，接下来进入总选 / 年度人气结算。'
+      : nextState.phase === 'b50'
+        ? '年度作品节点已经记录，接下来进入 B50 / 舞台记忆结算。'
+        : nextState.phase === 'yearSummary'
+          ? '年度作品节点已经记录，接下来整理这一年的总结。'
+          : '年度节点已经记录，新的月份准备开始。';
   }
 
   return {
@@ -326,12 +371,14 @@ export function applyEventChoice(
 
   const before = state;
   const afterDeltas = applyDeltas(state, choice.effects);
+  const sourceActionId = getCurrentMonthPlanId(state);
   const eventEntry: EventHistoryEntry = {
     id: `event-${state.currentYear}-${state.currentMonth}`,
     year: state.year,
     currentYear: state.currentYear,
     currentMonth: state.currentMonth,
     eventId: event.id,
+    eventType: event.type,
     eventTitle: event.title,
     choiceId: choice.id,
     choiceLabel: choice.label,
@@ -341,14 +388,21 @@ export function applyEventChoice(
     effects: choice.effects,
     b50Bonus: choice.b50Bonus ?? 0,
     electionBonus: choice.electionBonus ?? 0,
+    sourceActionId,
   };
   const growthLog = createGrowthLog(state, event.title, choice.resultText, choice.effects);
   const stateWithEvent = clampGameState({
     ...afterDeltas,
+    pendingEventId: null,
     eventFlags: {
       ...afterDeltas.eventFlags,
       ...(choice.flags ?? {}),
     },
+    eventCooldowns: {
+      ...afterDeltas.eventCooldowns,
+      [event.id]: getAbsoluteMonth(state.currentYear, state.currentMonth),
+    },
+    riskWarningCounts: updateRiskWarningCounts(afterDeltas.riskWarningCounts, event, choice),
     eventHistory: replaceSameMonthEvent(state.eventHistory, eventEntry),
     unlockedGallery: event.galleryId
       ? addGalleryId(state.unlockedGallery, event.galleryId)
@@ -527,6 +581,8 @@ export function getPhaseLabel(phase: GamePhase): string {
     monthlyEvent: '本月事件',
     election: '本月总选',
     b50: '本月 B50',
+    themeNode: '年度主题节点',
+    workNode: '年度作品节点',
     yearSummary: '年度总结',
     flamePrelude: '终章占位',
     finalEnding: '终章结算',
@@ -540,6 +596,11 @@ export function getMonthLabel(state: GameState): string {
 }
 
 function resolveAfterMonthActivity(state: GameState): GameState {
+  const themeNodeState = resolveThemeOrWorkNodeState(state);
+  if (themeNodeState) {
+    return themeNodeState;
+  }
+
   if (shouldResolveElection(state)) {
     return clampGameState({
       ...state,
@@ -548,6 +609,50 @@ function resolveAfterMonthActivity(state: GameState): GameState {
   }
 
   return resolveAfterNode(state);
+}
+
+function resolveAfterThemeOrWorkNode(state: GameState): GameState {
+  if (shouldResolveElection(state)) {
+    return clampGameState({
+      ...state,
+      phase: 'election',
+    });
+  }
+
+  return resolveAfterNode(state);
+}
+
+function resolveThemeOrWorkNodeState(state: GameState): GameState | null {
+  const config = getThemeNodeConfigForState(state);
+  if (!config) {
+    return null;
+  }
+
+  if (config.nodeType === 'performanceWork' && config.gradeEnabled) {
+    const workResult = buildWorkResult(state, config);
+    const afterDeltas = applyDeltas(state, workResult.deltas);
+    const workMilestones = buildWorkMilestones(workResult, config);
+
+    return clampGameState({
+      ...afterDeltas,
+      phase: 'workNode',
+      workResults: replaceSameWorkResult(state.workResults, workResult),
+      workMilestones: mergeWorkMilestones(state.workMilestones, workMilestones),
+      pendingWorkResult: workResult,
+      pendingThemeNodeResult: null,
+    });
+  }
+
+  const themeNodeResult = buildThemeNodeResult(state, config);
+  const afterDeltas = applyDeltas(state, themeNodeResult.deltas);
+
+  return clampGameState({
+    ...afterDeltas,
+    phase: 'themeNode',
+    themeNodeResults: replaceSameThemeNodeResult(state.themeNodeResults, themeNodeResult),
+    pendingThemeNodeResult: themeNodeResult,
+    pendingWorkResult: null,
+  });
 }
 
 function resolveAfterNode(state: GameState): GameState {
@@ -882,6 +987,42 @@ function replaceSameYearSummary(history: YearSummary[], entry: YearSummary): Yea
   return [...history.filter((item) => item.currentYear !== entry.currentYear), entry];
 }
 
+function replaceSameThemeNodeResult(
+  history: ThemeNodeResult[],
+  entry: ThemeNodeResult,
+): ThemeNodeResult[] {
+  return [
+    ...history.filter(
+      (item) =>
+        item.currentYear !== entry.currentYear ||
+        item.month !== entry.month ||
+        item.nodeId !== entry.nodeId,
+    ),
+    entry,
+  ];
+}
+
+function replaceSameWorkResult(history: WorkResult[], entry: WorkResult): WorkResult[] {
+  return [
+    ...history.filter(
+      (item) =>
+        item.currentYear !== entry.currentYear ||
+        item.month !== entry.month ||
+        item.workId !== entry.workId,
+    ),
+    entry,
+  ];
+}
+
+function mergeWorkMilestones(history: WorkMilestone[], entries: WorkMilestone[]): WorkMilestone[] {
+  const next = new Map<string, WorkMilestone>();
+  [...history, ...entries].forEach((entry) => {
+    next.set(entry.id, entry);
+  });
+
+  return Array.from(next.values());
+}
+
 function replaceSameAnnualResult(history: AnnualResult[], entry: AnnualResult): AnnualResult[] {
   return [
     ...history.filter((item) => item.currentYear !== entry.currentYear || item.type !== entry.type),
@@ -1069,6 +1210,47 @@ function buildPostActionSummary(state: GameState) {
   };
 }
 
+function getCurrentMonthPlanId(state: GameState): PlanId | undefined {
+  return state.planHistory.find(
+    (entry) =>
+      entry.currentYear === state.currentYear && entry.currentMonth === state.currentMonth,
+  )?.planId;
+}
+
+function getAbsoluteMonth(currentYear: number, currentMonth: number): number {
+  return (currentYear - CAREER_START_YEAR) * MONTHS_PER_YEAR + currentMonth;
+}
+
+function updateRiskWarningCounts(
+  counts: Record<string, number>,
+  event: RandomEventConfig,
+  choice: RandomEventChoice,
+): Record<string, number> {
+  const next = { ...counts };
+
+  if (event.type === 'recovery') {
+    Object.keys(next).forEach((key) => {
+      next[key] = Math.max(0, next[key] - 1);
+    });
+    return next;
+  }
+
+  if (event.type !== 'risk') {
+    return next;
+  }
+
+  const riskKey = event.riskKey ?? event.id;
+  if (choice.riskLevel === 'major') {
+    next[riskKey] = (next[riskKey] ?? 0) + 2;
+  } else if (choice.riskLevel === 'warning') {
+    next[riskKey] = (next[riskKey] ?? 0) + 1;
+  } else {
+    next[riskKey] = Math.max(0, (next[riskKey] ?? 0) - 1);
+  }
+
+  return next;
+}
+
 function buildMigratedStats(
   source: Record<string, unknown> | null | undefined,
   initial: GameState,
@@ -1141,6 +1323,20 @@ function normalizeDeltas(deltas: Partial<Record<string, number>> | null | undefi
   }, {});
 }
 
+function normalizeNumberRecord(value: unknown): Record<string, number> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+
+  return Object.entries(value).reduce<Record<string, number>>((result, [key, rawValue]) => {
+    if (typeof rawValue === 'number' && Number.isFinite(rawValue)) {
+      result[key] = Math.max(0, Math.round(rawValue));
+    }
+
+    return result;
+  }, {});
+}
+
 function normalizeCurrentYear(value: Partial<GameState> | null | undefined): number {
   if (typeof value?.currentYear === 'number') {
     return clamp(Math.round(value.currentYear), CAREER_START_YEAR, CAREER_END_YEAR);
@@ -1175,6 +1371,8 @@ function normalizePhase(phase: string | undefined): GamePhase {
     phase === 'monthStart' ||
     phase === 'monthlyPlan' ||
     phase === 'monthlyEvent' ||
+    phase === 'themeNode' ||
+    phase === 'workNode' ||
     phase === 'election' ||
     phase === 'b50' ||
     phase === 'yearSummary' ||
@@ -1251,9 +1449,11 @@ function normalizeEventHistory(history: EventHistoryEntry[]): EventHistoryEntry[
       ...entry,
       currentYear,
       currentMonth,
+      eventType: entry.eventType ?? event?.type,
       eventCgKey: entry.eventCgKey ?? event?.eventCgKey,
       galleryId: entry.galleryId ?? event?.galleryId,
       effects: normalizeDeltas(entry.effects),
+      sourceActionId: entry.sourceActionId,
     };
   });
 }
@@ -1329,6 +1529,109 @@ function normalizeMilestones(history: Partial<Milestone>[]): Milestone[] {
       sourceResultId: entry.sourceResultId || `annual-${type}-${currentYear}`,
     };
   });
+}
+
+function normalizeThemeNodeResults(history: Partial<ThemeNodeResult>[]): ThemeNodeResult[] {
+  if (!Array.isArray(history)) {
+    return [];
+  }
+
+  return history
+    .map(normalizeNullableThemeNodeResult)
+    .filter((entry): entry is ThemeNodeResult => entry !== null);
+}
+
+function normalizeWorkResults(history: Partial<WorkResult>[]): WorkResult[] {
+  if (!Array.isArray(history)) {
+    return [];
+  }
+
+  return history
+    .map(normalizeNullableWorkResult)
+    .filter((entry): entry is WorkResult => entry !== null);
+}
+
+function normalizeWorkMilestones(history: Partial<WorkMilestone>[]): WorkMilestone[] {
+  if (!Array.isArray(history)) {
+    return [];
+  }
+
+  return history.map((entry, index) => {
+    const currentYear = entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1;
+    const grade = isValidWorkGrade(entry.grade) ? entry.grade : DEFAULT_WORK_GRADE;
+
+    return {
+      id: entry.id || `work-milestone-${currentYear}-${index + 1}`,
+      year: getCareerYear(currentYear),
+      currentYear,
+      type: 'work',
+      title: entry.title || '作品里程碑',
+      description: entry.description || '',
+      sourceWorkResultId: entry.sourceWorkResultId || '',
+      grade,
+      potentialVisualKey: typeof entry.potentialVisualKey === 'string' ? entry.potentialVisualKey : undefined,
+    };
+  });
+}
+
+function normalizeNullableThemeNodeResult(
+  entry: Partial<ThemeNodeResult> | null | undefined,
+): ThemeNodeResult | null {
+  if (!entry) {
+    return null;
+  }
+
+  const currentYear = entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1;
+  const month = clamp(Math.round(entry.month ?? entry.createdAtMonth ?? 1), 1, MONTHS_PER_YEAR);
+
+  return {
+    id: entry.id || `theme-${entry.nodeId ?? 'unknown'}-${currentYear}`,
+    year: getCareerYear(currentYear),
+    currentYear,
+    month,
+    nodeId: entry.nodeId || 'unknown',
+    title: entry.title || '年度主题节点',
+    nodeType: 'timeline',
+    narrative: entry.narrative || '',
+    deltas: normalizeDeltas(entry.deltas),
+    sourceName: entry.sourceName,
+    createdAtMonth: clamp(Math.round(entry.createdAtMonth ?? month), 1, MONTHS_PER_YEAR),
+    potentialVisualKey: typeof entry.potentialVisualKey === 'string' ? entry.potentialVisualKey : undefined,
+  };
+}
+
+function normalizeNullableWorkResult(entry: Partial<WorkResult> | null | undefined): WorkResult | null {
+  if (!entry) {
+    return null;
+  }
+
+  const currentYear = entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1;
+  const month = clamp(Math.round(entry.month ?? entry.createdAtMonth ?? 1), 1, MONTHS_PER_YEAR);
+  const grade = isValidWorkGrade(entry.grade) ? entry.grade : DEFAULT_WORK_GRADE;
+
+  return {
+    id: entry.id || `work-${entry.workId ?? 'unknown'}-${currentYear}`,
+    year: getCareerYear(currentYear),
+    currentYear,
+    month,
+    workId: entry.workId || 'unknown',
+    title: entry.title || '年度作品节点',
+    theme: entry.theme || '',
+    score: Number.isFinite(entry.score) ? Math.round(Number(entry.score)) : 0,
+    grade,
+    resultLabel: entry.resultLabel || grade,
+    narrative: entry.narrative || '',
+    deltas: normalizeDeltas(entry.deltas),
+    relatedAnnualResultIds: Array.isArray(entry.relatedAnnualResultIds)
+      ? entry.relatedAnnualResultIds.filter((item): item is string => typeof item === 'string')
+      : [],
+    relatedEventIds: Array.isArray(entry.relatedEventIds)
+      ? entry.relatedEventIds.filter((item): item is string => typeof item === 'string')
+      : [],
+    relatedActionSummary: normalizeNumberRecord(entry.relatedActionSummary),
+    potentialVisualKey: typeof entry.potentialVisualKey === 'string' ? entry.potentialVisualKey : undefined,
+    createdAtMonth: clamp(Math.round(entry.createdAtMonth ?? month), 1, MONTHS_PER_YEAR),
+  };
 }
 
 function normalizeYearSummaries(history: YearSummary[]): YearSummary[] {

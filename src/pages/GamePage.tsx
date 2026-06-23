@@ -6,6 +6,7 @@ import { StatPanel } from '../components/StatPanel';
 import { StatChangeList } from '../components/StatChangeList';
 import { YearTimeline } from '../components/YearTimeline';
 import { isFinalCareerMonth } from '../config/annualCalendar';
+import { STAT_CONFIG_BY_ID } from '../config/stats';
 import { getVisualAsset } from '../config/visualAssets';
 import type {
   CharacterImageKey,
@@ -14,6 +15,11 @@ import type {
   PlanId,
   RandomEventChoice,
   RandomEventConfig,
+  StatChange,
+  StatDeltas,
+  StatKey,
+  ThemeNodeResult,
+  WorkResult,
   YearSummary,
 } from '../types/game';
 import type { FlowPanelState } from '../types/flow';
@@ -202,6 +208,18 @@ function PhaseCard({
     );
   }
 
+  if (state.phase === 'themeNode') {
+    return (
+      <ThemeNodeCard result={state.pendingThemeNodeResult} onContinue={onAdvancePhase} />
+    );
+  }
+
+  if (state.phase === 'workNode') {
+    return (
+      <WorkNodeCard result={state.pendingWorkResult} onContinue={onAdvancePhase} />
+    );
+  }
+
   if (state.phase === 'election') {
     return (
       <section className="interaction-panel phase-card">
@@ -294,6 +312,75 @@ function PhaseCard({
   );
 }
 
+function ThemeNodeCard({
+  result,
+  onContinue,
+}: {
+  result: ThemeNodeResult | null;
+  onContinue: () => void;
+}) {
+  return (
+    <section className="interaction-panel phase-card phase-card--theme-node">
+      <div className="interaction-panel__header">
+        <p className="eyebrow">年度主题节点</p>
+        <h1>{result?.title ?? '年度主题节点'}</h1>
+      </div>
+      <div className="interaction-panel__body">
+        <p className="node-meta">{result ? `${result.currentYear} 年 ${result.month} 月` : '节点记录整理中'}</p>
+        <p>{result?.narrative ?? '这一年的重要记忆正在整理。'}</p>
+        {result && Object.keys(result.deltas).length > 0 ? (
+          <StatChangeList changes={deltasToChanges(result.deltas)} compact />
+        ) : null}
+      </div>
+      <div className="interaction-panel__footer">
+        <button className="button button--primary" type="button" onClick={onContinue}>
+          继续
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function WorkNodeCard({
+  result,
+  onContinue,
+}: {
+  result: WorkResult | null;
+  onContinue: () => void;
+}) {
+  return (
+    <section className="interaction-panel phase-card phase-card--work-node">
+      <div className="interaction-panel__header">
+        <p className="eyebrow">年度作品节点</p>
+        <h1>{result?.title ?? '年度作品节点'}</h1>
+      </div>
+      <div className="interaction-panel__body">
+        <p className="node-meta">{result ? `${result.currentYear} 年 ${result.month} 月` : '作品记录整理中'}</p>
+        {result ? (
+          <p className="work-grade-badge">
+            结果等级 {result.grade} · {result.resultLabel}
+          </p>
+        ) : null}
+        <p>{result?.theme ?? '这一年的作品节点正在整理。'}</p>
+        <p>{result?.narrative ?? null}</p>
+        {result && Object.keys(result.deltas).length > 0 ? (
+          <StatChangeList changes={deltasToChanges(result.deltas)} compact />
+        ) : null}
+        {result?.grade === 'A' || result?.grade === 'S' ? (
+          <p className="work-milestone-note">
+            里程碑：{result.grade === 'S' ? '年度作品高光' : '代表作成形'}
+          </p>
+        ) : null}
+      </div>
+      <div className="interaction-panel__footer">
+        <button className="button button--primary" type="button" onClick={onContinue}>
+          继续
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function EventCard({
   event,
   onEventChoice,
@@ -316,9 +403,9 @@ function EventCard({
   }
 
   return (
-    <section className="interaction-panel phase-card phase-card--event">
+    <section className={`interaction-panel phase-card phase-card--event phase-card--event-${event.type}`}>
       <div className="interaction-panel__header">
-        <p className="eyebrow">阶段事件</p>
+        <p className="eyebrow">{getEventTypeLabel(event.type)}</p>
         <h1>{event.title}</h1>
       </div>
       <div className="interaction-panel__body">
@@ -327,17 +414,48 @@ function EventCard({
       <div className="interaction-panel__footer choice-list">
         {event.choices.map((choice) => (
           <button
-            className="button button--primary"
+            className="event-choice-button"
             type="button"
             key={choice.id}
             onClick={() => onEventChoice(choice)}
           >
-            {choice.label}
+            <strong>{choice.label}</strong>
+            {choice.description ? <span>{choice.description}</span> : null}
           </button>
         ))}
       </div>
     </section>
   );
+}
+
+function getEventTypeLabel(type: RandomEventConfig['type']): string {
+  const labels: Record<RandomEventConfig['type'], string> = {
+    positive: '机会事件',
+    negative: '波动事件',
+    risk: '风险事件',
+    recovery: '补救事件',
+    milestone: '里程碑事件',
+  };
+
+  return labels[type];
+}
+
+function deltasToChanges(deltas: StatDeltas): StatChange[] {
+  return Object.entries(deltas)
+    .map(([key, value]) => {
+      const statKey = key as StatKey;
+      const delta = value ?? 0;
+      const label = STAT_CONFIG_BY_ID[statKey]?.statName ?? key;
+
+      return {
+        key: statKey,
+        label,
+        before: 0,
+        after: delta,
+        delta,
+      };
+    })
+    .filter((change) => change.delta !== 0);
 }
 
 function YearSummaryPanel({

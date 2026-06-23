@@ -4,14 +4,13 @@ import type { GameSnapshot, GameState, PlanId, RandomEventConfig, StatChange, St
 import type { MonthlySummaryData } from '../types/flow';
 import {
   advancePhase,
-  applyEventChoice,
   applyPlan,
   isEventPhase,
   resolveNoEventAfterPlan,
 } from './gameLogic';
 import { getCurrentMonthlyActionOptions } from './actionRoll';
 import { pickMonthlyEvent } from './eventLogic';
-import { getCriticalGameStateReason, getEventPauseReason, shouldPauseForEvent } from './flowImportance';
+import { getCriticalGameStateReason, getEventPauseReason } from './flowImportance';
 import { getTopRoutes } from './routeLogic';
 import { getStatLabel } from './statDisplay';
 import { getPlanAvailability, isPlanUnlocked } from './unlockLogic';
@@ -202,7 +201,7 @@ export function runAutoAdvanceStep(initialState: GameState): AutoAdvanceStepResu
   }
 
   const eventPick = pickMonthlyEvent(workingState);
-  if (eventPick.type === 'event' && shouldPauseForEvent(eventPick.event, workingState)) {
+  if (eventPick.type === 'event') {
     const changes = planFeedback?.changes ?? [];
 
     return {
@@ -229,29 +228,15 @@ export function runAutoAdvanceStep(initialState: GameState): AutoAdvanceStepResu
     };
   }
 
-  let eventFeedback: GameSnapshot['lastResult'] = null;
-  let eventLabel = '平稳度过';
-  let noEventText: string | undefined = '这个月平稳度过。';
+  const noEventSnapshot = resolveNoEventAfterPlan(workingState);
+  workingSnapshot = {
+    ...noEventSnapshot,
+    lastPlanId: planSnapshot.lastPlanId,
+    lastResult: planSnapshot.lastResult,
+  };
+  workingState = workingSnapshot.state;
 
-  if (eventPick.type === 'event') {
-    const choice = eventPick.event.choices[0];
-    const eventSnapshot = applyEventChoice(workingState, eventPick.event, choice);
-    workingSnapshot = eventSnapshot;
-    workingState = eventSnapshot.state;
-    eventFeedback = eventSnapshot.lastResult;
-    eventLabel = eventPick.event.title;
-    noEventText = undefined;
-  } else {
-    const noEventSnapshot = resolveNoEventAfterPlan(workingState);
-    workingSnapshot = {
-      ...noEventSnapshot,
-      lastPlanId: planSnapshot.lastPlanId,
-      lastResult: planSnapshot.lastResult,
-    };
-    workingState = workingSnapshot.state;
-  }
-
-  const changes = mergeStatChanges(planFeedback?.changes, eventFeedback?.changes);
+  const changes = mergeStatChanges(planFeedback?.changes, undefined);
   const unlockedSpecialAction = findNewSpecialAction(beforeSpecialActions, workingState);
   const stopReason =
     unlockedSpecialAction ??
@@ -267,11 +252,11 @@ export function runAutoAdvanceStep(initialState: GameState): AutoAdvanceStepResu
       currentYear: actionYear,
       currentMonth: actionMonth,
       actionFeedback: planFeedback,
-      eventFeedback,
-      noEventText,
+      eventFeedback: null,
+      noEventText: '这个月平稳度过。',
       changes,
       actionLabel,
-      eventLabel,
+      eventLabel: '平稳度过',
       completedMonth: true,
     },
   };
@@ -361,6 +346,14 @@ export function getAutoAdvanceStopReason(state: GameState): string | null {
 
   if (state.phase === 'yearSummary') {
     return '年度总结';
+  }
+
+  if (state.phase === 'themeNode') {
+    return '年度主题节点';
+  }
+
+  if (state.phase === 'workNode') {
+    return '年度作品节点';
   }
 
   if (state.phase === 'election') {

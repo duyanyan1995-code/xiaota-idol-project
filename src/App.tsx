@@ -35,7 +35,6 @@ import { getEventById, pickMonthlyEvent } from './utils/eventLogic';
 import { getEndingForState } from './utils/endingLogic';
 import { formatYearMonth } from './utils/dateDisplay';
 import { runAutoAdvanceStep, mergeStatChanges } from './utils/autoAdvanceLogic';
-import { shouldPauseForEvent, shouldUseModalForEvent } from './utils/flowImportance';
 import {
   clearGameSnapshot,
   loadGameSnapshot,
@@ -79,6 +78,7 @@ function App() {
     const stateForSave: GameState = {
       ...gameState,
       unlockedGallery: nextUnlocked,
+      pendingEventId: pendingEvent?.id ?? null,
     };
     const snapshotForSave: GameSnapshot = {
       state: stateForSave,
@@ -195,10 +195,18 @@ function App() {
     }
 
     const snapshot = applyEventChoice(gameState, pendingEvent, choice);
-    const showFeedback = shouldUseModalForEvent(pendingEvent);
 
-    commitSnapshot(snapshot, null, showFeedback);
-    setFlowPanel(null);
+    commitSnapshot(snapshot, null, false);
+    setFlowPanel({
+      type: 'inlineEventSummary',
+      continueLabel: getPostEventContinueLabel(snapshot.state.phase),
+      summary: {
+        kind: 'manual',
+        title: '事件处理完成',
+        eventFeedback: snapshot.lastResult,
+        changes: snapshot.lastResult?.changes ?? [],
+      },
+    });
   }
 
   function handleContinueFlow() {
@@ -223,23 +231,7 @@ function App() {
     const actionFeedback = flowPanel?.summary.actionFeedback ?? lastResult;
 
     if (pendingEvent) {
-      if (shouldPauseForEvent(pendingEvent, gameState)) {
-        setFlowPanel(null);
-        return;
-      }
-
-      const snapshot = applyEventChoice(gameState, pendingEvent, pendingEvent.choices[0]);
-      commitSnapshot(snapshot, null, false);
-      setFlowPanel({
-        type: 'inlineEventSummary',
-        continueLabel: '进入下个月',
-        summary: {
-          kind: 'manual',
-          title: '本月小插曲',
-          eventFeedback: snapshot.lastResult,
-          changes: mergeStatChanges(actionFeedback?.changes, snapshot.lastResult?.changes),
-        },
-      });
+      setFlowPanel(null);
       return;
     }
 
@@ -349,6 +341,20 @@ function App() {
           return;
         }
 
+        if (nextPendingEvent) {
+          setIsAutoAdvancing(false);
+          setFlowPanel(null);
+          commitSnapshot(snapshot, nextPendingEvent, false);
+          return;
+        }
+
+        if (snapshot.state.phase === 'themeNode' || snapshot.state.phase === 'workNode') {
+          setIsAutoAdvancing(false);
+          setFlowPanel(null);
+          commitSnapshot(snapshot, null, false);
+          return;
+        }
+
         stopReason = result.stopReason ?? stopReason;
         break;
       }
@@ -391,7 +397,11 @@ function App() {
     event: RandomEventConfig | null,
     showFeedback: boolean,
   ) {
-    setGameState(snapshot.state);
+    const stateWithPendingEvent: GameState = {
+      ...snapshot.state,
+      pendingEventId: event?.id ?? null,
+    };
+    setGameState(stateWithPendingEvent);
     setLastPlanId(snapshot.lastPlanId);
     setLastResult(snapshot.lastResult);
     setPendingEvent(event);
@@ -522,7 +532,7 @@ function loadNormalizedSnapshot(): GameSnapshot | null {
 }
 
 function resolvePendingEvent(snapshot: GameSnapshot): RandomEventConfig | null {
-  const storedEvent = getEventById(snapshot.pendingEventId);
+  const storedEvent = getEventById(snapshot.pendingEventId ?? snapshot.state.pendingEventId);
   if (storedEvent) {
     return storedEvent;
   }
@@ -533,6 +543,22 @@ function resolvePendingEvent(snapshot: GameSnapshot): RandomEventConfig | null {
   }
 
   return null;
+}
+
+function getPostEventContinueLabel(phase: GameState['phase']): string {
+  if (phase === 'election') {
+    return '继续到总选';
+  }
+
+  if (phase === 'b50') {
+    return '继续到 B50';
+  }
+
+  if (phase === 'yearSummary') {
+    return '继续到年度总结';
+  }
+
+  return '进入下个月';
 }
 
 function resolveAutoAnnualNodeSnapshot(state: GameState): GameSnapshot | null {

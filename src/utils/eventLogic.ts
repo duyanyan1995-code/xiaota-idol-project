@@ -1,25 +1,8 @@
-import { getAnnualCalendar } from '../config/annualCalendar';
-import {
-  EVENT_POOL_BASE_WEIGHTS,
-  type EventPoolBucket,
-  getEventPoolBucket,
-  isNegativeEventBucket,
-  isPositiveEventBucket,
-} from '../config/eventPools';
+import { CAREER_START_YEAR, MONTHS_PER_YEAR, getAnnualCalendar } from '../config/annualCalendar';
 import { FALLBACK_EVENT, RANDOM_EVENTS } from '../config/events';
 import { PLAN_BY_ID } from '../config/plans';
 import type { GameState, PlanConfig, RandomEventConfig } from '../types/game';
-import {
-  calculateRouteScores,
-  getRouteEventWeightMultiplier,
-  type RouteScore,
-} from './routeLogic';
-
-const ELECTION_FOCUS_TAGS = ['粉丝', '应援', '人气', '营业'];
-const B50_FOCUS_TAGS = ['舞台', 'B50', '练习'];
-const PRESSURE_TAGS = ['压力', '透支'];
-const RECOVERY_TAGS = ['恢复', '休息', '日常'];
-const CG_COOLDOWN_MONTHS = 3;
+import { calculateRouteScores } from './routeLogic';
 
 export type MonthlyEventPick =
   | {
@@ -28,9 +11,14 @@ export type MonthlyEventPick =
     }
   | {
       type: 'event';
-      bucket: EventPoolBucket;
+      bucket: RandomEventConfig['type'];
       event: RandomEventConfig;
     };
+
+const BASE_EVENT_CHANCE = 0.28;
+const MAX_EVENT_CHANCE = 0.42;
+const HIGH_INTENSITY_PLANS = new Set(['stageFocus', 'outsideExposure', 'fanService', 'theaterTraining']);
+const RISK_TAGS = ['透支', '压力', '疲劳', '低落'];
 
 export function getEventById(eventId: string | null | undefined): RandomEventConfig | null {
   if (!eventId) {
@@ -45,16 +33,15 @@ export function getEventById(eventId: string | null | undefined): RandomEventCon
 }
 
 export function pickMonthlyEvent(state: GameState): MonthlyEventPick {
-  if (state.phase !== 'monthlyEvent') {
+  if (state.phase !== 'monthlyEvent' || hasResolvedEventThisMonth(state)) {
     return {
       type: 'none',
       bucket: 'none',
     };
   }
 
-  const availableEvents = RANDOM_EVENTS.filter(
-    (event) => !event.triggerCondition || event.triggerCondition(state),
-  );
+  const plan = getCurrentPlan(state);
+  const availableEvents = RANDOM_EVENTS.filter((event) => isEventAvailable(event, state, plan));
 
   if (availableEvents.length === 0) {
     return {
@@ -63,46 +50,40 @@ export function pickMonthlyEvent(state: GameState): MonthlyEventPick {
     };
   }
 
-  const plan = getCurrentPlan(state);
-  const routeScores = calculateRouteScores(state);
-  const bucketWeights = buildBucketWeights(state, plan, availableEvents, routeScores);
-  const selectedBucket = pickWeightedEntry(bucketWeights);
+  const riskCandidates = availableEvents.filter((event) => event.type === 'risk');
+  const riskChance = getRiskEventChance(state, riskCandidates);
+  if (riskCandidates.length > 0 && Math.random() < riskChance) {
+    const event = pickWeightedEvent(riskCandidates, state, plan);
+    if (event) {
+      return {
+        type: 'event',
+        bucket: event.type,
+        event,
+      };
+    }
+  }
 
-  if (!selectedBucket || selectedBucket === 'none') {
+  const eventChance = getOrdinaryEventChance(state, plan);
+  if (Math.random() > eventChance) {
     return {
       type: 'none',
       bucket: 'none',
     };
   }
 
-  const eventWeights = availableEvents
-    .filter((event) => getEventPoolBucket(event) === selectedBucket)
-    .map((event) => ({
-      key: event.id,
-      weight: getEventWeight(event, state, plan, routeScores),
-      event,
-    }));
+  const ordinaryCandidates = availableEvents.filter((event) => event.type !== 'risk');
+  const event = pickWeightedEvent(ordinaryCandidates, state, plan);
 
-  const selectedEventId = pickWeightedEntry(
-    eventWeights.reduce<Record<string, number>>((result, item) => {
-      result[item.key] = item.weight;
-      return result;
-    }, {}),
-  );
-  const selectedEvent = eventWeights.find((item) => item.key === selectedEventId)?.event;
-
-  if (!selectedEvent) {
-    return {
-      type: 'none',
-      bucket: 'none',
-    };
-  }
-
-  return {
-    type: 'event',
-    bucket: selectedBucket,
-    event: selectedEvent,
-  };
+  return event
+    ? {
+        type: 'event',
+        bucket: event.type,
+        event,
+      }
+    : {
+        type: 'none',
+        bucket: 'none',
+      };
 }
 
 export function pickRandomEvent(state: GameState): RandomEventConfig {
@@ -110,147 +91,201 @@ export function pickRandomEvent(state: GameState): RandomEventConfig {
   return result.type === 'event' ? result.event : FALLBACK_EVENT;
 }
 
-function buildBucketWeights(
+function isEventAvailable(
+  event: RandomEventConfig,
   state: GameState,
   plan: PlanConfig | null,
-  events: RandomEventConfig[],
-  routeScores: RouteScore[],
-): Record<EventPoolBucket, number> {
-  const weights = { ...EVENT_POOL_BASE_WEIGHTS };
-  const availableBuckets = new Set<EventPoolBucket>(events.map(getEventPoolBucket));
-
-  Object.keys(weights).forEach((bucket) => {
-    const key = bucket as EventPoolBucket;
-    if (key !== 'none' && !availableBuckets.has(key)) {
-      weights[key] = 0;
+): boolean {
+  if (event.stageRange) {
+    const [startYear, endYear] = event.stageRange;
+    if (state.currentYear < startYear || state.currentYear > endYear) {
+      return false;
     }
-  });
-
-  if (state.pressure >= 70) {
-    weights.commonNegative *= 1.7;
-    weights.rareNegative *= 1.9;
-    weights.none *= 0.85;
-  } else if (state.pressure <= 25) {
-    weights.commonNegative *= 0.7;
-    weights.rareNegative *= 0.6;
-    weights.none *= 1.08;
   }
 
-  if (state.stamina <= 30) {
-    weights.commonNegative *= 1.55;
-    weights.rareNegative *= 1.75;
-    weights.none *= 0.9;
-  } else if (state.stamina >= 75) {
-    weights.commonNegative *= 0.82;
-    weights.rareNegative *= 0.78;
+  if (event.actionTypes && (!plan || !event.actionTypes.includes(plan.id))) {
+    return false;
   }
 
-  if (plan?.id === 'restAndReflect') {
-    weights.none *= 1.28;
-    weights.commonPositive *= 1.18;
-    weights.commonNegative *= 0.62;
-    weights.rareNegative *= 0.56;
+  if (event.triggerCondition && !event.triggerCondition(state)) {
+    return false;
   }
 
-  if (plan?.id === 'stableOperation') {
-    weights.none *= 1.12;
-    weights.commonPositive *= 1.12;
-    weights.commonNegative *= 0.82;
-    weights.rareNegative *= 0.72;
-    weights.superRare *= 0.75;
+  return !isEventCoolingDown(event, state);
+}
+
+function isEventCoolingDown(event: RandomEventConfig, state: GameState): boolean {
+  const cooldownMonths = event.cooldownMonths ?? 0;
+  if (cooldownMonths <= 0) {
+    return false;
   }
 
-  const topRoute = routeScores[0];
-  if (topRoute?.id === 'recovery' && topRoute.score >= 12) {
-    weights.commonPositive *= 1.08;
-    weights.commonNegative *= 0.88;
-    weights.rareNegative *= 0.82;
+  const currentAbsoluteMonth = getAbsoluteMonth(state.currentYear, state.currentMonth);
+  const cooldownSource = state.eventCooldowns[event.id];
+  const historySource = state.eventHistory
+    .filter((entry) => entry.eventId === event.id)
+    .map((entry) => getAbsoluteMonth(entry.currentYear, entry.currentMonth))
+    .sort((a, b) => b - a)[0];
+  const lastTriggeredMonth = cooldownSource ?? historySource;
+
+  return lastTriggeredMonth !== undefined && currentAbsoluteMonth - lastTriggeredMonth < cooldownMonths;
+}
+
+function getRiskEventChance(state: GameState, candidates: RandomEventConfig[]): number {
+  if (candidates.length === 0) {
+    return 0;
   }
 
-  if (topRoute?.id === 'stable' && topRoute.score >= 12) {
-    weights.none *= 1.06;
-    weights.commonPositive *= 1.06;
-    weights.commonNegative *= 0.9;
-    weights.rareNegative *= 0.86;
-    weights.superRare *= 0.92;
+  let chance = 0;
+  if (state.stamina <= 20) {
+    chance += 0.42;
   }
 
-  if (isNearElection(state)) {
-    weights.commonPositive *= 1.1;
-    weights.rarePositive *= 1.22;
-    weights.superRare *= 1.12;
+  if (state.pressure >= 80) {
+    chance += 0.42;
   }
 
-  if (isNearB50(state)) {
-    weights.commonPositive *= 1.06;
-    weights.rarePositive *= 1.16;
-    weights.rareNegative *= 1.08;
+  if (state.fanFatigue >= 70) {
+    chance += 0.38;
   }
 
-  if (hasRecentCgEvent(state)) {
-    weights.superRare *= 0.34;
+  if (state.mood <= 25) {
+    chance += 0.34;
   }
 
-  return clampWeights(weights);
+  if (hasRecentHighElectionResult(state)) {
+    chance += 0.1;
+  }
+
+  if (getRecentHighIntensityCount(state) >= 2) {
+    chance += 0.16;
+  }
+
+  return clamp(chance, 0, 0.86);
+}
+
+function getOrdinaryEventChance(state: GameState, plan: PlanConfig | null): number {
+  let chance = BASE_EVENT_CHANCE;
+
+  if (plan?.id === 'restAndReflect' || plan?.id === 'stableOperation') {
+    chance += 0.03;
+  }
+
+  if (isNearElection(state) || isNearB50(state)) {
+    chance += 0.04;
+  }
+
+  if (state.pressure >= 65 || state.stamina <= 35 || state.fanFatigue >= 55) {
+    chance += 0.04;
+  }
+
+  return clamp(chance, 0.2, MAX_EVENT_CHANCE);
+}
+
+function pickWeightedEvent(
+  events: RandomEventConfig[],
+  state: GameState,
+  plan: PlanConfig | null,
+): RandomEventConfig | null {
+  if (events.length === 0) {
+    return null;
+  }
+
+  const weights = events.map((event) => ({
+    event,
+    weight: getEventWeight(event, state, plan),
+  }));
+  const totalWeight = weights.reduce((total, item) => total + item.weight, 0);
+
+  if (totalWeight <= 0) {
+    return null;
+  }
+
+  let roll = Math.random() * totalWeight;
+  for (const item of weights) {
+    roll -= item.weight;
+    if (roll <= 0) {
+      return item.event;
+    }
+  }
+
+  return weights[weights.length - 1].event;
 }
 
 function getEventWeight(
   event: RandomEventConfig,
   state: GameState,
   plan: PlanConfig | null,
-  routeScores: RouteScore[],
 ): number {
   let weight = Math.max(0, event.baseWeight || event.weight || 1);
-  const planTags = plan?.eventTags ?? [];
-  const tagMatches = countTagMatches(event.triggerTags, planTags);
 
+  if (event.priority) {
+    weight += event.priority / 8;
+  }
+
+  if (event.actionTypes && plan && event.actionTypes.includes(plan.id)) {
+    weight *= 1.7;
+  }
+
+  const tagMatches = countTagMatches(event.triggerTags, plan?.eventTags ?? []);
   if (tagMatches > 0) {
-    weight *= 1 + Math.min(tagMatches, 3) * 0.45;
+    weight *= 1 + Math.min(tagMatches, 3) * 0.28;
   }
 
-  weight *= getRouteEventWeightMultiplier(routeScores, event.triggerTags);
-
-  if (isNearElection(state) && hasAnyTag(event.triggerTags, ELECTION_FOCUS_TAGS)) {
-    weight *= 1.65;
+  if (event.type === 'risk') {
+    weight *= 1 + (state.riskWarningCounts[event.riskKey ?? event.id] ?? 0) * 0.24;
   }
 
-  if (isNearB50(state) && hasAnyTag(event.triggerTags, B50_FOCUS_TAGS)) {
-    weight *= 1.65;
+  if (event.type === 'recovery' && (state.pressure >= 55 || state.stamina <= 45 || state.fanFatigue >= 45)) {
+    weight *= 1.35;
   }
 
-  if (state.pressure >= 70 && hasAnyTag(event.triggerTags, PRESSURE_TAGS)) {
-    weight *= event.tone === 'negative' ? 1.65 : 1.25;
+  if (event.type === 'negative' && getRecentHighIntensityCount(state) >= 2) {
+    weight *= 1.2;
   }
 
-  if (state.pressure <= 25 && event.tone === 'negative') {
-    weight *= 0.72;
+  if (event.type === 'milestone') {
+    weight *= 1.15;
   }
 
-  if (state.stamina <= 30 && hasAnyTag(event.triggerTags, ['透支', '压力'])) {
-    weight *= event.tone === 'negative' ? 1.65 : 1.2;
-  }
-
-  if (state.stamina >= 75 && event.tone === 'negative') {
-    weight *= 0.82;
-  }
-
-  if (plan?.id === 'restAndReflect' && hasAnyTag(event.triggerTags, RECOVERY_TAGS)) {
-    weight *= isPositiveEventBucket(getEventPoolBucket(event)) ? 1.35 : 1.08;
-  }
-
-  if (plan?.id === 'restAndReflect' && event.tone === 'negative') {
-    weight *= 0.62;
-  }
-
-  if (plan?.id === 'stableOperation' && isNegativeEventBucket(getEventPoolBucket(event))) {
-    weight *= 0.78;
-  }
-
-  if (event.galleryId && hasRecentCgEvent(state)) {
-    weight *= event.rarity === 'superRare' ? 0.28 : 0.52;
-  }
+  weight *= getCareerStageWeight(event, state);
+  weight *= getRouteWeight(event, state);
 
   return Math.max(0, weight);
+}
+
+function getCareerStageWeight(event: RandomEventConfig, state: GameState): number {
+  if (state.currentYear <= 2017) {
+    return hasAnyTag(event.triggerTags, ['剧场', '练习', '粉丝']) ? 1.18 : 0.92;
+  }
+
+  if (state.currentYear <= 2020) {
+    return hasAnyTag(event.triggerTags, ['外务', '风格', '曝光']) ? 1.18 : 1;
+  }
+
+  if (state.currentYear <= 2023) {
+    return hasAnyTag(event.triggerTags, ['应援', '舞台', '粉丝']) ? 1.16 : 1;
+  }
+
+  return hasAnyTag(event.triggerTags, ['高位', ...RISK_TAGS]) ? 1.2 : 1;
+}
+
+function getRouteWeight(event: RandomEventConfig, state: GameState): number {
+  const topRoute = calculateRouteScores(state)[0];
+  if (!topRoute || topRoute.score < 12) {
+    return 1;
+  }
+
+  const routeTags: Record<string, string[]> = {
+    stage: ['舞台', '练习', 'B50'],
+    fan: ['粉丝', '应援', '营业'],
+    outside: ['外务', '曝光', '路人盘'],
+    style: ['风格', '形象', '物料'],
+    stable: ['运营', '日常'],
+    recovery: ['恢复', '休息'],
+  };
+
+  return hasAnyTag(event.triggerTags, routeTags[topRoute.id] ?? []) ? 1.14 : 1;
 }
 
 function getCurrentPlan(state: GameState): PlanConfig | null {
@@ -262,15 +297,29 @@ function getCurrentPlan(state: GameState): PlanConfig | null {
   return planEntry ? PLAN_BY_ID[planEntry.planId] ?? null : null;
 }
 
-function hasRecentCgEvent(state: GameState): boolean {
-  return state.eventHistory.some((event) => {
-    if (!event.galleryId) {
+function hasResolvedEventThisMonth(state: GameState): boolean {
+  return state.eventHistory.some(
+    (event) =>
+      event.currentYear === state.currentYear && event.currentMonth === state.currentMonth,
+  );
+}
+
+function getRecentHighIntensityCount(state: GameState): number {
+  return state.planHistory.filter((entry) => {
+    const monthsAgo =
+      (state.currentYear - entry.currentYear) * MONTHS_PER_YEAR +
+      (state.currentMonth - entry.currentMonth);
+    return monthsAgo >= 0 && monthsAgo < 3 && HIGH_INTENSITY_PLANS.has(entry.planId);
+  }).length;
+}
+
+function hasRecentHighElectionResult(state: GameState): boolean {
+  return state.annualResults.some((result) => {
+    if (result.type !== 'election' || !['kami7', 'top3', 'center'].includes(String(result.tier))) {
       return false;
     }
 
-    const monthsAgo =
-      (state.currentYear - event.currentYear) * 12 + (state.currentMonth - event.currentMonth);
-    return monthsAgo > 0 && monthsAgo <= CG_COOLDOWN_MONTHS;
+    return state.currentYear - result.currentYear <= 1;
   });
 }
 
@@ -294,25 +343,8 @@ function isNearB50(state: GameState): boolean {
   return monthsBefore >= 1 && monthsBefore <= 2;
 }
 
-function pickWeightedEntry<T extends string>(weights: Record<T, number>): T | null {
-  const entries = Object.entries(weights).filter(([, weight]) => Number(weight) > 0) as Array<
-    [T, number]
-  >;
-  const totalWeight = entries.reduce((total, [, weight]) => total + weight, 0);
-
-  if (totalWeight <= 0) {
-    return null;
-  }
-
-  let roll = Math.random() * totalWeight;
-  for (const [key, weight] of entries) {
-    roll -= weight;
-    if (roll <= 0) {
-      return key;
-    }
-  }
-
-  return entries[entries.length - 1]?.[0] ?? null;
+function getAbsoluteMonth(currentYear: number, currentMonth: number): number {
+  return (currentYear - CAREER_START_YEAR) * MONTHS_PER_YEAR + currentMonth;
 }
 
 function countTagMatches(sourceTags: string[], targetTags: string[]): number {
@@ -323,9 +355,6 @@ function hasAnyTag(sourceTags: string[], targetTags: string[]): boolean {
   return sourceTags.some((tag) => targetTags.includes(tag));
 }
 
-function clampWeights<T extends string>(weights: Record<T, number>): Record<T, number> {
-  return Object.entries(weights).reduce<Record<T, number>>((result, [key, value]) => {
-    result[key as T] = Math.max(0, Number(value) || 0);
-    return result;
-  }, {} as Record<T, number>);
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
 }

@@ -1442,6 +1442,60 @@ button:disabled {
   justify-content: center;
 }
 
+.phase-card--event-positive,
+.phase-card--event-milestone {
+  border-color: rgba(232, 176, 55, 0.34);
+  background: linear-gradient(180deg, #fffaf0 0%, #fff1c9 100%);
+}
+
+.phase-card--event-negative {
+  border-color: rgba(189, 122, 43, 0.28);
+  background: linear-gradient(180deg, #fffaf0 0%, #f7e9db 100%);
+}
+
+.phase-card--event-risk {
+  border-color: rgba(214, 92, 61, 0.36);
+  background: linear-gradient(180deg, #fffaf0 0%, #ffe3dc 100%);
+}
+
+.phase-card--event-recovery {
+  border-color: rgba(81, 154, 125, 0.28);
+  background: linear-gradient(180deg, #fffaf0 0%, #e8f6ee 100%);
+}
+
+.phase-card--theme-node,
+.phase-card--work-node {
+  border-color: rgba(232, 176, 55, 0.34);
+  background: linear-gradient(180deg, #fffaf0 0%, #fff4d6 100%);
+}
+
+.phase-card--work-node {
+  border-color: rgba(126, 72, 32, 0.24);
+}
+
+.node-meta {
+  color: var(--caramel);
+  font-size: 0.76rem;
+  font-weight: 950;
+}
+
+.work-grade-badge,
+.work-milestone-note {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--ink);
+  background: rgba(255, 216, 111, 0.42);
+  font-size: 0.76rem;
+  font-weight: 950;
+  line-height: 1.15;
+}
+
+.work-milestone-note {
+  background: rgba(155, 216, 191, 0.34);
+}
+
 .phase-card--summary {
   gap: 10px;
   padding: 14px;
@@ -1494,8 +1548,47 @@ button:disabled {
 
 .choice-list {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   margin-top: auto;
+}
+
+.event-choice-button {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  border: 1px solid rgba(126, 72, 32, 0.18);
+  border-radius: 16px;
+  padding: 10px 11px;
+  background: rgba(255, 250, 240, 0.82);
+  color: var(--brown);
+  text-align: left;
+  box-shadow: 0 8px 18px rgba(35, 25, 21, 0.08);
+  cursor: pointer;
+}
+
+.event-choice-button:hover,
+.event-choice-button:focus-visible {
+  border-color: rgba(232, 176, 55, 0.68);
+  background: #fff8e4;
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.event-choice-button:active {
+  transform: translateY(0);
+}
+
+.event-choice-button strong {
+  color: var(--ink);
+  font-size: 0.88rem;
+  line-height: 1.16;
+}
+
+.event-choice-button span {
+  color: var(--caramel);
+  font-size: 0.7rem;
+  font-weight: 850;
+  line-height: 1.28;
 }
 
 .top-bar {
