@@ -1,5 +1,13 @@
 import { RANDOM_EVENTS } from '../config/events';
 import {
+  B50_TIER_LABELS,
+  B50_TIER_NARRATIVES,
+  B50_TIER_REWARDS,
+  ELECTION_TIER_LABELS,
+  ELECTION_TIER_NARRATIVES,
+  ELECTION_TIER_REWARDS,
+} from '../config/annualResults';
+import {
   getRankCalibrationStage,
   type B50Thresholds,
   type ElectionThresholds,
@@ -14,46 +22,11 @@ import type {
   EventTone,
   GameState,
   NodeGrade,
+  NodeTier,
   PlanId,
   ScoreModifier,
   StatDeltas,
 } from '../types/game';
-
-const B50_REWARDS: Record<NodeGrade, StatDeltas> = {
-  S: { fanCount: 260, influence: 8, resource: 12, mood: 8 },
-  A: { fanCount: 190, influence: 6, resource: 8, mood: 5 },
-  B: { fanCount: 130, influence: 4, resource: 5, mood: 3 },
-  C: { fanCount: 80, influence: 2, resource: 3 },
-  D: { fanCount: 40, resource: 1 },
-  E: { mood: -3, pressure: 3 },
-};
-
-const ELECTION_REWARDS: Record<NodeGrade, StatDeltas> = {
-  S: { fanCount: 360, influence: 10, resource: 14, supportPower: 6, mood: 8 },
-  A: { fanCount: 260, influence: 7, resource: 10, supportPower: 4, mood: 5 },
-  B: { fanCount: 180, influence: 5, resource: 6, supportPower: 3, mood: 3 },
-  C: { fanCount: 110, influence: 3, resource: 3, supportPower: 2 },
-  D: { fanCount: 55, influence: 1, supportPower: 1 },
-  E: { mood: -4, pressure: 4 },
-};
-
-const ELECTION_LABELS: Record<ElectionTier, string> = {
-  outside: '圈外',
-  top48: 'TOP48',
-  top32: 'TOP32',
-  top16: 'TOP16',
-  kami7: '神七',
-  center: '顶点',
-};
-
-const B50_LABELS: Record<B50Tier, string> = {
-  notRanked: '未入围',
-  ranked: '入围',
-  middle: '中位圈',
-  high: '高位曲',
-  highlight: '名场面',
-  legend: '年度舞台记忆',
-};
 
 const EVENT_CONFIG_BY_ID = RANDOM_EVENTS.reduce<
   Record<string, { tone: EventTone; triggerTags: string[] }>
@@ -65,7 +38,7 @@ const EVENT_CONFIG_BY_ID = RANDOM_EVENTS.reduce<
   return result;
 }, {});
 
-const ELECTION_TIER_ORDER: ElectionTier[] = ['outside', 'top48', 'top32', 'top16', 'kami7', 'center'];
+const ELECTION_TIER_ORDER: ElectionTier[] = ['outside', 'ranked', 'top48', 'top32', 'top16', 'kami7', 'top3', 'center'];
 const B50_TIER_ORDER: B50Tier[] = ['notRanked', 'ranked', 'middle', 'high', 'highlight', 'legend'];
 
 export function calculateElectionResult(state: GameState): ElectionResult {
@@ -91,14 +64,20 @@ export function calculateElectionResult(state: GameState): ElectionResult {
   );
   const eventBonus = getEventBonus(state, 'electionBonus');
   const statusModifiers = getStateModifiers(state, 'election');
+  const fatiguePenalty = Math.max(0, state.fanFatigue - state.operation * 0.35) * 0.16;
+  const pressurePenalty = Math.max(0, state.pressure - state.operation * 0.25) * 0.08;
   const rawScore =
     fansScore * 0.35 +
     clamp(state.supportPower, 0, 100) * 0.25 +
-    clamp(state.influence, 0, 100) * 0.2 +
-    clamp(state.charm, 0, 100) * 0.1 +
-    actionEventScore * 0.1 +
+    clamp(state.influence, 0, 100) * 0.18 +
+    clamp(state.resource, 0, 100) * 0.08 +
+    clamp(state.charm, 0, 100) * 0.08 +
+    clamp(state.stagePower, 0, 100) * 0.04 +
+    actionEventScore * 0.09 +
     eventBonus +
-    sumModifiers(statusModifiers);
+    sumModifiers(statusModifiers) -
+    fatiguePenalty -
+    pressurePenalty;
   const score = clamp(
     Math.round(rawScore * calibration.electionScoreMultiplier),
     0,
@@ -106,6 +85,7 @@ export function calculateElectionResult(state: GameState): ElectionResult {
   );
   const tierResolution = resolveElectionTier(score, state, planStats, eventStats, calibration);
   const tier = tierResolution.tier;
+  const expectedTier = getExpectedElectionTier(state, score, calibration.electionThresholds);
   const grade = electionTierToGrade(tier);
   const mainFactors = buildElectionMainFactors(state, planStats, fansScore);
   const bonusFactors = buildElectionBonusFactors(planStats, eventStats, eventBonus);
@@ -113,7 +93,8 @@ export function calculateElectionResult(state: GameState): ElectionResult {
     ...buildElectionPenaltyFactors(state, fansScore, eventStats),
     ...tierResolution.notes,
   ];
-  const message = buildElectionMessage(tier, mainFactors, penaltyFactors);
+  const expectation = getElectionExpectationAdjustment(tier, expectedTier);
+  const message = ELECTION_TIER_NARRATIVES[tier];
 
   return {
     id: `election-${state.year}`,
@@ -122,15 +103,16 @@ export function calculateElectionResult(state: GameState): ElectionResult {
     currentMonth: state.currentMonth,
     score,
     grade,
-    gradeText: ELECTION_LABELS[tier],
+    gradeText: ELECTION_TIER_LABELS[tier],
     tier,
-    rankLabel: ELECTION_LABELS[tier],
+    rankLabel: ELECTION_TIER_LABELS[tier],
+    expectedTier,
     eventBonus,
     modifiers: statusModifiers,
     mainFactors,
-    bonusFactors,
-    penaltyFactors,
-    rewards: ELECTION_REWARDS[grade],
+    bonusFactors: expectation.bonusNote ? [...bonusFactors, expectation.bonusNote] : bonusFactors,
+    penaltyFactors: expectation.penaltyNote ? [...penaltyFactors, expectation.penaltyNote] : penaltyFactors,
+    rewards: mergeDeltas(ELECTION_TIER_REWARDS[tier], expectation.deltas),
     message,
   };
 }
@@ -170,16 +152,21 @@ export function calculateB50Result(state: GameState): B50Result {
   );
   const eventBonus = getEventBonus(state, 'b50Bonus');
   const statusModifiers = getStateModifiers(state, 'b50');
+  const fatiguePenalty = Math.max(0, state.fanFatigue - state.operation * 0.25) * 0.1;
+  const pressurePenalty = Math.max(0, state.pressure - 50) * 0.08;
   const rawScore =
     clamp(state.stagePower, 0, 100) * 0.3 +
+    clamp(state.vocal, 0, 100) * 0.13 +
+    clamp(state.dance, 0, 100) * 0.13 +
     clamp(state.supportPower, 0, 100) * 0.2 +
-    fansScore * 0.15 +
-    clamp(state.dance, 0, 100) * 0.1 +
-    clamp(state.vocal, 0, 100) * 0.1 +
+    fansScore * 0.11 +
+    clamp(state.influence, 0, 100) * 0.05 +
     actionScore * 0.1 +
     eventStateScore * 0.05 +
     eventBonus +
-    sumModifiers(statusModifiers);
+    sumModifiers(statusModifiers) -
+    fatiguePenalty -
+    pressurePenalty;
   const score = clamp(
     Math.round(rawScore * calibration.b50ScoreMultiplier),
     0,
@@ -194,7 +181,7 @@ export function calculateB50Result(state: GameState): B50Result {
     ...buildB50PenaltyFactors(state, eventStats),
     ...tierResolution.notes,
   ];
-  const message = buildB50Message(tier, mainFactors, penaltyFactors);
+  const message = B50_TIER_NARRATIVES[tier];
 
   return {
     id: `b50-${state.year}`,
@@ -203,15 +190,15 @@ export function calculateB50Result(state: GameState): B50Result {
     currentMonth: state.currentMonth,
     score,
     grade,
-    gradeText: B50_LABELS[tier],
+    gradeText: B50_TIER_LABELS[tier],
     tier,
-    rankLabel: B50_LABELS[tier],
+    rankLabel: B50_TIER_LABELS[tier],
     eventBonus,
     modifiers: statusModifiers,
     mainFactors,
     bonusFactors,
     penaltyFactors,
-    rewards: B50_REWARDS[grade],
+    rewards: B50_TIER_REWARDS[tier],
     message,
   };
 }
@@ -228,6 +215,10 @@ export function mapElectionScoreToTier(
     return 'center';
   }
 
+  if (score >= thresholds.top3) {
+    return 'top3';
+  }
+
   if (score >= thresholds.kami7) {
     return 'kami7';
   }
@@ -242,6 +233,10 @@ export function mapElectionScoreToTier(
 
   if (score >= thresholds.top48) {
     return 'top48';
+  }
+
+  if (score >= thresholds.ranked) {
+    return 'ranked';
   }
 
   return 'outside';
@@ -286,13 +281,20 @@ function resolveElectionTier(
   const cappedTier = capTier(tier, calibration.maxElectionTier, ELECTION_TIER_ORDER);
 
   if (cappedTier !== tier) {
-    notes.push(`${calibration.name}最高参考档位为 ${ELECTION_LABELS[calibration.maxElectionTier]}`);
+    notes.push(`${calibration.name}最高参考档位为 ${ELECTION_TIER_LABELS[calibration.maxElectionTier]}`);
     tier = cappedTier;
   }
 
   if (tier === 'center' && calibration.centerRequires) {
     if (!meetsHighTierRequirement(state, planStats, eventStats.positive, eventStats.negative, calibration.centerRequires)) {
-      notes.push('顶点条件未满足，降为神七');
+      notes.push('第1条件未满足，降为 Top3');
+      tier = 'top3';
+    }
+  }
+
+  if (tier === 'top3' && calibration.kami7Requires) {
+    if (!meetsHighTierRequirement(state, planStats, eventStats.positive, eventStats.negative, calibration.kami7Requires)) {
+      notes.push('Top3 条件未满足，降为神七');
       tier = 'kami7';
     }
   }
@@ -319,7 +321,7 @@ function resolveB50Tier(
   const cappedTier = capTier(tier, calibration.maxB50Tier, B50_TIER_ORDER);
 
   if (cappedTier !== tier) {
-    notes.push(`${calibration.name}最高参考档位为 ${B50_LABELS[calibration.maxB50Tier]}`);
+    notes.push(`${calibration.name}最高参考档位为 ${B50_TIER_LABELS[calibration.maxB50Tier]}`);
     tier = cappedTier;
   }
 
@@ -551,30 +553,6 @@ function buildB50PenaltyFactors(
   ]);
 }
 
-function buildElectionMessage(
-  tier: ElectionTier,
-  mainFactors: string[],
-  penaltyFactors: string[],
-): string {
-  const label = ELECTION_LABELS[tier];
-  const strength = mainFactors[0] ?? '小獭仍在积累自己的基本盘';
-  const weakness = penaltyFactors[0] ?? '接下来需要继续维持稳定节奏';
-
-  return `总选结果：${label}。${strength}，让今年的支持更有方向。${weakness}。`;
-}
-
-function buildB50Message(
-  tier: B50Tier,
-  mainFactors: string[],
-  penaltyFactors: string[],
-): string {
-  const label = B50_LABELS[tier];
-  const strength = mainFactors[0] ?? '今年的舞台记忆还在慢慢积累';
-  const weakness = penaltyFactors[0] ?? '后续可以继续打磨代表性舞台';
-
-  return `B50 结果：${label}。${strength}，粉丝也更容易记住这一年的舞台。${weakness}。`;
-}
-
 function getEventBonus(
   state: GameState,
   key: 'b50Bonus' | 'electionBonus',
@@ -591,14 +569,92 @@ function normalizeFans(fanCount: number, target: number): number {
 function electionTierToGrade(tier: ElectionTier): NodeGrade {
   const gradeMap: Record<ElectionTier, NodeGrade> = {
     outside: 'E',
+    ranked: 'D',
     top48: 'D',
     top32: 'C',
     top16: 'B',
     kami7: 'A',
+    top3: 'A',
     center: 'S',
   };
 
   return gradeMap[tier];
+}
+
+function getExpectedElectionTier(
+  state: GameState,
+  score: number,
+  thresholds: ElectionThresholds,
+): ElectionTier {
+  const previousResult = [...state.electionResults]
+    .filter((result) => result.currentYear < state.currentYear)
+    .sort((a, b) => b.currentYear - a.currentYear)[0];
+  const baselineScore = clamp(
+    score +
+      (state.fanCount >= 2800 ? 4 : 0) +
+      (state.supportPower >= 60 ? 4 : 0) +
+      (state.influence >= 55 ? 3 : 0),
+    0,
+    100,
+  );
+  const statExpectation = mapElectionScoreToTier(baselineScore, thresholds);
+
+  if (!previousResult?.tier) {
+    return statExpectation;
+  }
+
+  return higherElectionTier(statExpectation, previousResult.tier as ElectionTier);
+}
+
+function getElectionExpectationAdjustment(
+  actualTier: ElectionTier,
+  expectedTier: ElectionTier,
+): {
+  deltas: StatDeltas;
+  bonusNote?: string;
+  penaltyNote?: string;
+} {
+  const gap = getTierIndex(expectedTier, ELECTION_TIER_ORDER) - getTierIndex(actualTier, ELECTION_TIER_ORDER);
+
+  if (gap >= 2) {
+    return {
+      deltas: { pressure: 5, supportPower: -1, fanFatigue: 4 },
+      penaltyNote: '结果低于预期，压力和粉丝疲劳上升',
+    };
+  }
+
+  if (gap <= 0 && actualTier !== 'outside') {
+    return {
+      deltas: { mood: 3, supportPower: 1 },
+      bonusNote: '达到或超过预期，应援信心提升',
+    };
+  }
+
+  return { deltas: {} };
+}
+
+function higherElectionTier(a: ElectionTier, b: ElectionTier): ElectionTier {
+  return getTierIndex(a, ELECTION_TIER_ORDER) >= getTierIndex(b, ELECTION_TIER_ORDER) ? a : b;
+}
+
+function getTierIndex<T extends NodeTier>(tier: T, order: T[]): number {
+  const index = order.indexOf(tier);
+  return index >= 0 ? index : 0;
+}
+
+function mergeDeltas(...sources: StatDeltas[]): StatDeltas {
+  return sources.reduce<StatDeltas>((result, source) => {
+    Object.entries(source).forEach(([key, value]) => {
+      if (value === undefined) {
+        return;
+      }
+
+      const statKey = key as keyof StatDeltas;
+      result[statKey] = (result[statKey] ?? 0) + value;
+    });
+
+    return result;
+  }, {});
 }
 
 function b50TierToGrade(tier: B50Tier): NodeGrade {

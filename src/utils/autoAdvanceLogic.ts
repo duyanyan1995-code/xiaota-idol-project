@@ -371,28 +371,11 @@ export function getAutoAdvanceStopReason(state: GameState): string | null {
     return '本月 B50';
   }
 
-  if ((state.phase === 'monthStart' || state.phase === 'monthlyPlan') && isUnresolvedNodeMonth(state)) {
-    const calendar = getAnnualCalendar(state.currentYear);
-    return state.currentMonth === calendar.electionMonth ? '本月总选' : '本月 B50';
-  }
-
   if (state.phase === 'monthlyEvent') {
     return '本月事件待处理';
   }
 
   return getCriticalGameStateReason(state);
-}
-
-function isUnresolvedNodeMonth(state: GameState): boolean {
-  const calendar = getAnnualCalendar(state.currentYear);
-  const needsElection =
-    calendar.electionMonth === state.currentMonth &&
-    !state.electionResults.some((result) => result.currentYear === state.currentYear);
-  const needsB50 =
-    calendar.b50Month === state.currentMonth &&
-    !state.b50Results.some((result) => result.currentYear === state.currentYear);
-
-  return Boolean(needsElection || needsB50);
 }
 
 function getMonthsUntil(currentMonth: number, targetMonth: number | undefined): number {

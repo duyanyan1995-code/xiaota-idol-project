@@ -341,6 +341,14 @@ function App() {
       }
 
       if (result.type === 'stopped') {
+        const annualNodeSnapshot = resolveAutoAnnualNodeSnapshot(snapshot.state);
+        if (annualNodeSnapshot) {
+          setIsAutoAdvancing(false);
+          setFlowPanel(null);
+          commitSnapshot(annualNodeSnapshot, null, true);
+          return;
+        }
+
         stopReason = result.stopReason ?? stopReason;
         break;
       }
@@ -522,6 +530,18 @@ function resolvePendingEvent(snapshot: GameSnapshot): RandomEventConfig | null {
   if (isEventPhase(snapshot.state.phase)) {
     const eventPick = pickMonthlyEvent(snapshot.state);
     return eventPick.type === 'event' ? eventPick.event : getEventById('dailyMoment');
+  }
+
+  return null;
+}
+
+function resolveAutoAnnualNodeSnapshot(state: GameState): GameSnapshot | null {
+  if (state.phase === 'election') {
+    return resolveElectionNode(state);
+  }
+
+  if (state.phase === 'b50') {
+    return resolveB50Node(state);
   }
 
   return null;

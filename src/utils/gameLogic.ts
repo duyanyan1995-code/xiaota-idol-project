@@ -21,6 +21,7 @@ import {
 } from '../config/stats';
 import { calculateB50Result, calculateElectionResult } from './nodeLogic';
 import { formatMonthlyActionLabel, formatYearMonth } from './dateDisplay';
+import { isB50AtLeast, isElectionAtLeast } from './routeLogic';
 import { getPlanLockedReason, isPlanUnlocked } from './unlockLogic';
 import {
   ensureMonthlyActionOptions,
@@ -30,6 +31,8 @@ import {
 import type {
   CharacterImage,
   CharacterImageKey,
+  AnnualResult,
+  AnnualResultType,
   EventHistoryEntry,
   GameFeedback,
   GamePhase,
@@ -37,8 +40,11 @@ import type {
   GameState,
   GalleryId,
   GrowthLog,
+  Milestone,
   MonthlyActionOption,
   NodeResult,
+  NodeGrade,
+  NodeTier,
   PlanHistoryEntry,
   PlanId,
   RandomEventChoice,
@@ -49,8 +55,8 @@ import type {
   YearSummary,
 } from '../types/game';
 
-const SAVE_VERSION = 6;
-const SUPPORTED_SAVE_VERSIONS = [2, 3, 4, 5, 6];
+const SAVE_VERSION = 7;
+const SUPPORTED_SAVE_VERSIONS = [2, 3, 4, 5, 6, 7];
 
 export function createInitialGameState(): GameState {
   return {
@@ -78,6 +84,8 @@ export function createInitialGameState(): GameState {
     eventHistory: [],
     b50Results: [],
     electionResults: [],
+    annualResults: [],
+    milestones: [],
     yearSummaries: [],
     growthLogs: [],
     unlockedGallery: ['base'],
@@ -120,6 +128,8 @@ export function normalizeGameState(value: Partial<GameState> | null | undefined)
     eventHistory: normalizeEventHistory(value?.eventHistory ?? []),
     b50Results: normalizeNodeResults(value?.b50Results ?? []),
     electionResults: normalizeNodeResults(value?.electionResults ?? []),
+    annualResults: normalizeAnnualResults(value?.annualResults ?? []),
+    milestones: normalizeMilestones(value?.milestones ?? []),
     yearSummaries: normalizeYearSummaries(value?.yearSummaries ?? []),
     growthLogs: normalizeGrowthLogs(value?.growthLogs ?? []),
     unlockedGallery: ensureBaseGallery(value?.unlockedGallery ?? initial.unlockedGallery),
@@ -371,13 +381,39 @@ export function resolveB50Node(state: GameState): GameSnapshot {
     return makeNoopSnapshot(state, '当前阶段不能进行 B50 结算。');
   }
 
+  const existingNodeResult = findNodeResult(state.b50Results, state.currentYear);
+  const existingAnnualResult =
+    findAnnualResult(state.annualResults, 'b50', state.currentYear) ??
+    (existingNodeResult ? buildAnnualResultFromNode(state, existingNodeResult, 'b50') : null);
+
+  if (existingAnnualResult) {
+    const stateWithExistingResult = clampGameState({
+      ...state,
+      annualResults: replaceSameAnnualResult(state.annualResults, existingAnnualResult),
+      milestones: mergeMilestones(state.milestones, buildMilestones(existingAnnualResult)),
+    });
+    const nextState = isYearEndMonth(stateWithExistingResult)
+      ? buildYearSummaryState(stateWithExistingResult)
+      : advanceToNextMonth(stateWithExistingResult);
+
+    return {
+      state: nextState,
+      lastPlanId: null,
+      lastResult: buildAnnualResultFeedback(existingAnnualResult, []),
+      pendingEventId: null,
+    };
+  }
+
   const before = state;
   const result = calculateB50Result(state);
   const afterRewards = applyDeltas(state, result.rewards);
+  const annualResult = buildAnnualResultFromNode(state, result, 'b50');
   const growthLog = createGrowthLog(state, 'B50 舞台记忆节点', result.message, result.rewards);
   const stateWithResult = clampGameState({
     ...afterRewards,
     b50Results: replaceSameYearNodeResult(state.b50Results, result),
+    annualResults: replaceSameAnnualResult(state.annualResults, annualResult),
+    milestones: mergeMilestones(state.milestones, buildMilestones(annualResult)),
     growthLogs: [...state.growthLogs, growthLog],
   });
   const nextState = isYearEndMonth(stateWithResult)
@@ -388,13 +424,13 @@ export function resolveB50Node(state: GameState): GameSnapshot {
     state: nextState,
     lastPlanId: null,
     lastResult: {
-      title: 'B50 舞台记忆节点',
+      title: annualResult.title,
       message: result.message,
       score: result.score,
       grade: result.grade,
-      imageKey: result.score >= 60 ? 'stage' : undefined,
+      suppressFallbackVisual: true,
       changes: collectChanges(before, nextState),
-      details: buildNodeDetails(result),
+      details: [`档位 ${annualResult.resultLabel}`],
     },
     pendingEventId: null,
   };
@@ -405,13 +441,37 @@ export function resolveElectionNode(state: GameState): GameSnapshot {
     return makeNoopSnapshot(state, '当前阶段不能进行总选结算。');
   }
 
+  const existingNodeResult = findNodeResult(state.electionResults, state.currentYear);
+  const existingAnnualResult =
+    findAnnualResult(state.annualResults, 'election', state.currentYear) ??
+    (existingNodeResult ? buildAnnualResultFromNode(state, existingNodeResult, 'election') : null);
+
+  if (existingAnnualResult) {
+    const stateWithExistingResult = clampGameState({
+      ...state,
+      annualResults: replaceSameAnnualResult(state.annualResults, existingAnnualResult),
+      milestones: mergeMilestones(state.milestones, buildMilestones(existingAnnualResult)),
+    });
+    const nextState = resolveAfterNode(stateWithExistingResult);
+
+    return {
+      state: nextState,
+      lastPlanId: null,
+      lastResult: buildAnnualResultFeedback(existingAnnualResult, []),
+      pendingEventId: null,
+    };
+  }
+
   const before = state;
   const result = calculateElectionResult(state);
   const afterRewards = applyDeltas(state, result.rewards);
+  const annualResult = buildAnnualResultFromNode(state, result, 'election');
   const growthLog = createGrowthLog(state, '年度人气总选节点', result.message, result.rewards);
   const stateWithResult = clampGameState({
     ...afterRewards,
     electionResults: replaceSameYearNodeResult(state.electionResults, result),
+    annualResults: replaceSameAnnualResult(state.annualResults, annualResult),
+    milestones: mergeMilestones(state.milestones, buildMilestones(annualResult)),
     growthLogs: [...state.growthLogs, growthLog],
   });
   const nextState = resolveAfterNode(stateWithResult);
@@ -420,13 +480,13 @@ export function resolveElectionNode(state: GameState): GameSnapshot {
     state: nextState,
     lastPlanId: null,
     lastResult: {
-      title: '年度人气总选节点',
+      title: annualResult.title,
       message: result.message,
       score: result.score,
       grade: result.grade,
-      imageKey: result.score >= 60 ? 'happy' : undefined,
+      suppressFallbackVisual: true,
       changes: collectChanges(before, nextState),
-      details: buildNodeDetails(result),
+      details: [`档位 ${annualResult.resultLabel}`],
     },
     pendingEventId: null,
   };
@@ -509,7 +569,8 @@ function shouldResolveElection(state: GameState): boolean {
   const calendar = getAnnualCalendar(state.currentYear);
   return (
     calendar.electionMonth === state.currentMonth &&
-    !hasNodeResult(state.electionResults, state.currentYear)
+    !hasNodeResult(state.electionResults, state.currentYear) &&
+    !hasAnnualResult(state.annualResults, 'election', state.currentYear)
   );
 }
 
@@ -517,12 +578,33 @@ function shouldResolveB50(state: GameState): boolean {
   const calendar = getAnnualCalendar(state.currentYear);
   return (
     calendar.b50Month === state.currentMonth &&
-    !hasNodeResult(state.b50Results, state.currentYear)
+    !hasNodeResult(state.b50Results, state.currentYear) &&
+    !hasAnnualResult(state.annualResults, 'b50', state.currentYear)
   );
 }
 
 function hasNodeResult(history: { currentYear: number; year: number }[], currentYear: number): boolean {
   return history.some((item) => item.currentYear === currentYear);
+}
+
+function findNodeResult<T extends NodeResult>(history: T[], currentYear: number): T | null {
+  return history.find((item) => item.currentYear === currentYear) ?? null;
+}
+
+function hasAnnualResult(
+  history: AnnualResult[],
+  type: AnnualResultType,
+  currentYear: number,
+): boolean {
+  return history.some((item) => item.type === type && item.currentYear === currentYear);
+}
+
+function findAnnualResult(
+  history: AnnualResult[],
+  type: AnnualResultType,
+  currentYear: number,
+): AnnualResult | null {
+  return history.find((item) => item.type === type && item.currentYear === currentYear) ?? null;
 }
 
 function isYearEndMonth(state: GameState): boolean {
@@ -800,6 +882,169 @@ function replaceSameYearSummary(history: YearSummary[], entry: YearSummary): Yea
   return [...history.filter((item) => item.currentYear !== entry.currentYear), entry];
 }
 
+function replaceSameAnnualResult(history: AnnualResult[], entry: AnnualResult): AnnualResult[] {
+  return [
+    ...history.filter((item) => item.currentYear !== entry.currentYear || item.type !== entry.type),
+    entry,
+  ];
+}
+
+function mergeMilestones(history: Milestone[], entries: Milestone[]): Milestone[] {
+  const next = new Map<string, Milestone>();
+  [...history, ...entries].forEach((entry) => {
+    next.set(entry.id, entry);
+  });
+
+  return Array.from(next.values());
+}
+
+function buildAnnualResultFromNode(
+  state: GameState,
+  result: NodeResult,
+  type: AnnualResultType,
+): AnnualResult {
+  const title = type === 'election' ? '总选 / 年度人气' : 'B50 / 舞台记忆';
+  const tier = result.tier ?? getFallbackNodeTier(type, result.grade);
+  const resultLabel = result.rankLabel ?? result.gradeText;
+
+  return {
+    id: `annual-${type}-${state.currentYear}`,
+    year: state.year,
+    currentYear: state.currentYear,
+    month: state.currentMonth,
+    type,
+    score: result.score,
+    grade: result.grade,
+    tier,
+    expectedTier: result.expectedTier,
+    title,
+    resultLabel,
+    narrative: result.message,
+    deltas: normalizeDeltas(result.rewards),
+    createdAtMonth: state.currentMonth,
+    internalBreakdown: buildNodeDetails(result),
+  };
+}
+
+function buildAnnualResultFeedback(
+  result: AnnualResult,
+  changes: StatChange[],
+): GameFeedback {
+  return {
+    title: result.title,
+    message: result.narrative,
+    score: result.score,
+    grade: result.grade,
+    suppressFallbackVisual: true,
+    changes,
+    details: [`档位 ${result.resultLabel}`],
+  };
+}
+
+function buildMilestones(result: AnnualResult): Milestone[] {
+  if (result.type === 'election') {
+    return buildElectionMilestones(result);
+  }
+
+  return buildB50Milestones(result);
+}
+
+function buildElectionMilestones(result: AnnualResult): Milestone[] {
+  const milestones: Milestone[] = [];
+  const add = (suffix: string, title: string, description: string) => {
+    milestones.push({
+      id: `${suffix}_${result.currentYear}`,
+      year: result.year,
+      currentYear: result.currentYear,
+      type: result.type,
+      title,
+      description,
+      sourceResultId: result.id,
+    });
+  };
+
+  if (isElectionAtLeast(result.tier, 'ranked')) {
+    add('election_rank', `${result.currentYear} 总选入围`, '年度人气节点进入可见名单。');
+  }
+
+  if (isElectionAtLeast(result.tier, 'top16')) {
+    add('election_top16', `${result.currentYear} 总选 Top16`, '粉丝支持进入核心档位。');
+  }
+
+  if (isElectionAtLeast(result.tier, 'kami7')) {
+    add('election_kamig7', `${result.currentYear} 总选神七`, '年度人气走到真正高位。');
+  }
+
+  if (isElectionAtLeast(result.tier, 'top3')) {
+    add('election_top3', `${result.currentYear} 总选 Top3`, '距离年度顶点只差一步。');
+  }
+
+  if (result.tier === 'center') {
+    add('election_champion', `${result.currentYear} 总选第1`, '长期应援汇成最高处的名字。');
+  }
+
+  return milestones;
+}
+
+function buildB50Milestones(result: AnnualResult): Milestone[] {
+  const milestones: Milestone[] = [];
+  const add = (suffix: string, title: string, description: string) => {
+    milestones.push({
+      id: `${suffix}_${result.currentYear}`,
+      year: result.year,
+      currentYear: result.currentYear,
+      type: result.type,
+      title,
+      description,
+      sourceResultId: result.id,
+    });
+  };
+
+  if (isB50AtLeast(result.tier, 'ranked')) {
+    add('b50_rank', `${result.currentYear} B50 入围`, '这一年的舞台留下了可见回声。');
+  }
+
+  if (isB50AtLeast(result.tier, 'high')) {
+    add('b50_top16', `${result.currentYear} B50 Top16`, '舞台记忆进入高位区域。');
+  }
+
+  if (isB50AtLeast(result.tier, 'highlight')) {
+    add('b50_top3', `${result.currentYear} B50 Top3`, '年度舞台成为重要记忆点。');
+  }
+
+  if (result.tier === 'legend') {
+    add('b50_highlight', `${result.currentYear} 年度舞台记忆`, '这一场舞台成为会被反复提起的高光。');
+  }
+
+  return milestones;
+}
+
+function getFallbackNodeTier(type: AnnualResultType, grade: NodeGrade): NodeTier {
+  if (type === 'election') {
+    const electionFallback: Record<NodeGrade, NodeTier> = {
+      S: 'center',
+      A: 'kami7',
+      B: 'top16',
+      C: 'top32',
+      D: 'top48',
+      E: 'outside',
+    };
+
+    return electionFallback[grade];
+  }
+
+  const b50Fallback: Record<NodeGrade, NodeTier> = {
+    S: 'legend',
+    A: 'highlight',
+    B: 'high',
+    C: 'middle',
+    D: 'ranked',
+    E: 'notRanked',
+  };
+
+  return b50Fallback[grade];
+}
+
 function buildNodeDetails(result: NodeResult): string[] {
   const details = [
     result.rankLabel ? `档位 ${result.rankLabel}` : null,
@@ -1026,6 +1271,66 @@ function normalizeNodeResults<T extends { year: number; currentYear: number; cur
   }));
 }
 
+function normalizeAnnualResults(history: Partial<AnnualResult>[]): AnnualResult[] {
+  if (!Array.isArray(history)) {
+    return [];
+  }
+
+  return history.map((entry, index) => {
+    const type: AnnualResultType = entry.type === 'b50' ? 'b50' : 'election';
+    const currentYear = entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1;
+    const calendar = getAnnualCalendar(currentYear);
+    const defaultMonth = type === 'election' ? calendar.electionMonth : calendar.b50Month;
+    const month = clamp(Math.round(entry.month ?? entry.createdAtMonth ?? defaultMonth ?? 1), 1, MONTHS_PER_YEAR);
+    const grade = isNodeGrade(entry.grade) ? entry.grade : 'E';
+    const tier = normalizeAnnualTier(type, entry.tier, grade);
+    const expectedTier = normalizeOptionalAnnualTier(type, entry.expectedTier);
+    const title = entry.title || (type === 'election' ? '总选 / 年度人气' : 'B50 / 舞台记忆');
+    const resultLabel = entry.resultLabel || entry.title || String(tier);
+
+    return {
+      id: entry.id || `annual-${type}-${currentYear}-${index + 1}`,
+      year: getCareerYear(currentYear),
+      currentYear,
+      month,
+      type,
+      score: Number.isFinite(entry.score) ? Math.round(Number(entry.score)) : 0,
+      grade,
+      tier,
+      expectedTier,
+      title,
+      resultLabel,
+      narrative: entry.narrative || '',
+      deltas: normalizeDeltas(entry.deltas),
+      createdAtMonth: clamp(Math.round(entry.createdAtMonth ?? month), 1, MONTHS_PER_YEAR),
+      internalBreakdown: Array.isArray(entry.internalBreakdown)
+        ? entry.internalBreakdown.filter((item): item is string => typeof item === 'string')
+        : [],
+    };
+  });
+}
+
+function normalizeMilestones(history: Partial<Milestone>[]): Milestone[] {
+  if (!Array.isArray(history)) {
+    return [];
+  }
+
+  return history.map((entry, index) => {
+    const type: AnnualResultType = entry.type === 'b50' ? 'b50' : 'election';
+    const currentYear = entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1;
+
+    return {
+      id: entry.id || `milestone-${type}-${currentYear}-${index + 1}`,
+      year: getCareerYear(currentYear),
+      currentYear,
+      type,
+      title: entry.title || '年度节点记录',
+      description: entry.description || '',
+      sourceResultId: entry.sourceResultId || `annual-${type}-${currentYear}`,
+    };
+  });
+}
+
 function normalizeYearSummaries(history: YearSummary[]): YearSummary[] {
   return history.map((entry) => ({
     ...entry,
@@ -1059,6 +1364,47 @@ function addGalleryId(ids: GalleryId[], id: GalleryId): GalleryId[] {
 
 function ensureBaseGallery(ids: GalleryId[]): GalleryId[] {
   return Array.from(new Set<GalleryId>(['base', ...ids]));
+}
+
+function isNodeGrade(value: unknown): value is NodeGrade {
+  return value === 'S' || value === 'A' || value === 'B' || value === 'C' || value === 'D' || value === 'E';
+}
+
+function normalizeAnnualTier(
+  type: AnnualResultType,
+  value: unknown,
+  grade: NodeGrade,
+): NodeTier {
+  const candidate = String(value);
+  if (type === 'election' && isElectionAtLeast(candidate, 'outside')) {
+    return candidate as NodeTier;
+  }
+
+  if (type === 'b50' && isB50AtLeast(candidate, 'notRanked')) {
+    return candidate as NodeTier;
+  }
+
+  return getFallbackNodeTier(type, grade);
+}
+
+function normalizeOptionalAnnualTier(
+  type: AnnualResultType,
+  value: unknown,
+): NodeTier | undefined {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+
+  const candidate = String(value);
+  if (type === 'election' && isElectionAtLeast(candidate, 'outside')) {
+    return candidate as NodeTier;
+  }
+
+  if (type === 'b50' && isB50AtLeast(candidate, 'notRanked')) {
+    return candidate as NodeTier;
+  }
+
+  return undefined;
 }
 
 function clamp(value: number, min: number, max: number): number {

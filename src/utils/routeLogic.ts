@@ -149,7 +149,7 @@ export function getFallbackPlanRoutes(planId: PlanId): RouteId[] {
 }
 
 export function isElectionAtLeast(current: unknown, target: string): boolean {
-  const order = ['outside', 'top48', 'top32', 'top16', 'kami7', 'center'];
+  const order = ['outside', 'ranked', 'top48', 'top32', 'top16', 'kami7', 'top3', 'center'];
   return order.indexOf(String(current)) >= order.indexOf(target);
 }
 

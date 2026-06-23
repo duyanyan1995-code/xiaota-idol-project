@@ -129,7 +129,15 @@ export type NodeGrade = 'S' | 'A' | 'B' | 'C' | 'D' | 'E';
 
 export type GameStatus = 'playing' | 'completed';
 
-export type ElectionTier = 'outside' | 'top48' | 'top32' | 'top16' | 'kami7' | 'center';
+export type ElectionTier =
+  | 'outside'
+  | 'ranked'
+  | 'top48'
+  | 'top32'
+  | 'top16'
+  | 'kami7'
+  | 'top3'
+  | 'center';
 
 export type B50Tier = 'notRanked' | 'ranked' | 'middle' | 'high' | 'highlight' | 'legend';
 
@@ -274,6 +282,7 @@ export interface NodeResult {
   gradeText: string;
   tier?: NodeTier;
   rankLabel?: string;
+  expectedTier?: NodeTier;
   eventBonus: number;
   modifiers: ScoreModifier[];
   mainFactors?: string[];
@@ -313,8 +322,38 @@ export interface YearSummary {
   routeHint: string;
 }
 
+export type AnnualResultType = 'election' | 'b50';
+
+export interface AnnualResult {
+  id: string;
+  year: number;
+  currentYear: number;
+  month: number;
+  type: AnnualResultType;
+  score: number;
+  grade: NodeGrade;
+  tier: NodeTier;
+  expectedTier?: NodeTier;
+  title: string;
+  resultLabel: string;
+  narrative: string;
+  deltas: StatDeltas;
+  createdAtMonth: number;
+  internalBreakdown?: string[];
+}
+
+export interface Milestone {
+  id: string;
+  year: number;
+  currentYear: number;
+  type: AnnualResultType;
+  title: string;
+  description: string;
+  sourceResultId: string;
+}
+
 export interface GameState {
-  saveVersion: 6;
+  saveVersion: 7;
   year: number;
   currentYear: number;
   currentMonth: number;
@@ -338,6 +377,8 @@ export interface GameState {
   eventHistory: EventHistoryEntry[];
   b50Results: B50Result[];
   electionResults: ElectionResult[];
+  annualResults: AnnualResult[];
+  milestones: Milestone[];
   yearSummaries: YearSummary[];
   growthLogs: GrowthLog[];
   unlockedGallery: GalleryId[];
