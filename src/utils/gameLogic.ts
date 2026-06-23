@@ -124,7 +124,7 @@ export function normalizeGameState(value: Partial<GameState> | null | undefined)
     growthLogs: normalizeGrowthLogs(value?.growthLogs ?? []),
     unlockedGallery: ensureBaseGallery(value?.unlockedGallery ?? initial.unlockedGallery),
     eventFlags: value?.eventFlags ?? {},
-    gameStatus: value?.gameStatus ?? 'playing',
+    gameStatus: phase === 'flamePrelude' ? 'playing' : value?.gameStatus ?? 'playing',
     workGrade: isValidWorkGrade(source?.workGrade) ? source.workGrade : initial.workGrade,
     monthlyActionOptions: normalizeMonthlyActionOptions(value?.monthlyActionOptions ?? []),
   };
@@ -196,15 +196,16 @@ export function advancePhase(state: GameState): GameSnapshot {
     if (isFinalCareerMonth(state.currentYear, state.currentMonth)) {
       nextState = clampGameState({
         ...state,
-        phase: 'finalEnding',
-        gameStatus: 'completed',
+        // TODO Phase 8: 接入 2026 FLAME 终章、最终总选与正式结局判定。
+        phase: 'flamePrelude',
+        gameStatus: 'playing',
         eventFlags: {
           ...state.eventFlags,
           summerActive: false,
         },
       });
-      title = '十一年终章';
-      message = '小獭的 11 年偶像生涯走到了终章结算。';
+      title = '即将进入 2026 FLAME 终章';
+      message = '2015—2025 的主养成期已经完成。2026 终章、最终总选、FLAME 舞台和结局判定会在后续 Phase 中开放。';
     } else {
       nextState = advanceToNextMonth(state);
       title = formatYearMonth(nextState.currentYear, nextState.currentMonth);
@@ -467,6 +468,7 @@ export function getPhaseLabel(phase: GamePhase): string {
     election: '本月总选',
     b50: '本月 B50',
     yearSummary: '年度总结',
+    flamePrelude: '终章占位',
     finalEnding: '终章结算',
   };
 
@@ -931,8 +933,13 @@ function normalizePhase(phase: string | undefined): GamePhase {
     phase === 'election' ||
     phase === 'b50' ||
     phase === 'yearSummary' ||
+    phase === 'flamePrelude' ||
     phase === 'finalEnding'
   ) {
+    if (phase === 'finalEnding') {
+      return 'flamePrelude';
+    }
+
     return phase;
   }
 

@@ -1,5 +1,5 @@
-import { CHARACTER_IMAGES } from '../config/characterImages';
 import { CharacterDisplay } from '../components/CharacterDisplay';
+import { HOME_VISUAL } from '../config/homeVisual';
 
 interface HomePageProps {
   hasSave: boolean;
@@ -27,7 +27,13 @@ export function HomePage({
           <p>从 2015 到 2025，每月陪小獭安排行动、经历事件、冲击总选和 B50。</p>
           {savedProgress ? <p className="save-progress">当前进度：{savedProgress}</p> : null}
         </div>
-        <CharacterDisplay image={CHARACTER_IMAGES.base} caption="杨小獭" />
+        <div className="home-hero-visual" aria-label="杨小獭首页主视觉">
+          <span className="home-sparkle home-sparkle--one" aria-hidden="true" />
+          <span className="home-sparkle home-sparkle--two" aria-hidden="true" />
+          <span className="home-sparkle home-sparkle--three" aria-hidden="true" />
+          <span className="home-sparkle home-sparkle--four" aria-hidden="true" />
+          <CharacterDisplay image={HOME_VISUAL} caption="杨小獭" />
+        </div>
       </section>
 
       <section className="home-actions" aria-label="主页操作">

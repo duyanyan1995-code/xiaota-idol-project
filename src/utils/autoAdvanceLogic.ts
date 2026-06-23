@@ -351,6 +351,10 @@ export function mergeStatChanges(
 }
 
 export function getAutoAdvanceStopReason(state: GameState): string | null {
+  if (state.phase === 'flamePrelude') {
+    return '2026 FLAME 终章占位';
+  }
+
   if (state.phase === 'finalEnding') {
     return '进入终章结算';
   }

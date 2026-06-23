@@ -21,7 +21,7 @@ export function EndingPage({
   return (
     <main className="page ending-page">
       <EndingView ending={ending} state={state} unlockedCount={unlockedCount} />
-      <section className="home-actions">
+      <section className="home-actions ending-actions">
         <button className="button button--primary" type="button" onClick={onRestart}>
           再来一次
         </button>

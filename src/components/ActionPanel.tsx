@@ -1,23 +1,34 @@
 import { PLAN_BY_ID, PLANS } from '../config/plans';
 import type { GameState, MonthlyActionOption, PlanConfig, PlanId, StatKey } from '../types/game';
 import { getCurrentMonthlyActionOptions } from '../utils/actionRoll';
-import { getStatLabel } from '../utils/statDisplay';
 import { getPlanAvailability } from '../utils/unlockLogic';
 
 const MAX_VISIBLE_STATS = 3;
 
-const SHORT_DESCRIPTIONS: Record<PlanId, string> = {
-  theaterTraining: '打磨基础唱跳与舞台力',
-  fanService: '回应粉丝，维持陪伴感',
-  outsideExposure: '参加外部活动，扩大认知',
-  stageFocus: '集中打磨舞台记忆点',
-  imageBuilding: '建立风格与辨识度',
-  restAndReflect: '恢复体力和心情',
-  stableOperation: '低风险地稳定成长',
-  specialSoloWork: '独立外务，扩大认知',
-  specialIntensiveTraining: '短期冲刺基础能力',
-  specialBirthdaySupport: '凝聚生日应援心意',
-  specialStyleShift: '尝试更鲜明的风格',
+const PLAN_BOOST_TAGS: Partial<Record<PlanId, string[]>> = {
+  theaterTraining: ['舞台', '唱功', '舞蹈'],
+  fanService: ['粉丝', '应援', '魅力'],
+  outsideExposure: ['影响', '资源', '粉丝'],
+  stageFocus: ['舞台', '舞蹈', '唱功'],
+  imageBuilding: ['魅力', '影响', '粉丝'],
+  restAndReflect: ['体力', '心情', '降压'],
+  stableOperation: ['应援', '运营', '疲劳↓'],
+};
+
+const SHORT_STAT_LABELS: Record<StatKey, string> = {
+  stamina: '体力',
+  mood: '心情',
+  pressure: '压力',
+  vocal: '唱功',
+  dance: '舞蹈',
+  stagePower: '舞台',
+  fanCount: '粉丝',
+  supportPower: '应援',
+  influence: '影响',
+  resource: '资源',
+  charm: '魅力',
+  operation: '运营',
+  fanFatigue: '疲劳',
 };
 
 interface ActionPanelProps {
@@ -80,10 +91,7 @@ function ActionButton({
       }}
     >
       <span className="action-card__name">{plan.name}</span>
-      <small className="action-card__desc">{option.variantText}</small>
-      <small className="action-card__note">{SHORT_DESCRIPTIONS[plan.id]}</small>
       <div className="action-card__meta">
-        <span className="action-card__label">主要影响</span>
         <span className="action-card__tags">
           {getBoostTags(plan).map((tag) => (
             <span className="action-tag action-tag--stat" key={tag}>
@@ -100,10 +108,15 @@ function ActionButton({
 }
 
 function getBoostTags(plan: PlanConfig): string[] {
+  const fixedTags = PLAN_BOOST_TAGS[plan.id];
+  if (fixedTags) {
+    return fixedTags;
+  }
+
   const orderedStats = [...plan.primaryStats, ...plan.secondaryStats];
   const uniqueStats = Array.from(new Set<StatKey>(orderedStats));
 
-  return uniqueStats.slice(0, MAX_VISIBLE_STATS).map(getStatLabel);
+  return uniqueStats.slice(0, MAX_VISIBLE_STATS).map((key) => SHORT_STAT_LABELS[key]);
 }
 
 function buildFallbackMonthlyOptions(state: GameState): MonthlyActionOption[] {

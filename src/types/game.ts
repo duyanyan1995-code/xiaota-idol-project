@@ -5,6 +5,7 @@ export type GamePhase =
   | 'election'
   | 'b50'
   | 'yearSummary'
+  | 'flamePrelude'
   | 'finalEnding';
 
 export type HalfYear = 'first' | 'second';

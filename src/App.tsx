@@ -179,7 +179,7 @@ function App() {
     commitSnapshot(snapshot, nextEvent, false);
     setFlowPanel({
       type: 'inlineActionResult',
-      continueLabel: '查看本月后续',
+      continueLabel: '继续',
       summary: {
         kind: 'manual',
         title: '本月行动完成',
@@ -461,7 +461,8 @@ function App() {
             <h2 id="guide-title">11 年偶像生涯</h2>
             <p>
               从 2015 年 1 月开始，每个月安排一次行动、处理一次事件，并在配置月份结算总选或 B50。
-              年度总结会记录这一年的路线，完成 2025 年 12 月后进入终章结算。
+              年度总结会记录这一年的路线。当前 V4 Phase 3 会在 2025 年 12 月后停在 2026 终章占位，
+              正式最终总选、FLAME 舞台和结局判定将在后续 Phase 接入。
             </p>
             <button className="button button--primary" type="button" onClick={() => setShowGuide(false)}>
               知道了

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { DETAIL_STAT_GROUPS, MAIN_STAT_KEYS, STAT_CONFIG_BY_ID } from '../config/stats';
 import type { GameState, StatChange, StatKey } from '../types/game';
-import { getRouteSummaryLabel } from '../utils/routeLogic';
 import { formatDeltaValue, getStatChangeTone } from '../utils/statDisplay';
 
 interface StatPanelProps {
@@ -14,21 +13,22 @@ export function StatPanel({ state, recentChanges = null }: StatPanelProps) {
 
   return (
     <>
-      <section className="quick-status" aria-label="关键状态">
-        {MAIN_STAT_KEYS.map((statKey) => (
-          <QuickStatusItem
-            changes={recentChanges}
-            key={statKey}
-            label={STAT_CONFIG_BY_ID[statKey].statName}
-            statKey={statKey}
-            value={state[statKey]}
-          />
-        ))}
-        <button className="status-route" type="button" onClick={() => setShowDetails(true)}>
-          <span>倾向</span>
-          <strong>{getRouteSummaryLabel(state)}</strong>
+      <div className="quick-status-panel">
+        <section className="quick-status" aria-label="关键状态">
+          {MAIN_STAT_KEYS.map((statKey) => (
+            <QuickStatusItem
+              changes={recentChanges}
+              key={statKey}
+              label={STAT_CONFIG_BY_ID[statKey].statName}
+              statKey={statKey}
+              value={state[statKey]}
+            />
+          ))}
+        </section>
+        <button className="status-detail-button" type="button" onClick={() => setShowDetails(true)}>
+          查看完整属性
         </button>
-      </section>
+      </div>
 
       {showDetails ? (
         <div className="modal-backdrop" role="presentation">
