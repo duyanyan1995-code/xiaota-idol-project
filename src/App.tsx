@@ -78,6 +78,7 @@ function App() {
     const stateForSave: GameState = {
       ...gameState,
       unlockedGallery: nextUnlocked,
+      unlockedGalleryIds: nextUnlocked.filter((id) => id !== 'base'),
       pendingEventId: pendingEvent?.id ?? null,
     };
     const snapshotForSave: GameSnapshot = {
@@ -92,7 +93,10 @@ function App() {
 
     if (!sameGalleryIds(nextUnlocked, unlockedGallery)) {
       const newUnlocks = nextUnlocked.filter(
-        (id) => id !== 'base' && !unlockedGallery.includes(id),
+        (id) =>
+          id !== 'base' &&
+          id !== stateForSave.pendingVisualUnlock?.galleryId &&
+          !unlockedGallery.includes(id),
       );
       if (newUnlocks.length > 0) {
         setQueuedGalleryUnlocks((current) =>

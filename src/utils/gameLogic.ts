@@ -19,6 +19,7 @@ import {
   isValidWorkGrade,
   toCurrentStatKey,
 } from '../config/stats';
+import { getVisualAsset } from '../config/visualAssets';
 import { calculateB50Result, calculateElectionResult } from './nodeLogic';
 import { formatMonthlyActionLabel, formatYearMonth } from './dateDisplay';
 import { isB50AtLeast, isElectionAtLeast } from './routeLogic';
@@ -40,11 +41,14 @@ import type {
   AnnualResult,
   AnnualResultType,
   EventHistoryEntry,
+  GallerySourceType,
+  GalleryUnlockRecord,
   GameFeedback,
   GamePhase,
   GameSnapshot,
   GameState,
   GalleryId,
+  WorkCgKey,
   GrowthLog,
   Milestone,
   MonthlyActionOption,
@@ -59,13 +63,14 @@ import type {
   StatDeltas,
   StatKey,
   ThemeNodeResult,
+  VisualUnlock,
   WorkMilestone,
   WorkResult,
   YearSummary,
 } from '../types/game';
 
-const SAVE_VERSION = 9;
-const SUPPORTED_SAVE_VERSIONS = [2, 3, 4, 5, 6, 7, 8, 9];
+const SAVE_VERSION = 10;
+const SUPPORTED_SAVE_VERSIONS = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export function createInitialGameState(): GameState {
   return {
@@ -103,6 +108,10 @@ export function createInitialGameState(): GameState {
     workMilestones: [],
     pendingThemeNodeResult: null,
     pendingWorkResult: null,
+    unlockedGalleryIds: [],
+    galleryUnlockHistory: [],
+    pendingVisualUnlock: null,
+    seenVisualUnlockIds: [],
     yearSummaries: [],
     growthLogs: [],
     unlockedGallery: ['base'],
@@ -157,6 +166,13 @@ export function normalizeGameState(value: Partial<GameState> | null | undefined)
     workMilestones: normalizeWorkMilestones(value?.workMilestones ?? []),
     pendingThemeNodeResult: normalizeNullableThemeNodeResult(value?.pendingThemeNodeResult ?? null),
     pendingWorkResult: normalizeNullableWorkResult(value?.pendingWorkResult ?? null),
+    unlockedGalleryIds: normalizeGalleryIds([
+      ...(Array.isArray(value?.unlockedGalleryIds) ? value.unlockedGalleryIds : []),
+      ...(Array.isArray(value?.unlockedGallery) ? value.unlockedGallery.filter((id) => id !== 'base') : []),
+    ]),
+    galleryUnlockHistory: normalizeGalleryUnlockHistory(value?.galleryUnlockHistory ?? []),
+    pendingVisualUnlock: normalizeNullableVisualUnlock(value?.pendingVisualUnlock ?? null),
+    seenVisualUnlockIds: normalizeGalleryIds(value?.seenVisualUnlockIds ?? []),
     yearSummaries: normalizeYearSummaries(value?.yearSummaries ?? []),
     growthLogs: normalizeGrowthLogs(value?.growthLogs ?? []),
     unlockedGallery: ensureBaseGallery(value?.unlockedGallery ?? initial.unlockedGallery),
@@ -221,7 +237,11 @@ export function advancePhase(state: GameState): GameSnapshot {
   let title = '阶段推进';
   let message = '小獭整理好状态，准备进入下一阶段。';
 
-  if (state.phase === 'monthStart') {
+  if (state.pendingVisualUnlock) {
+    nextState = consumePendingVisualUnlock(state);
+    title = '视觉记忆已收录';
+    message = '这份记忆已经加入图鉴，后续可以随时回看。';
+  } else if (state.phase === 'monthStart') {
     nextState = ensureMonthlyActionOptions(clampGameState({
       ...state,
       phase: 'monthlyPlan',
@@ -252,12 +272,16 @@ export function advancePhase(state: GameState): GameSnapshot {
       message = '新的月份开始了，小獭还会继续向舞台靠近。';
     }
   } else if (state.phase === 'themeNode' || state.phase === 'workNode') {
+    const pendingWorkResult = state.pendingWorkResult;
     const stateAfterThemeNode = clampGameState({
       ...state,
       pendingThemeNodeResult: null,
       pendingWorkResult: null,
     });
-    nextState = resolveAfterThemeOrWorkNode(stateAfterThemeNode);
+    nextState = applyVisualUnlock(
+      resolveAfterThemeOrWorkNode(stateAfterThemeNode),
+      pendingWorkResult ? buildWorkVisualUnlock(stateAfterThemeNode, pendingWorkResult) : null,
+    );
     title = getPhaseLabel(nextState.phase);
     message = nextState.phase === 'election'
       ? '年度主题节点已经记录，接下来进入总选 / 年度人气结算。'
@@ -404,12 +428,13 @@ export function applyEventChoice(
     },
     riskWarningCounts: updateRiskWarningCounts(afterDeltas.riskWarningCounts, event, choice),
     eventHistory: replaceSameMonthEvent(state.eventHistory, eventEntry),
-    unlockedGallery: event.galleryId
-      ? addGalleryId(state.unlockedGallery, event.galleryId)
-      : state.unlockedGallery,
     growthLogs: [...state.growthLogs, growthLog],
   });
-  const nextState = resolveAfterMonthActivity(stateWithEvent);
+  const stateWithVisualUnlock = applyVisualUnlock(
+    stateWithEvent,
+    buildEventVisualUnlock(stateWithEvent, event, choice),
+  );
+  const nextState = resolveAfterMonthActivity(stateWithVisualUnlock);
 
   return {
     state: nextState,
@@ -1569,7 +1594,7 @@ function normalizeWorkMilestones(history: Partial<WorkMilestone>[]): WorkMilesto
       description: entry.description || '',
       sourceWorkResultId: entry.sourceWorkResultId || '',
       grade,
-      potentialVisualKey: typeof entry.potentialVisualKey === 'string' ? entry.potentialVisualKey : undefined,
+      potentialVisualKey: isValidWorkCgKey(entry.potentialVisualKey) ? entry.potentialVisualKey : undefined,
     };
   });
 }
@@ -1596,7 +1621,7 @@ function normalizeNullableThemeNodeResult(
     deltas: normalizeDeltas(entry.deltas),
     sourceName: entry.sourceName,
     createdAtMonth: clamp(Math.round(entry.createdAtMonth ?? month), 1, MONTHS_PER_YEAR),
-    potentialVisualKey: typeof entry.potentialVisualKey === 'string' ? entry.potentialVisualKey : undefined,
+    potentialVisualKey: isValidGalleryId(entry.potentialVisualKey) ? entry.potentialVisualKey : undefined,
   };
 }
 
@@ -1608,13 +1633,14 @@ function normalizeNullableWorkResult(entry: Partial<WorkResult> | null | undefin
   const currentYear = entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1;
   const month = clamp(Math.round(entry.month ?? entry.createdAtMonth ?? 1), 1, MONTHS_PER_YEAR);
   const grade = isValidWorkGrade(entry.grade) ? entry.grade : DEFAULT_WORK_GRADE;
+  const workId = isValidWorkCgKey(entry.workId) ? entry.workId : 'girls_revolution';
 
   return {
-    id: entry.id || `work-${entry.workId ?? 'unknown'}-${currentYear}`,
+    id: entry.id || `work-${workId}-${currentYear}`,
     year: getCareerYear(currentYear),
     currentYear,
     month,
-    workId: entry.workId || 'unknown',
+    workId,
     title: entry.title || '年度作品节点',
     theme: entry.theme || '',
     score: Number.isFinite(entry.score) ? Math.round(Number(entry.score)) : 0,
@@ -1629,8 +1655,64 @@ function normalizeNullableWorkResult(entry: Partial<WorkResult> | null | undefin
       ? entry.relatedEventIds.filter((item): item is string => typeof item === 'string')
       : [],
     relatedActionSummary: normalizeNumberRecord(entry.relatedActionSummary),
-    potentialVisualKey: typeof entry.potentialVisualKey === 'string' ? entry.potentialVisualKey : undefined,
+    potentialVisualKey: isValidWorkCgKey(entry.potentialVisualKey) ? entry.potentialVisualKey : undefined,
     createdAtMonth: clamp(Math.round(entry.createdAtMonth ?? month), 1, MONTHS_PER_YEAR),
+  };
+}
+
+function normalizeGalleryUnlockHistory(history: Partial<GalleryUnlockRecord>[]): GalleryUnlockRecord[] {
+  if (!Array.isArray(history)) {
+    return [];
+  }
+
+  return history
+    .filter((entry) => isValidGalleryId(entry.galleryId))
+    .map((entry, index) => {
+      const currentYear =
+        entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1;
+      const month = clamp(Math.round(entry.month ?? entry.unlockedAtMonth ?? 1), 1, MONTHS_PER_YEAR);
+      const sourceType = normalizeGallerySourceType(entry.sourceType);
+
+      return {
+        id: entry.id || `gallery-${entry.galleryId}-${currentYear}-${month}-${index + 1}`,
+        galleryId: entry.galleryId as GalleryId,
+        sourceType,
+        sourceId: entry.sourceId || String(entry.galleryId),
+        year: getCareerYear(currentYear),
+        currentYear,
+        month,
+        title: entry.title || '视觉记忆',
+        unlockedAtMonth: clamp(Math.round(entry.unlockedAtMonth ?? month), 1, MONTHS_PER_YEAR),
+        grade: isValidWorkGrade(entry.grade) ? entry.grade : undefined,
+        eventChoiceId: typeof entry.eventChoiceId === 'string' ? entry.eventChoiceId : undefined,
+      };
+    });
+}
+
+function normalizeNullableVisualUnlock(
+  entry: Partial<VisualUnlock> | null | undefined,
+): VisualUnlock | null {
+  if (!entry || !isValidGalleryId(entry.galleryId)) {
+    return null;
+  }
+
+  const currentYear = entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1;
+  const month = clamp(Math.round(entry.month ?? entry.unlockedAtMonth ?? 1), 1, MONTHS_PER_YEAR);
+
+  return {
+    id: entry.id || `visual-${entry.galleryId}-${currentYear}-${month}`,
+    galleryId: entry.galleryId as GalleryId,
+    sourceType: normalizeGallerySourceType(entry.sourceType),
+    sourceId: entry.sourceId || String(entry.galleryId),
+    year: getCareerYear(currentYear),
+    currentYear,
+    month,
+    title: entry.title || '视觉记忆',
+    description: entry.description || '这份记忆已经加入图鉴。',
+    imagePath: typeof entry.imagePath === 'string' ? entry.imagePath : '',
+    unlockedAtMonth: clamp(Math.round(entry.unlockedAtMonth ?? month), 1, MONTHS_PER_YEAR),
+    grade: isValidWorkGrade(entry.grade) ? entry.grade : undefined,
+    eventChoiceId: typeof entry.eventChoiceId === 'string' ? entry.eventChoiceId : undefined,
   };
 }
 
@@ -1661,12 +1743,193 @@ function getEventConfig(eventId: string) {
   return RANDOM_EVENTS.find((event) => event.id === eventId);
 }
 
+function buildEventVisualUnlock(
+  state: GameState,
+  event: RandomEventConfig,
+  choice: RandomEventChoice,
+): VisualUnlock | null {
+  const galleryId = event.galleryId;
+  const visualKey = event.eventCgKey ?? event.visualKey;
+  if (!galleryId || !visualKey || galleryId !== visualKey || hasVisualUnlocked(state, galleryId)) {
+    return null;
+  }
+
+  return createVisualUnlock({
+    state,
+    galleryId,
+    sourceType: 'event',
+    sourceId: event.id,
+    title: event.title,
+    description: choice.resultText,
+    eventChoiceId: choice.id,
+  });
+}
+
+function buildWorkVisualUnlock(state: GameState, result: WorkResult): VisualUnlock | null {
+  if ((result.grade !== 'A' && result.grade !== 'S') || !result.potentialVisualKey) {
+    return null;
+  }
+
+  if (hasVisualUnlocked(state, result.potentialVisualKey)) {
+    return null;
+  }
+
+  return createVisualUnlock({
+    state,
+    galleryId: result.potentialVisualKey,
+    sourceType: 'work',
+    sourceId: result.workId,
+    title: result.title,
+    description: result.grade === 'S'
+      ? '年度级高光已经收录进作品记忆。'
+      : '代表作记忆已经收录进作品图鉴。',
+    grade: result.grade,
+  });
+}
+
+function createVisualUnlock({
+  state,
+  galleryId,
+  sourceType,
+  sourceId,
+  title,
+  description,
+  grade,
+  eventChoiceId,
+}: {
+  state: GameState;
+  galleryId: GalleryId;
+  sourceType: GallerySourceType;
+  sourceId: string;
+  title: string;
+  description: string;
+  grade?: WorkResult['grade'];
+  eventChoiceId?: string;
+}): VisualUnlock {
+  const item = GALLERY_ITEMS.find((entry) => entry.id === galleryId);
+  const image = item ? getVisualAsset(item.visual.type, item.visual.key) : null;
+
+  return {
+    id: `visual-${galleryId}-${state.currentYear}-${state.currentMonth}`,
+    galleryId,
+    sourceType,
+    sourceId,
+    year: state.year,
+    currentYear: state.currentYear,
+    month: state.currentMonth,
+    title: item?.name ?? title,
+    description: item?.description ?? description,
+    imagePath: image?.plannedSrc ?? image?.src ?? '',
+    unlockedAtMonth: state.currentMonth,
+    grade,
+    eventChoiceId,
+  };
+}
+
+function applyVisualUnlock(state: GameState, unlock: VisualUnlock | null): GameState {
+  if (!unlock || hasVisualUnlocked(state, unlock.galleryId)) {
+    return state;
+  }
+
+  const record: GalleryUnlockRecord = {
+    id: `gallery-${unlock.galleryId}-${unlock.currentYear}-${unlock.month}`,
+    galleryId: unlock.galleryId,
+    sourceType: unlock.sourceType,
+    sourceId: unlock.sourceId,
+    year: unlock.year,
+    currentYear: unlock.currentYear,
+    month: unlock.month,
+    title: unlock.title,
+    unlockedAtMonth: unlock.unlockedAtMonth,
+    grade: unlock.grade,
+    eventChoiceId: unlock.eventChoiceId,
+  };
+
+  return clampGameState({
+    ...state,
+    unlockedGallery: addGalleryId(state.unlockedGallery, unlock.galleryId),
+    unlockedGalleryIds: addGalleryId(state.unlockedGalleryIds, unlock.galleryId).filter(
+      (id) => id !== 'base',
+    ),
+    galleryUnlockHistory: mergeGalleryUnlockHistory(state.galleryUnlockHistory, record),
+    pendingVisualUnlock: unlock,
+  });
+}
+
+function consumePendingVisualUnlock(state: GameState): GameState {
+  const pendingId = state.pendingVisualUnlock?.galleryId;
+
+  return clampGameState({
+    ...state,
+    pendingVisualUnlock: null,
+    seenVisualUnlockIds: pendingId
+      ? normalizeGalleryIds([...state.seenVisualUnlockIds, pendingId])
+      : state.seenVisualUnlockIds,
+  });
+}
+
+function hasVisualUnlocked(state: GameState, galleryId: GalleryId): boolean {
+  return (
+    state.unlockedGallery.includes(galleryId) ||
+    state.unlockedGalleryIds.includes(galleryId) ||
+    state.galleryUnlockHistory.some((entry) => entry.galleryId === galleryId)
+  );
+}
+
+function mergeGalleryUnlockHistory(
+  history: GalleryUnlockRecord[],
+  record: GalleryUnlockRecord,
+): GalleryUnlockRecord[] {
+  if (history.some((entry) => entry.galleryId === record.galleryId)) {
+    return history;
+  }
+
+  return [...history, record];
+}
+
 function addGalleryId(ids: GalleryId[], id: GalleryId): GalleryId[] {
   return Array.from(new Set<GalleryId>(['base', ...ids, id]));
 }
 
 function ensureBaseGallery(ids: GalleryId[]): GalleryId[] {
   return Array.from(new Set<GalleryId>(['base', ...ids]));
+}
+
+const WORK_CG_KEYS = new Set<WorkCgKey>([
+  'girls_revolution',
+  'yy_ds',
+  'xiaoyi',
+  'meteor_stream',
+  'triones',
+  'fu',
+  'super_tata',
+  'brand_mark',
+  'flame',
+]);
+
+function isValidWorkCgKey(value: unknown): value is WorkCgKey {
+  return typeof value === 'string' && WORK_CG_KEYS.has(value as WorkCgKey);
+}
+
+function isValidGalleryId(value: unknown): value is GalleryId {
+  return (
+    typeof value === 'string' &&
+    GALLERY_ITEMS.some((item) => item.id === value)
+  );
+}
+
+function normalizeGalleryIds(value: unknown): GalleryId[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return Array.from(
+    new Set(value.filter((item): item is GalleryId => isValidGalleryId(item))),
+  );
+}
+
+function normalizeGallerySourceType(value: unknown): GallerySourceType {
+  return value === 'work' || value === 'annual' || value === 'ending' ? value : 'event';
 }
 
 function isNodeGrade(value: unknown): value is NodeGrade {

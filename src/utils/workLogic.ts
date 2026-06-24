@@ -85,7 +85,7 @@ export function buildWorkResult(state: GameState, config: ThemeNodeConfig): Work
     relatedAnnualResultIds,
     relatedEventIds,
     relatedActionSummary,
-    potentialVisualKey: grade === 'S' ? config.potentialVisualKey : undefined,
+    potentialVisualKey: grade === 'A' || grade === 'S' ? config.potentialVisualKey : undefined,
     createdAtMonth: config.month,
   };
 }

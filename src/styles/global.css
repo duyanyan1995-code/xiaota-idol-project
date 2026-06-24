@@ -1496,6 +1496,47 @@ button:disabled {
   background: rgba(155, 216, 191, 0.34);
 }
 
+.visual-unlock-panel {
+  border-color: rgba(232, 176, 55, 0.38);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 231, 149, 0.48), transparent 7rem),
+    linear-gradient(180deg, #fffaf0 0%, #fff1cf 100%);
+}
+
+.visual-unlock-panel__body {
+  gap: 10px;
+}
+
+.visual-unlock-panel .character-display {
+  margin: 0;
+}
+
+.visual-unlock-panel .character-display__frame {
+  width: min(100%, 300px);
+  min-height: 210px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.92), transparent 7rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 216, 111, 0.2));
+}
+
+.visual-unlock-panel .character-display__image {
+  max-height: 230px;
+  object-fit: contain;
+}
+
+.visual-unlock-placeholder {
+  display: grid;
+  min-height: 210px;
+  place-items: center;
+  border: 1px dashed rgba(126, 72, 32, 0.22);
+  border-radius: 18px;
+  color: var(--caramel);
+  background: rgba(255, 252, 242, 0.68);
+  font-size: 0.9rem;
+  font-weight: 950;
+}
+
 .phase-card--summary {
   gap: 10px;
   padding: 14px;

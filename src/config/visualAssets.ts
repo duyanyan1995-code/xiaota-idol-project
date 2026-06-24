@@ -2,11 +2,13 @@ import { CHARACTER_IMAGES } from './characterImages';
 import { publicPath } from './publicPath';
 import type {
   ActionVisualKey,
+  AnnualCgKey,
   CharacterImage,
   CharacterImageKey,
   EndingCgKey,
   EventCgKey,
   FeedbackVisual,
+  WorkCgKey,
 } from '../types/game';
 
 export const LEGACY_CHARACTER_IMAGES = CHARACTER_IMAGES;
@@ -137,6 +139,59 @@ export const EVENT_CGS: Record<EventCgKey, CharacterImage> = {
   ),
 };
 
+export const WORK_CGS: Record<WorkCgKey, CharacterImage> = {
+  girls_revolution: makeCgPlaceholder(
+    'girls_revolution',
+    publicPath('assets/cg/work/girls_revolution.png'),
+    '少女革命作品 CG',
+  ),
+  yy_ds: makeCgPlaceholder(
+    'yy_ds',
+    publicPath('assets/cg/work/yy_ds.png'),
+    '歪歪DS作品 CG',
+  ),
+  xiaoyi: makeCgPlaceholder(
+    'xiaoyi',
+    publicPath('assets/cg/work/xiaoyi.png'),
+    '小一作品 CG',
+  ),
+  meteor_stream: makeCgPlaceholder(
+    'meteor_stream',
+    publicPath('assets/cg/work/meteor_stream.png'),
+    'meteor stream作品 CG',
+  ),
+  triones: makeCgPlaceholder(
+    'triones',
+    publicPath('assets/cg/work/triones.png'),
+    'Triones作品 CG',
+  ),
+  fu: makeCgPlaceholder('fu', publicPath('assets/cg/work/fu.png'), 'Fu作品 CG'),
+  super_tata: makeCgPlaceholder(
+    'super_tata',
+    publicPath('assets/cg/work/super_tata.png'),
+    'SuperTATA作品 CG',
+  ),
+  brand_mark: makeCgPlaceholder(
+    'brand_mark',
+    publicPath('assets/cg/work/brand_mark.png'),
+    '烙印作品 CG',
+  ),
+  flame: makeCgPlaceholder('flame', publicPath('assets/cg/work/flame.png'), 'FLAME作品 CG'),
+};
+
+export const ANNUAL_CGS: Record<AnnualCgKey, CharacterImage> = {
+  election_champion: makeCgPlaceholder(
+    'election_champion',
+    publicPath('assets/cg/annual/election_champion.png'),
+    '总选高光 CG',
+  ),
+  b50_highlight: makeCgPlaceholder(
+    'b50_highlight',
+    publicPath('assets/cg/annual/b50_highlight.png'),
+    'B50高光 CG',
+  ),
+};
+
 export const ENDING_CGS: Record<EndingCgKey, CharacterImage> = {
   idolPeakEndingCg: makeEndingCg(
     'idolPeakEndingCg',
@@ -197,6 +252,14 @@ export function getVisualAsset(
     return EVENT_CGS[key as EventCgKey];
   }
 
+  if (type === 'workCg') {
+    return WORK_CGS[key as WorkCgKey];
+  }
+
+  if (type === 'annualCg') {
+    return ANNUAL_CGS[key as AnnualCgKey];
+  }
+
   if (type === 'endingCg') {
     return ENDING_CGS[key as EndingCgKey];
   }
@@ -238,5 +301,20 @@ function makeEndingCg(key: EndingCgKey, src: string, label: string): CharacterIm
     alt: label,
     label,
     placeholderText: '结局 CG 待接入',
+  };
+}
+
+function makeCgPlaceholder(
+  key: WorkCgKey | AnnualCgKey,
+  plannedSrc: string,
+  label: string,
+): CharacterImage {
+  return {
+    key,
+    src: publicPath('assets/cg/placeholder.png'),
+    plannedSrc,
+    alt: label,
+    label,
+    placeholderText: '视觉资源待补充',
   };
 }

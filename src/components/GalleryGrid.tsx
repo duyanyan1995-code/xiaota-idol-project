@@ -24,6 +24,16 @@ const GALLERY_CATEGORIES: Array<{
     description: '完成剧情事件后解锁的回忆 CG',
   },
   {
+    id: 'work',
+    title: '作品记忆',
+    description: '年度作品达到高光后收录的视觉记忆',
+  },
+  {
+    id: 'annual',
+    title: '年度节点',
+    description: '总选和 B50 相关视觉预留',
+  },
+  {
     id: 'ending',
     title: '结局相册',
     description: '达成终章结局后收录的结局 CG',
@@ -38,7 +48,9 @@ export function GalleryGrid({ unlockedIds }: GalleryGridProps) {
     <>
       <div className="gallery-sections">
         {GALLERY_CATEGORIES.map((category) => {
-          const items = GALLERY_ITEMS.filter((item) => item.category === category.id);
+          const items = GALLERY_ITEMS.filter((item) => item.category === category.id).sort(
+            (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+          );
           if (items.length === 0) {
             return null;
           }
@@ -62,8 +74,8 @@ export function GalleryGrid({ unlockedIds }: GalleryGridProps) {
                       onClick={() => (isUnlocked ? setActiveItem(item) : undefined)}
                     >
                       <CharacterDisplay image={image} compact />
-                      <strong>{isUnlocked ? item.name : '未解锁'}</strong>
-                      <span>{isUnlocked ? '点击查看详情' : item.conditionText}</span>
+                      <strong>{isUnlocked ? item.name : item.lockedTitle ?? '未解锁'}</strong>
+                      <span>{isUnlocked ? '点击查看详情' : item.lockedHint ?? item.conditionText}</span>
                     </button>
                   );
                 })}

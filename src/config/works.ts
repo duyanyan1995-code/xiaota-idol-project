@@ -1,4 +1,4 @@
-import type { PlanId, StatDeltas, StatKey, ThemeNodeImportance, ThemeNodeType, WorkGrade } from '../types/game';
+import type { PlanId, StatDeltas, StatKey, ThemeNodeImportance, ThemeNodeType, WorkCgKey, WorkGrade } from '../types/game';
 
 export interface ThemeNodeConfig {
   id: string;
@@ -12,13 +12,13 @@ export interface ThemeNodeConfig {
   focusStats?: StatKey[];
   relatedActions?: PlanId[];
   gradeEnabled: boolean;
-  workId?: string;
+  workId?: WorkCgKey;
   category?: 'performanceWork';
   gradeThresholds?: Record<WorkGrade, number>;
   rewardByGrade?: Record<WorkGrade, StatDeltas>;
   narrativeByGrade?: Record<WorkGrade, string>;
   milestoneByGrade?: Partial<Record<WorkGrade, { title: string; description: string }>>;
-  potentialVisualKey?: string;
+  potentialVisualKey?: WorkCgKey;
   phaseEnabled?: 'phase6' | 'phase8';
   timelineDeltas?: StatDeltas;
 }
@@ -257,7 +257,7 @@ function createPerformanceWorkNode(config: {
   year: number;
   month: number;
   sourceName: string;
-  workId: string;
+  workId: WorkCgKey;
   title: string;
   description: string;
   focusStats: StatKey[];

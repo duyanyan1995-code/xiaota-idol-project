@@ -87,6 +87,19 @@ export type EventCgKey =
   | 'secretHappyCg'
   | 'dailyMomentCg';
 
+export type WorkCgKey =
+  | 'girls_revolution'
+  | 'yy_ds'
+  | 'xiaoyi'
+  | 'meteor_stream'
+  | 'triones'
+  | 'fu'
+  | 'super_tata'
+  | 'brand_mark'
+  | 'flame';
+
+export type AnnualCgKey = 'election_champion' | 'b50_highlight';
+
 export type EndingId =
   | 'idolPeak'
   | 'kamiSeven'
@@ -109,9 +122,9 @@ export type EndingCgKey =
   | 'steadyOperationEndingCg'
   | 'regretGraduationEndingCg';
 
-export type GalleryId = CharacterImageKey | EventCgKey | EndingCgKey;
+export type GalleryId = CharacterImageKey | EventCgKey | WorkCgKey | AnnualCgKey | EndingCgKey;
 
-export type VisualAssetKey = CharacterImageKey | ActionVisualKey | EventCgKey | EndingCgKey;
+export type VisualAssetKey = CharacterImageKey | ActionVisualKey | EventCgKey | WorkCgKey | AnnualCgKey | EndingCgKey;
 
 export type FeedbackVisual =
   | {
@@ -121,6 +134,14 @@ export type FeedbackVisual =
   | {
       type: 'eventCg';
       key: EventCgKey;
+    }
+  | {
+      type: 'workCg';
+      key: WorkCgKey;
+    }
+  | {
+      type: 'annualCg';
+      key: AnnualCgKey;
     }
   | {
       type: 'endingCg';
@@ -249,6 +270,7 @@ export interface RandomEventConfig {
   type: EventType;
   title: string;
   description: string;
+  visualKey?: EventCgKey;
   eventCgKey?: EventCgKey;
   galleryId?: GalleryId;
   rarity: EventRarity;
@@ -384,7 +406,7 @@ export interface ThemeNodeResult {
   deltas: StatDeltas;
   sourceName?: string;
   createdAtMonth: number;
-  potentialVisualKey?: string;
+  potentialVisualKey?: GalleryId;
 }
 
 export interface WorkResult {
@@ -392,7 +414,7 @@ export interface WorkResult {
   year: number;
   currentYear: number;
   month: number;
-  workId: string;
+  workId: WorkCgKey;
   title: string;
   theme: string;
   score: number;
@@ -403,7 +425,7 @@ export interface WorkResult {
   relatedAnnualResultIds?: string[];
   relatedEventIds?: string[];
   relatedActionSummary?: Record<string, number>;
-  potentialVisualKey?: string;
+  potentialVisualKey?: WorkCgKey;
   createdAtMonth: number;
 }
 
@@ -416,11 +438,43 @@ export interface WorkMilestone {
   description: string;
   sourceWorkResultId: string;
   grade: WorkGrade;
-  potentialVisualKey?: string;
+  potentialVisualKey?: WorkCgKey;
+}
+
+export type GallerySourceType = 'event' | 'work' | 'annual' | 'ending';
+
+export interface GalleryUnlockRecord {
+  id: string;
+  galleryId: GalleryId;
+  sourceType: GallerySourceType;
+  sourceId: string;
+  year: number;
+  currentYear: number;
+  month: number;
+  title: string;
+  unlockedAtMonth: number;
+  grade?: WorkGrade;
+  eventChoiceId?: string;
+}
+
+export interface VisualUnlock {
+  id: string;
+  galleryId: GalleryId;
+  sourceType: GallerySourceType;
+  sourceId: string;
+  year: number;
+  currentYear: number;
+  month: number;
+  title: string;
+  description: string;
+  imagePath: string;
+  unlockedAtMonth: number;
+  grade?: WorkGrade;
+  eventChoiceId?: string;
 }
 
 export interface GameState {
-  saveVersion: 9;
+  saveVersion: 10;
   year: number;
   currentYear: number;
   currentMonth: number;
@@ -454,6 +508,10 @@ export interface GameState {
   workMilestones: WorkMilestone[];
   pendingThemeNodeResult: ThemeNodeResult | null;
   pendingWorkResult: WorkResult | null;
+  unlockedGalleryIds: GalleryId[];
+  galleryUnlockHistory: GalleryUnlockRecord[];
+  pendingVisualUnlock: VisualUnlock | null;
+  seenVisualUnlockIds: GalleryId[];
   yearSummaries: YearSummary[];
   growthLogs: GrowthLog[];
   unlockedGallery: GalleryId[];
@@ -484,8 +542,15 @@ export interface GameFeedback {
 export interface GalleryItem {
   id: GalleryId;
   name: string;
-  category: 'character' | 'event' | 'ending';
-  visual: Extract<FeedbackVisual, { type: 'legacy' | 'eventCg' | 'endingCg' }>;
+  category: 'character' | 'event' | 'work' | 'annual' | 'ending';
+  sourceType?: GallerySourceType;
+  sourceId?: string;
+  rarity?: 'normal' | 'key' | 'rare';
+  enabledInPhase?: 'phase7' | 'phase8';
+  sortOrder?: number;
+  lockedTitle?: string;
+  lockedHint?: string;
+  visual: Extract<FeedbackVisual, { type: 'legacy' | 'eventCg' | 'workCg' | 'annualCg' | 'endingCg' }>;
   description: string;
   conditionText: string;
   isUnlocked: (state: GameState) => boolean;

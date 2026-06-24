@@ -6,6 +6,7 @@ import { StatPanel } from '../components/StatPanel';
 import { StatChangeList } from '../components/StatChangeList';
 import { YearTimeline } from '../components/YearTimeline';
 import { isFinalCareerMonth } from '../config/annualCalendar';
+import { GALLERY_ITEMS } from '../config/gallery';
 import { STAT_CONFIG_BY_ID } from '../config/stats';
 import { getVisualAsset } from '../config/visualAssets';
 import type {
@@ -19,6 +20,7 @@ import type {
   StatDeltas,
   StatKey,
   ThemeNodeResult,
+  VisualUnlock,
   WorkResult,
   YearSummary,
 } from '../types/game';
@@ -165,6 +167,12 @@ function PhaseCard({
   onHome: () => void;
   onResolveNode: () => void;
 }) {
+  if (state.pendingVisualUnlock) {
+    return (
+      <VisualUnlockCard unlock={state.pendingVisualUnlock} onContinue={onAdvancePhase} />
+    );
+  }
+
   if (state.phase === 'monthStart') {
     return (
       <section className="phase-actions phase-actions--month-start" aria-label="月份操作">
@@ -310,6 +318,64 @@ function PhaseCard({
       </div>
     </section>
   );
+}
+
+function VisualUnlockCard({
+  unlock,
+  onContinue,
+}: {
+  unlock: VisualUnlock;
+  onContinue: () => void;
+}) {
+  const galleryItem = GALLERY_ITEMS.find((item) => item.id === unlock.galleryId);
+  const visual = galleryItem ? getVisualAsset(galleryItem.visual.type, galleryItem.visual.key) : null;
+
+  return (
+    <section className="interaction-panel phase-card visual-unlock-panel" aria-label="视觉记忆解锁">
+      <div className="interaction-panel__header">
+        <p className="eyebrow">新的记忆已收录</p>
+        <h1>{unlock.title}</h1>
+      </div>
+      <div className="interaction-panel__body visual-unlock-panel__body">
+        {visual ? (
+          <CharacterDisplay image={visual} caption={unlock.title} />
+        ) : (
+          <div className="visual-unlock-placeholder">
+            <span>视觉资源待补充</span>
+          </div>
+        )}
+        <p>{unlock.description}</p>
+        <p className="node-meta">
+          来源：{getVisualSourceLabel(unlock.sourceType)}
+          {unlock.grade ? ` · ${unlock.grade} 级作品` : ''}
+          {' · '}
+          {unlock.currentYear} 年 {unlock.month} 月
+        </p>
+        <p className="work-milestone-note">已加入图鉴</p>
+      </div>
+      <div className="interaction-panel__footer">
+        <button className="button button--primary" type="button" onClick={onContinue}>
+          继续
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function getVisualSourceLabel(sourceType: VisualUnlock['sourceType']): string {
+  if (sourceType === 'work') {
+    return '年度作品';
+  }
+
+  if (sourceType === 'annual') {
+    return '年度节点';
+  }
+
+  if (sourceType === 'ending') {
+    return '终章';
+  }
+
+  return '事件';
 }
 
 function ThemeNodeCard({
