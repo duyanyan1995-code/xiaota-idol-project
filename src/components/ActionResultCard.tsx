@@ -41,7 +41,13 @@ export function ActionResultCard({
     <article className={className} aria-label="行动结果">
       <div className="action-result-card__visual">
         {visualAsset ? (
-          <CharacterDisplay image={visualAsset} compact={compact} />
+          <CharacterDisplay
+            image={visualAsset}
+            compact={compact}
+            zoomable
+            zoomTitle={plan?.name ?? feedback.title}
+            zoomDescription={variantText ?? feedback.message}
+          />
         ) : (
           <div className="action-result-card__visual-placeholder">
             <span>行动视觉</span>

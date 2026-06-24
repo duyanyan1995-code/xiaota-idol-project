@@ -1,4 +1,14 @@
-import type { PlanId, StatDeltas, StatKey, ThemeNodeImportance, ThemeNodeType, WorkCgKey, WorkGrade } from '../types/game';
+import type {
+  GalleryId,
+  PlanId,
+  StatDeltas,
+  StatKey,
+  ThemeNodeImportance,
+  ThemeNodeType,
+  WorkCgKey,
+  WorkGalleryId,
+  WorkGrade,
+} from '../types/game';
 
 export interface ThemeNodeConfig {
   id: string;
@@ -19,6 +29,7 @@ export interface ThemeNodeConfig {
   narrativeByGrade?: Record<WorkGrade, string>;
   milestoneByGrade?: Partial<Record<WorkGrade, { title: string; description: string }>>;
   potentialVisualKey?: WorkCgKey;
+  galleryId?: GalleryId;
   phaseEnabled?: 'phase6' | 'phase8';
   timelineDeltas?: StatDeltas;
 }
@@ -64,10 +75,11 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     focusStats: ['stagePower', 'supportPower'],
     relatedActions: ['theaterTraining', 'stableOperation'],
     gradeEnabled: false,
+    galleryId: 'timeline_x_team_debut',
     timelineDeltas: { stagePower: 1, supportPower: 1 },
   },
   {
-    id: 'ice_emperor_legend',
+    id: 'quick_report_first',
     year: 2015,
     month: 5,
     sourceName: '速报第一',
@@ -78,6 +90,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     focusStats: ['fanCount', 'supportPower', 'influence'],
     relatedActions: ['fanService', 'stableOperation'],
     gradeEnabled: false,
+    galleryId: 'timeline_quick_report_first',
     timelineDeltas: { supportPower: 1, influence: 1, fanFatigue: 1 },
   },
   {
@@ -92,6 +105,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     focusStats: ['stagePower', 'charm', 'supportPower'],
     relatedActions: ['theaterTraining', 'imageBuilding'],
     gradeEnabled: false,
+    galleryId: 'timeline_eighteen_shining_moments',
     timelineDeltas: { charm: 1, fanCount: 25 },
   },
   {
@@ -106,6 +120,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     focusStats: ['charm', 'influence', 'stagePower'],
     relatedActions: ['imageBuilding', 'outsideExposure'],
     gradeEnabled: false,
+    galleryId: 'timeline_color_girls',
     timelineDeltas: { influence: 1, charm: 1, pressure: 1 },
   },
   {
@@ -120,6 +135,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     focusStats: ['operation', 'supportPower', 'pressure'],
     relatedActions: ['stableOperation', 'fanService'],
     gradeEnabled: false,
+    galleryId: 'timeline_vice_captain',
     timelineDeltas: { operation: 2, supportPower: 1, pressure: 1 },
   },
   {
@@ -134,10 +150,11 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     focusStats: ['stagePower', 'dance', 'charm'],
     relatedActions: ['stageFocus', 'imageBuilding'],
     gradeEnabled: false,
+    galleryId: 'timeline_demoon',
     timelineDeltas: { stagePower: 2, charm: 1, pressure: 1 },
   },
   {
-    id: 'captain_responsibility',
+    id: 'captain',
     year: 2020,
     month: 11,
     sourceName: '队长责任',
@@ -148,6 +165,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     focusStats: ['operation', 'supportPower', 'pressure'],
     relatedActions: ['stableOperation', 'fanService'],
     gradeEnabled: false,
+    galleryId: 'timeline_captain',
     timelineDeltas: { operation: 3, supportPower: 1, pressure: 2 },
   },
   createPerformanceWorkNode({
@@ -156,6 +174,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     month: 12,
     sourceName: '少女革命',
     workId: 'girls_revolution',
+    galleryId: 'work_girls_revolution',
     title: '少女革命',
     description: '成长不只是变得更强，也是在一次次舞台里重新定义自己。这个节点记录的是她从青涩走向坚定的瞬间。',
     focusStats: ['stagePower', 'vocal', 'dance', 'charm', 'supportPower'],
@@ -167,6 +186,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     month: 7,
     sourceName: '歪歪DS',
     workId: 'yy_ds',
+    galleryId: 'work_yy_ds',
     title: '歪歪DS',
     description: '这是一场更靠近粉丝记忆的舞台。不是宏大的宣告，而是把陪伴、回应和个人色彩认真地放进同一个夜晚。',
     focusStats: ['charm', 'supportPower', 'fanCount', 'mood', 'operation'],
@@ -178,6 +198,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     month: 10,
     sourceName: '小一',
     workId: 'xiaoyi',
+    galleryId: 'work_xiaoyi',
     title: '小一',
     description: '她把更细腻的表达放进作品里。那些不夸张却足够清晰的瞬间，开始让人意识到她的个人质感。',
     focusStats: ['vocal', 'stagePower', 'charm', 'supportPower'],
@@ -189,6 +210,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     month: 7,
     sourceName: 'meteor stream',
     workId: 'meteor_stream',
+    galleryId: 'work_meteor_stream',
     title: 'meteor stream',
     description: '像流星划过夜空一样，这个舞台需要速度、冲击力和被看见的瞬间。它考验的不只是完成度，也考验她能不能抓住目光。',
     focusStats: ['stagePower', 'dance', 'influence', 'charm'],
@@ -200,6 +222,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     month: 4,
     sourceName: 'Triones',
     workId: 'triones',
+    galleryId: 'work_triones',
     title: 'Triones',
     description: '稳定、完整、默契和舞台掌控力在这里被放大。她需要证明自己不是偶然闪光，而是能够持续撑住舞台。',
     focusStats: ['stagePower', 'vocal', 'dance', 'supportPower'],
@@ -211,6 +234,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     month: 6,
     sourceName: 'Fu',
     workId: 'fu',
+    galleryId: 'work_fu',
     title: 'Fu',
     description: '风格、表达和粉丝记忆在这一刻汇合。她不再只是完成作品，而是在作品里留下了自己的烙印。',
     focusStats: ['charm', 'stagePower', 'influence', 'supportPower', 'operation'],
@@ -222,6 +246,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     month: 1,
     sourceName: 'SuperTATA',
     workId: 'super_tata',
+    galleryId: 'work_super_tata',
     title: 'SuperTATA',
     description: '轻快、鲜明、带有个人符号的舞台记忆，需要她把可爱、灵气和自我表达融合成一个容易被记住的瞬间。',
     focusStats: ['charm', 'fanCount', 'supportPower', 'influence', 'mood'],
@@ -233,6 +258,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     month: 6,
     sourceName: '烙印',
     workId: 'brand_mark',
+    galleryId: 'work_brand_mark',
     title: '烙印',
     description: '这是高位阶段留下的证明。舞台不只是表演，也是一种宣告：她曾经走到这里，并把名字刻进这一年的记忆里。',
     focusStats: ['stagePower', 'influence', 'supportPower', 'fanCount', 'pressure'],
@@ -244,6 +270,7 @@ export const THEME_NODES: ThemeNodeConfig[] = [
     month: 6,
     sourceName: 'FLAME',
     workId: 'flame',
+    galleryId: 'work_flame',
     title: 'FLAME',
     description: '这是终章前被点燃的火焰。过去所有积累、压力、期待与陪伴，都会在这里汇成最后的舞台。',
     focusStats: ['stagePower', 'influence', 'supportPower', 'fanCount', 'charm', 'pressure', 'fanFatigue'],
@@ -258,6 +285,7 @@ function createPerformanceWorkNode(config: {
   month: number;
   sourceName: string;
   workId: WorkCgKey;
+  galleryId?: WorkGalleryId;
   title: string;
   description: string;
   focusStats: StatKey[];
@@ -284,6 +312,7 @@ function createPerformanceWorkNode(config: {
       },
     },
     potentialVisualKey: config.workId,
+    galleryId: config.galleryId,
     phaseEnabled: config.phaseEnabled ?? 'phase6',
   };
 }

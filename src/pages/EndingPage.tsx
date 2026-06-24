@@ -1,8 +1,8 @@
 import { EndingView } from '../components/EndingView';
-import type { EndingConfig, GameState } from '../types/game';
+import type { EndingResult, GameState } from '../types/game';
 
 interface EndingPageProps {
-  ending: EndingConfig;
+  ending: EndingResult;
   state: GameState;
   unlockedCount: number;
   onHome: () => void;

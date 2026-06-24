@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HomePage } from './pages/HomePage';
 import { GamePage } from './pages/GamePage';
 import { GalleryPage } from './pages/GalleryPage';
@@ -29,10 +29,10 @@ import {
   resolveNoEventAfterPlan,
   resolveB50Node,
   resolveElectionNode,
+  resolveFinalElectionNode,
   sameGalleryIds,
 } from './utils/gameLogic';
 import { getEventById, pickMonthlyEvent } from './utils/eventLogic';
-import { getEndingForState } from './utils/endingLogic';
 import { formatYearMonth } from './utils/dateDisplay';
 import { runAutoAdvanceStep, mergeStatChanges } from './utils/autoAdvanceLogic';
 import {
@@ -63,11 +63,6 @@ function App() {
     loadNormalizedSnapshot(),
   );
   const [showGuide, setShowGuide] = useState(false);
-
-  const ending = useMemo(
-    () => (gameState ? getEndingForState(gameState) : null),
-    [gameState],
-  );
 
   useEffect(() => {
     if (!gameState) {
@@ -153,7 +148,7 @@ function App() {
     setIsAutoAdvancing(false);
     setGalleryUnlockId(null);
     setQueuedGalleryUnlocks([]);
-    setPage(snapshot.state.phase === 'finalEnding' ? 'ending' : 'game');
+    setPage(shouldShowEndingPage(snapshot.state) ? 'ending' : 'game');
   }
 
   function handleAdvancePhase() {
@@ -275,6 +270,12 @@ function App() {
     if (gameState.phase === 'election') {
       setFlowPanel(null);
       commitSnapshot(resolveElectionNode(gameState), null, true);
+      return;
+    }
+
+    if (gameState.phase === 'finalElection') {
+      setFlowPanel(null);
+      commitSnapshot(resolveFinalElectionNode(gameState), null, true);
     }
   }
 
@@ -337,14 +338,6 @@ function App() {
       }
 
       if (result.type === 'stopped') {
-        const annualNodeSnapshot = resolveAutoAnnualNodeSnapshot(snapshot.state);
-        if (annualNodeSnapshot) {
-          setIsAutoAdvancing(false);
-          setFlowPanel(null);
-          commitSnapshot(annualNodeSnapshot, null, true);
-          return;
-        }
-
         if (nextPendingEvent) {
           setIsAutoAdvancing(false);
           setFlowPanel(null);
@@ -411,7 +404,7 @@ function App() {
     setPendingEvent(event);
     setActiveFeedback(showFeedback ? snapshot.lastResult : null);
 
-    if (snapshot.state.phase === 'finalEnding') {
+    if (shouldShowEndingPage(stateWithPendingEvent) && !showFeedback) {
       setPage('ending');
     } else {
       setPage('game');
@@ -449,7 +442,12 @@ function App() {
           onAutoAdvance={handleAutoAdvance}
           onEventChoice={handleEventChoice}
           onResolveNode={handleResolveNode}
-          onCloseFeedback={() => setActiveFeedback(null)}
+          onCloseFeedback={() => {
+            setActiveFeedback(null);
+            if (gameState && shouldShowEndingPage(gameState)) {
+              setPage('ending');
+            }
+          }}
           onContinueFlow={handleContinueFlow}
           onHome={goHome}
           onRestart={startNewGame}
@@ -460,9 +458,9 @@ function App() {
         <GalleryPage unlockedIds={unlockedGallery} onHome={goHome} />
       ) : null}
 
-      {page === 'ending' && gameState && ending ? (
+      {page === 'ending' && gameState && gameState.endingResult ? (
         <EndingPage
-          ending={ending}
+          ending={gameState.endingResult}
           state={gameState}
           unlockedCount={unlockedGallery.length}
           onHome={goHome}
@@ -483,8 +481,8 @@ function App() {
             <h2 id="guide-title">11 年偶像生涯</h2>
             <p>
               从 2015 年 1 月开始，每个月安排一次行动、处理一次事件，并在配置月份结算总选或 B50。
-              年度总结会记录这一年的路线。当前 V4 Phase 3 会在 2025 年 12 月后停在 2026 终章占位，
-              正式最终总选、FLAME 舞台和结局判定将在后续 Phase 接入。
+              年度总结会记录这一年的路线。2025 年 12 月后进入 2026 FLAME 终章，
+              完成 FLAME、最终总选与结局判定后即可通关。
             </p>
             <button className="button button--primary" type="button" onClick={() => setShowGuide(false)}>
               知道了
@@ -512,15 +510,27 @@ function GalleryUnlockModal({
     return null;
   }
   const categoryLabel =
-    item.category === 'ending' ? '结局 CG 解锁' : item.category === 'event' ? '事件 CG 解锁' : '图鉴解锁';
+    item.category === 'ending'
+      ? '结局 CG 解锁'
+      : item.category === 'timeline'
+        ? '年度主题 CG 解锁'
+        : item.category === 'event'
+          ? '事件 CG 解锁'
+          : '图鉴解锁';
   const unlockMessage =
     item.category === 'ending' ? `${item.name} 已加入结局相册。` : item.description;
 
   return (
     <div className="modal-backdrop" role="presentation">
-      <section className="modal-card result-modal" role="dialog" aria-modal="true">
+      <section className="modal-card result-modal gallery-unlock-modal" role="dialog" aria-modal="true">
         <p className="eyebrow">{categoryLabel}</p>
-        <CharacterDisplay image={getVisualAsset(item.visual.type, item.visual.key)} compact />
+        <CharacterDisplay
+          image={getVisualAsset(item.visual.type, item.visual.key)}
+          zoomable
+          zoomTitle={item.name}
+          zoomDescription={unlockMessage}
+          showZoomHint
+        />
         <h2>{item.name}</h2>
         <p>{unlockMessage}</p>
         <button className="button button--primary" type="button" onClick={onClose}>
@@ -562,6 +572,10 @@ function getPostEventContinueLabel(phase: GameState['phase']): string {
     return '继续到年度总结';
   }
 
+  if (phase === 'finalElection') {
+    return '继续到最终总选';
+  }
+
   return '进入下个月';
 }
 
@@ -575,6 +589,10 @@ function resolveAutoAnnualNodeSnapshot(state: GameState): GameSnapshot | null {
   }
 
   return null;
+}
+
+function shouldShowEndingPage(state: GameState): boolean {
+  return state.phase === 'finalEnding' && Boolean(state.endingResult) && !state.pendingVisualUnlock;
 }
 
 function wait(ms: number): Promise<void> {

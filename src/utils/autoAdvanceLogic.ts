@@ -336,12 +336,20 @@ export function mergeStatChanges(
 }
 
 export function getAutoAdvanceStopReason(state: GameState): string | null {
+  if (state.pendingVisualUnlock) {
+    return '视觉记忆解锁';
+  }
+
   if (state.phase === 'flamePrelude') {
-    return '2026 FLAME 终章占位';
+    return '2026 FLAME 终章开启';
   }
 
   if (state.phase === 'finalEnding') {
     return '进入终章结算';
+  }
+
+  if (state.isGameCompleted) {
+    return 'V4 通关完成';
   }
 
   if (state.phase === 'yearSummary') {
@@ -358,6 +366,10 @@ export function getAutoAdvanceStopReason(state: GameState): string | null {
 
   if (state.phase === 'election') {
     return '本月总选';
+  }
+
+  if (state.phase === 'finalElection') {
+    return '最终总选';
   }
 
   if (state.phase === 'b50') {

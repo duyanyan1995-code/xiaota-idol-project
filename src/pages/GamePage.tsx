@@ -105,7 +105,6 @@ export function GamePage({
             onPlan={onPlan}
             onAutoAdvance={onAutoAdvance}
             onEventChoice={onEventChoice}
-            onHome={onHome}
             onResolveNode={onResolveNode}
           />
         )}
@@ -151,7 +150,6 @@ function PhaseCard({
   onPlan,
   onAutoAdvance,
   onEventChoice,
-  onHome,
   onResolveNode,
 }: {
   state: GameState;
@@ -164,7 +162,6 @@ function PhaseCard({
   onPlan: (planId: PlanId) => void;
   onAutoAdvance: () => void;
   onEventChoice: (choice: RandomEventChoice) => void;
-  onHome: () => void;
   onResolveNode: () => void;
 }) {
   if (state.pendingVisualUnlock) {
@@ -266,6 +263,28 @@ function PhaseCard({
     );
   }
 
+  if (state.phase === 'finalElection') {
+    return (
+      <section className="interaction-panel phase-card phase-card--final-election">
+        <div className="interaction-panel__header">
+          <p className="eyebrow">FLAME 终章节点</p>
+          <h1>最终总选 / 终章总选</h1>
+        </div>
+        <div className="interaction-panel__body">
+          <p>
+            结算 2015—2026 的完整养成结果。最终总选会参考粉丝数、核心应援力、
+            影响力、资源、舞台力、运营力、FLAME 等级和长期里程碑。
+          </p>
+        </div>
+        <div className="interaction-panel__footer">
+          <button className="button button--primary" type="button" onClick={onResolveNode}>
+            开始最终总选
+          </button>
+        </div>
+      </section>
+    );
+  }
+
   if (state.phase === 'yearSummary') {
     return (
       <section className="interaction-panel phase-card phase-card--summary">
@@ -274,7 +293,7 @@ function PhaseCard({
         </div>
         <div className="interaction-panel__footer">
           <button className="button button--primary" type="button" onClick={onAdvancePhase}>
-            {isFinalCareerMonth(state.currentYear, state.currentMonth) ? '进入 2026 终章占位' : '进入下一年'}
+            {isFinalCareerMonth(state.currentYear, state.currentMonth) ? '进入 2026 FLAME 终章' : '进入下一年'}
           </button>
         </div>
       </section>
@@ -285,21 +304,18 @@ function PhaseCard({
     return (
       <section className="interaction-panel phase-card phase-card--flame-prelude">
         <div className="interaction-panel__header">
-          <p className="eyebrow">V4 终章占位</p>
+          <p className="eyebrow">V4 终章</p>
           <h1>即将进入 2026 FLAME 终章</h1>
         </div>
         <div className="interaction-panel__body">
           <p>
-            2015—2025 的主养成期已经完成。接下来将进入 2026 终章阶段，
-            最终总选、FLAME 舞台和结局判定会在后续 Phase 中开放。
-          </p>
-          <p className="phase-card__todo">
-            TODO Phase 8：2026 FLAME 终章、最终总选与结局判定将在后续接入。
+            2015—2025 的主养成期已经完成。接下来进入 2026 终章准备期：
+            1 月到 5 月仍可行动，6 月触发 FLAME，随后进入最终总选与结局判定。
           </p>
         </div>
         <div className="interaction-panel__footer">
-          <button className="button button--primary" type="button" onClick={onHome}>
-            返回首页
+          <button className="button button--primary" type="button" onClick={onAdvancePhase}>
+            进入终章准备
           </button>
         </div>
       </section>
@@ -338,7 +354,14 @@ function VisualUnlockCard({
       </div>
       <div className="interaction-panel__body visual-unlock-panel__body">
         {visual ? (
-          <CharacterDisplay image={visual} caption={unlock.title} />
+          <CharacterDisplay
+            image={visual}
+            caption={unlock.title}
+            zoomable
+            zoomTitle={unlock.title}
+            zoomDescription={unlock.description}
+            showZoomHint
+          />
         ) : (
           <div className="visual-unlock-placeholder">
             <span>视觉资源待补充</span>
@@ -365,6 +388,10 @@ function VisualUnlockCard({
 function getVisualSourceLabel(sourceType: VisualUnlock['sourceType']): string {
   if (sourceType === 'work') {
     return '年度作品';
+  }
+
+  if (sourceType === 'timeline') {
+    return '年度主题';
   }
 
   if (sourceType === 'annual') {
@@ -613,7 +640,16 @@ function ResultModal({
     <div className="modal-backdrop" role="presentation">
       <section className={modalClassName} role="dialog" aria-modal="true">
         <p className="eyebrow">结果反馈</p>
-        {visualAsset ? <CharacterDisplay image={visualAsset} compact={!isEventCg} /> : null}
+        {visualAsset ? (
+          <CharacterDisplay
+            image={visualAsset}
+            compact={!isEventCg}
+            zoomable
+            zoomTitle={displayTitle}
+            zoomDescription={nodeStory ?? feedback.message}
+            showZoomHint={isEventCg}
+          />
+        ) : null}
         <h2>{displayTitle}</h2>
         {feedback.score !== undefined ? (
           <p className="result-grade">

@@ -8,6 +8,7 @@ import type {
   EndingCgKey,
   EventCgKey,
   FeedbackVisual,
+  TimelineCgKey,
   WorkCgKey,
 } from '../types/game';
 
@@ -139,44 +140,82 @@ export const EVENT_CGS: Record<EventCgKey, CharacterImage> = {
   ),
 };
 
+export const TIMELINE_CGS: Record<TimelineCgKey, CharacterImage> = {
+  timeline_x_team_debut: makeTimelineCg(
+    'timeline_x_team_debut',
+    publicPath('assets/cg/timeline/timeline_x_team_debut.png'),
+    'X队初登场 CG',
+  ),
+  timeline_quick_report_first: makeTimelineCg(
+    'timeline_quick_report_first',
+    publicPath('assets/cg/timeline/timeline_quick_report_first.png'),
+    '冰帝传说 CG',
+  ),
+  timeline_eighteen_shining_moments: makeTimelineCgPlaceholder(
+    'timeline_eighteen_shining_moments',
+    publicPath('assets/cg/timeline/timeline_eighteen_shining_moments.png'),
+    '十八个闪耀瞬间 CG',
+  ),
+  timeline_color_girls: makeTimelineCg(
+    'timeline_color_girls',
+    publicPath('assets/cg/timeline/timeline_color_girls.png'),
+    '卡拉卡拉狗 CG',
+  ),
+  timeline_vice_captain: makeTimelineCg(
+    'timeline_vice_captain',
+    publicPath('assets/cg/timeline/timeline_vice_captain.png'),
+    '肩负旗帜 CG',
+  ),
+  timeline_demoon: makeTimelineCg(
+    'timeline_demoon',
+    publicPath('assets/cg/timeline/timeline_demoon.png'),
+    'DEMOON CG',
+  ),
+  timeline_captain: makeTimelineCgPlaceholder(
+    'timeline_captain',
+    publicPath('assets/cg/timeline/timeline_captain.png'),
+    '队长 CG',
+  ),
+};
+
 export const WORK_CGS: Record<WorkCgKey, CharacterImage> = {
-  girls_revolution: makeCgPlaceholder(
+  girls_revolution: makeWorkCg(
     'girls_revolution',
-    publicPath('assets/cg/work/girls_revolution.png'),
+    publicPath('assets/cg/work/work_girls_revolution.png'),
     '少女革命作品 CG',
   ),
   yy_ds: makeCgPlaceholder(
     'yy_ds',
-    publicPath('assets/cg/work/yy_ds.png'),
+    publicPath('assets/cg/work/work_yy_ds.png'),
     '歪歪DS作品 CG',
   ),
   xiaoyi: makeCgPlaceholder(
     'xiaoyi',
-    publicPath('assets/cg/work/xiaoyi.png'),
+    publicPath('assets/cg/work/work_xiaoyi.png'),
     '小一作品 CG',
   ),
   meteor_stream: makeCgPlaceholder(
     'meteor_stream',
-    publicPath('assets/cg/work/meteor_stream.png'),
+    publicPath('assets/cg/work/work_meteor_stream.png'),
     'meteor stream作品 CG',
   ),
   triones: makeCgPlaceholder(
     'triones',
-    publicPath('assets/cg/work/triones.png'),
+    publicPath('assets/cg/work/work_triones.png'),
     'Triones作品 CG',
   ),
-  fu: makeCgPlaceholder('fu', publicPath('assets/cg/work/fu.png'), 'Fu作品 CG'),
+  fu: makeCgPlaceholder('fu', publicPath('assets/cg/work/work_fu.png'), 'Fu作品 CG'),
   super_tata: makeCgPlaceholder(
     'super_tata',
-    publicPath('assets/cg/work/super_tata.png'),
+    publicPath('assets/cg/work/work_super_tata.png'),
     'SuperTATA作品 CG',
   ),
   brand_mark: makeCgPlaceholder(
     'brand_mark',
-    publicPath('assets/cg/work/brand_mark.png'),
+    publicPath('assets/cg/work/work_brand_mark.png'),
     '烙印作品 CG',
   ),
-  flame: makeCgPlaceholder('flame', publicPath('assets/cg/work/flame.png'), 'FLAME作品 CG'),
+  flame: makeCgPlaceholder('flame', publicPath('assets/cg/work/work_flame.png'), 'FLAME作品 CG'),
 };
 
 export const ANNUAL_CGS: Record<AnnualCgKey, CharacterImage> = {
@@ -193,6 +232,31 @@ export const ANNUAL_CGS: Record<AnnualCgKey, CharacterImage> = {
 };
 
 export const ENDING_CGS: Record<EndingCgKey, CharacterImage> = {
+  ending_butterfly: makeEndingCg(
+    'ending_butterfly',
+    publicPath('assets/cg/ending/ending_butterfly.png'),
+    '化茧为蝶结局 CG',
+  ),
+  ending_spark: makeEndingCg(
+    'ending_spark',
+    publicPath('assets/cg/ending/ending_spark.png'),
+    '星火将燃结局 CG',
+  ),
+  ending_halfway: makeEndingCg(
+    'ending_halfway',
+    publicPath('assets/cg/ending/ending_halfway.png'),
+    '仍在半山结局 CG',
+  ),
+  ending_goodnight: makeEndingCg(
+    'ending_goodnight',
+    publicPath('assets/cg/ending/ending_goodnight.png'),
+    '那么晚安结局 CG',
+  ),
+  ending_risk_pause: makeEndingCg(
+    'ending_risk_pause',
+    publicPath('assets/cg/ending/ending_risk_pause.png'),
+    '暂停休整结局 CG',
+  ),
   idolPeakEndingCg: makeEndingCg(
     'idolPeakEndingCg',
     publicPath('images/xiaota/endings/idol-peak.png'),
@@ -250,6 +314,10 @@ export function getVisualAsset(
 
   if (type === 'eventCg') {
     return EVENT_CGS[key as EventCgKey];
+  }
+
+  if (type === 'timelineCg') {
+    return TIMELINE_CGS[key as TimelineCgKey];
   }
 
   if (type === 'workCg') {
@@ -316,5 +384,40 @@ function makeCgPlaceholder(
     alt: label,
     label,
     placeholderText: '视觉资源待补充',
+  };
+}
+
+function makeWorkCg(key: WorkCgKey, src: string, label: string): CharacterImage {
+  return {
+    key,
+    src,
+    plannedSrc: src,
+    alt: label,
+    label,
+  };
+}
+
+function makeTimelineCg(key: TimelineCgKey, src: string, label: string): CharacterImage {
+  return {
+    key,
+    src,
+    plannedSrc: src,
+    alt: label,
+    label,
+  };
+}
+
+function makeTimelineCgPlaceholder(
+  key: TimelineCgKey,
+  plannedSrc: string,
+  label: string,
+): CharacterImage {
+  return {
+    key,
+    src: publicPath('assets/cg/placeholder.png'),
+    plannedSrc,
+    alt: label,
+    label,
+    placeholderText: '年度主题 CG 待补充',
   };
 }

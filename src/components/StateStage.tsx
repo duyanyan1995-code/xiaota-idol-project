@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { STATUS_PORTRAITS } from '../config/statusPortraits';
 import type { GameState } from '../types/game';
+import { ImageLightbox } from './ImageLightbox';
 import {
   getCurrentMainState,
   getCurrentTendencyLabel,
@@ -20,22 +21,31 @@ export function StateStage({
   const meta = getMainStateMeta(mainState);
   const portrait = STATUS_PORTRAITS[mainState];
   const [hasPortraitError, setHasPortraitError] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const warnings = getStatusWarnings(state);
 
   useEffect(() => {
     setHasPortraitError(false);
+    setIsLightboxOpen(false);
   }, [portrait.src]);
 
   return (
     <section className={`state-stage state-stage--${mainState}`} aria-label="状态舞台区">
       <div className="state-stage__portrait" aria-label={portrait.alt}>
         {!hasPortraitError ? (
-          <img
-            className="state-stage__portrait-image"
-            src={portrait.src}
-            alt={portrait.alt}
-            onError={() => setHasPortraitError(true)}
-          />
+          <button
+            className="state-stage__portrait-button"
+            type="button"
+            aria-label={`查看大图：${portrait.alt}`}
+            onClick={() => setIsLightboxOpen(true)}
+          >
+            <img
+              className="state-stage__portrait-image"
+              src={portrait.src}
+              alt={portrait.alt}
+              onError={() => setHasPortraitError(true)}
+            />
+          </button>
         ) : (
           <div className="state-stage__portrait-fallback">
             <span>杨小獭</span>
@@ -61,6 +71,15 @@ export function StateStage({
         ) : null}
 
       </div>
+      {isLightboxOpen ? (
+        <ImageLightbox
+          src={portrait.src}
+          alt={portrait.alt}
+          title="杨小獭"
+          description={meta.label}
+          onClose={() => setIsLightboxOpen(false)}
+        />
+      ) : null}
     </section>
   );
 }

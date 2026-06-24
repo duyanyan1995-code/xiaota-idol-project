@@ -1,3 +1,4 @@
+import { FINAL_CHAPTER_YEAR } from '../config/annualCalendar';
 import {
   THEME_NODES,
   WORK_GRADE_LABELS,
@@ -15,6 +16,7 @@ import type {
   StatKey,
   ThemeNodeResult,
   WorkGrade,
+  WorkGalleryId,
   WorkMilestone,
   WorkResult,
 } from '../types/game';
@@ -25,7 +27,7 @@ export function getThemeNodeConfigForState(state: GameState): ThemeNodeConfig | 
     (node) =>
       node.year === state.currentYear &&
       node.month === state.currentMonth &&
-      node.phaseEnabled !== 'phase8',
+      (node.phaseEnabled !== 'phase8' || state.currentYear === FINAL_CHAPTER_YEAR),
   );
 
   if (!config) {
@@ -52,7 +54,7 @@ export function buildThemeNodeResult(state: GameState, config: ThemeNodeConfig):
     deltas: config.timelineDeltas ?? {},
     sourceName: config.sourceName,
     createdAtMonth: config.month,
-    potentialVisualKey: config.potentialVisualKey,
+    potentialVisualKey: config.galleryId,
   };
 }
 
@@ -86,6 +88,7 @@ export function buildWorkResult(state: GameState, config: ThemeNodeConfig): Work
     relatedEventIds,
     relatedActionSummary,
     potentialVisualKey: grade === 'A' || grade === 'S' ? config.potentialVisualKey : undefined,
+    galleryId: grade === 'A' || grade === 'S' ? toWorkGalleryId(config.galleryId) : undefined,
     createdAtMonth: config.month,
   };
 }
@@ -113,6 +116,7 @@ export function buildWorkMilestones(result: WorkResult, config: ThemeNodeConfig)
       sourceWorkResultId: result.id,
       grade: result.grade,
       potentialVisualKey: result.potentialVisualKey,
+      galleryId: result.galleryId,
     },
   ];
 }
@@ -136,9 +140,14 @@ function calculateWorkScore(
   const annualScore = getAnnualScore(state) * 0.18;
   const eventScore = getEventScore(state) * 0.12;
   const conditionScore = getConditionScore(state) * 0.12;
+  const flameLegacyScore = config.workId === 'flame' ? getFlameLegacyScore(state) : 0;
   const careerPenalty = getCareerPenalty(config.year);
 
-  return clamp(Math.round(statScore + actionScore + annualScore + eventScore + conditionScore - careerPenalty), 0, 100);
+  return clamp(
+    Math.round(statScore + actionScore + annualScore + eventScore + conditionScore + flameLegacyScore - careerPenalty),
+    0,
+    100,
+  );
 }
 
 function averageStats(state: GameState, stats: StatKey[]): number {
@@ -230,6 +239,45 @@ function getConditionScore(state: GameState): number {
   );
 }
 
+function getFlameLegacyScore(state: GameState): number {
+  const recentWorks = state.workResults.filter(
+    (result) =>
+      result.currentYear >= 2024 &&
+      result.workId !== 'flame' &&
+      ['fu', 'super_tata', 'brand_mark', 'triones'].includes(result.workId),
+  );
+  const workBonus = recentWorks.reduce((total, result) => total + getWorkGradeBonus(result.grade), 0);
+  const milestoneBonus = state.workMilestones.filter((milestone) => milestone.grade === 'A' || milestone.grade === 'S').length * 1.2;
+  const annualBonus =
+    state.electionResults.some((result) => result.currentYear === 2025 && isElectionAtLeast(result.tier, 'top3')) ? 5 : 0;
+  const b50Bonus =
+    state.b50Results.some((result) => result.currentYear >= 2024 && isB50AtLeast(result.tier, 'highlight')) ? 4 : 0;
+  const positiveEvents = state.eventHistory.filter(
+    (event) => event.eventType === 'positive' || event.eventType === 'milestone',
+  ).length;
+  const riskEvents = state.eventHistory.filter(
+    (event) => event.eventType === 'risk' || event.eventType === 'negative',
+  ).length;
+  const riskPenalty =
+    Math.max(0, state.pressure - 82) * 0.1 +
+    Math.max(0, state.fanFatigue - 82) * 0.12 +
+    Math.max(0, 28 - state.stamina) * 0.12 +
+    Math.max(0, 30 - state.mood) * 0.1;
+
+  return clamp(workBonus + milestoneBonus + annualBonus + b50Bonus + positiveEvents * 0.25 - riskEvents * 0.35 - riskPenalty, -12, 22);
+}
+
+function getWorkGradeBonus(grade: WorkGrade): number {
+  const bonus: Record<WorkGrade, number> = {
+    C: 0,
+    B: 1.5,
+    A: 3.5,
+    S: 5.5,
+  };
+
+  return bonus[grade];
+}
+
 function getWorkGrade(score: number, config: ThemeNodeConfig): WorkGrade {
   const thresholds = config.gradeThresholds ?? WORK_GRADE_THRESHOLDS;
   if (score >= thresholds.S) {
@@ -290,4 +338,20 @@ function normalizeFanCount(fanCount: number): number {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
+}
+
+function toWorkGalleryId(value: unknown): WorkGalleryId | undefined {
+  const ids: WorkGalleryId[] = [
+    'work_girls_revolution',
+    'work_yy_ds',
+    'work_xiaoyi',
+    'work_meteor_stream',
+    'work_triones',
+    'work_fu',
+    'work_super_tata',
+    'work_brand_mark',
+    'work_flame',
+  ];
+
+  return ids.includes(value as WorkGalleryId) ? (value as WorkGalleryId) : undefined;
 }

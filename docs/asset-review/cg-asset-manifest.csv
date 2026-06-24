@@ -1,0 +1,32 @@
+category,sourceType,sourceId,galleryId,title,unlockPolicy,assetReady,currentImagePath,expectedImagePath,thumbnailPath,phase,note
+timeline,timeline,x_team_debut,timeline_x_team_debut,X队初登场,2015 年 4 月年度主题节点触发,true,public/assets/cg/timeline/timeline_x_team_debut.png,public/assets/cg/timeline/timeline_x_team_debut.png,,V4 Phase 8,已从桌面年度主题cg接入
+timeline,timeline,quick_report_first,timeline_quick_report_first,冰帝传说,2015 年 5 月年度主题节点触发,true,public/assets/cg/timeline/timeline_quick_report_first.png,public/assets/cg/timeline/timeline_quick_report_first.png,,V4 Phase 8,已从桌面年度主题cg接入
+timeline,timeline,eighteen_shining_moments,timeline_eighteen_shining_moments,十八个闪耀瞬间,2016 年 4 月年度主题节点触发,false,,public/assets/cg/timeline/timeline_eighteen_shining_moments.png,,future,未找到桌面素材；主流程不弹占位
+timeline,timeline,color_girls,timeline_color_girls,卡拉卡拉狗,2017 年 7 月年度主题节点触发,true,public/assets/cg/timeline/timeline_color_girls.png,public/assets/cg/timeline/timeline_color_girls.png,,V4 Phase 8,已从桌面年度主题cg接入
+timeline,timeline,vice_captain,timeline_vice_captain,肩负旗帜,2018 年 2 月年度主题节点触发,true,public/assets/cg/timeline/timeline_vice_captain.png,public/assets/cg/timeline/timeline_vice_captain.png,,V4 Phase 8,已从桌面年度主题cg接入
+timeline,timeline,demoon,timeline_demoon,DEMOON,2019 年 1 月年度主题节点触发,true,public/assets/cg/timeline/timeline_demoon.png,public/assets/cg/timeline/timeline_demoon.png,,V4 Phase 8,已从桌面年度主题cg接入
+timeline,timeline,captain,timeline_captain,队长,2020 年 11 月年度主题节点触发,false,,public/assets/cg/timeline/timeline_captain.png,,future,未找到桌面素材；主流程不弹占位
+work,work,girls_revolution,work_girls_revolution,少女革命作品记忆,少女革命作品节点达到 A 或 S,true,public/assets/cg/work/work_girls_revolution.png,public/assets/cg/work/work_girls_revolution.png,,V4 Phase 8,已从桌面年度主题cg接入
+work,work,yy_ds,work_yy_ds,歪歪DS作品记忆,歪歪DS作品节点达到 A 或 S,false,,public/assets/cg/work/work_yy_ds.png,,future,素材未就绪；A/S 不弹占位
+work,work,xiaoyi,work_xiaoyi,小一作品记忆,小一作品节点达到 A 或 S,false,,public/assets/cg/work/work_xiaoyi.png,,future,素材未就绪；A/S 不弹占位
+work,work,meteor_stream,work_meteor_stream,meteor stream作品记忆,meteor stream作品节点达到 A 或 S,false,,public/assets/cg/work/work_meteor_stream.png,,future,素材未就绪；A/S 不弹占位
+work,work,triones,work_triones,Triones作品记忆,Triones作品节点达到 A 或 S,false,,public/assets/cg/work/work_triones.png,,future,素材未就绪；A/S 不弹占位
+work,work,fu,work_fu,Fu作品记忆,Fu作品节点达到 A 或 S,false,,public/assets/cg/work/work_fu.png,,future,素材未就绪；A/S 不弹占位
+work,work,super_tata,work_super_tata,SuperTATA作品记忆,SuperTATA作品节点达到 A 或 S,false,,public/assets/cg/work/work_super_tata.png,,future,素材未就绪；A/S 不弹占位
+work,work,brand_mark,work_brand_mark,烙印作品记忆,烙印作品节点达到 A 或 S,false,,public/assets/cg/work/work_brand_mark.png,,future,素材未就绪；A/S 不弹占位
+work,work,flame,work_flame,FLAME终章记忆,FLAME 终章作品节点达到 A 或 S,false,,public/assets/cg/work/work_flame.png,,future,素材未就绪；A/S 不弹占位
+event,event,fanLetterCg,fanLetterCg,粉丝来信 CG,完成对应事件,true,public/images/xiaota/events/fan-letter.png,public/assets/cg/event/fan_letter_cg.png,,legacy,沿用历史资源路径；后续可迁移
+event,event,fanCreationCg,fanCreationCg,粉丝二创出圈 CG,完成对应事件,true,public/images/xiaota/events/fan-creation.png,public/assets/cg/event/fan_creation_cg.png,,legacy,沿用历史资源路径；后续可迁移
+event,event,stageMistakeCg,stageMistakeCg,舞台小失误 CG,完成对应事件,true,public/images/xiaota/events/stage-mistake.png,public/assets/cg/event/stage_mistake_cg.png,,legacy,沿用历史资源路径；后续可迁移
+event,event,extraPracticeCg,extraPracticeCg,练习室加练 CG,完成对应事件,true,public/images/xiaota/events/extra-practice.png,public/assets/cg/event/extra_practice_cg.png,,legacy,沿用历史资源路径；后续可迁移
+event,event,styleChallengeCg,styleChallengeCg,风格挑战 CG,完成对应事件,true,public/images/xiaota/events/style-challenge.png,public/assets/cg/event/style_challenge_cg.png,,legacy,沿用历史资源路径；后续可迁移
+event,event,summerInviteCg,summerInviteCg,夏日邀约 CG,完成对应事件,true,public/images/xiaota/events/summer-invite.png,public/assets/cg/event/summer_invite_cg.png,,legacy,沿用历史资源路径；后续可迁移
+event,event,lowMoodCg,lowMoodCg,心情低落 CG,完成对应事件,true,public/images/xiaota/events/low-mood.png,public/assets/cg/event/low_mood_cg.png,,legacy,沿用历史资源路径；后续可迁移
+event,event,secretHappyCg,secretHappyCg,偷偷开心 CG,完成对应事件,true,public/images/xiaota/events/secret-happy.png,public/assets/cg/event/secret_happy_cg.png,,legacy,沿用历史资源路径；后续可迁移
+annual,annual,election_champion,election_champion,总选高光记忆,年度总选高光视觉预留,false,,public/assets/cg/annual/election_champion.png,,future,素材未就绪；主流程不弹占位
+annual,annual,b50_highlight,b50_highlight,B50高光记忆,B50 舞台高光视觉预留,false,,public/assets/cg/annual/b50_highlight.png,,future,素材未就绪；主流程不弹占位
+ending,ending,ending_butterfly,ending_butterfly,化茧为蝶结局 CG,达成对应结局,false,,public/assets/cg/ending/ending_butterfly.png,,future,素材未就绪；结局不弹占位
+ending,ending,ending_spark,ending_spark,星火将燃结局 CG,达成对应结局,false,,public/assets/cg/ending/ending_spark.png,,future,素材未就绪；结局不弹占位
+ending,ending,ending_halfway,ending_halfway,仍在半山结局 CG,达成对应结局,false,,public/assets/cg/ending/ending_halfway.png,,future,素材未就绪；结局不弹占位
+ending,ending,ending_goodnight,ending_goodnight,那么晚安结局 CG,达成对应结局,false,,public/assets/cg/ending/ending_goodnight.png,,future,素材未就绪；结局不弹占位
+ending,ending,ending_risk_pause,ending_risk_pause,暂停休整结局 CG,达成对应结局,false,,public/assets/cg/ending/ending_risk_pause.png,,future,素材未就绪；结局不弹占位

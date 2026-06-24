@@ -24,6 +24,11 @@ const GALLERY_CATEGORIES: Array<{
     description: '完成剧情事件后解锁的回忆 CG',
   },
   {
+    id: 'timeline',
+    title: '年度主题',
+    description: '固定年度节点触发后收录的成长 CG',
+  },
+  {
     id: 'work',
     title: '作品记忆',
     description: '年度作品达到高光后收录的视觉记忆',
@@ -63,7 +68,7 @@ export function GalleryGrid({ unlockedIds }: GalleryGridProps) {
               </header>
               <div className="gallery-grid">
                 {items.map((item) => {
-                  const isUnlocked = unlockedSet.has(item.id);
+                  const isUnlocked = unlockedSet.has(item.id) && item.assetReady !== false;
                   const image = getVisualAsset(item.visual.type, item.visual.key);
 
                   return (
@@ -73,7 +78,13 @@ export function GalleryGrid({ unlockedIds }: GalleryGridProps) {
                       key={item.id}
                       onClick={() => (isUnlocked ? setActiveItem(item) : undefined)}
                     >
-                      <CharacterDisplay image={image} compact />
+                      {isUnlocked ? (
+                        <CharacterDisplay image={image} compact />
+                      ) : (
+                        <div className="gallery-card__locked-visual" aria-hidden="true">
+                          <span>LOCK</span>
+                        </div>
+                      )}
                       <strong>{isUnlocked ? item.name : item.lockedTitle ?? '未解锁'}</strong>
                       <span>{isUnlocked ? '点击查看详情' : item.lockedHint ?? item.conditionText}</span>
                     </button>
@@ -96,6 +107,10 @@ export function GalleryGrid({ unlockedIds }: GalleryGridProps) {
             <CharacterDisplay
               image={getVisualAsset(activeItem.visual.type, activeItem.visual.key)}
               caption={activeItem.name}
+              zoomable
+              zoomTitle={activeItem.name}
+              zoomDescription={activeItem.description}
+              showZoomHint
             />
             <h2 id="gallery-detail-title">{activeItem.name}</h2>
             <p>{activeItem.description}</p>

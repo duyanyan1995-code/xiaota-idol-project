@@ -8,6 +8,7 @@ export type GamePhase =
   | 'b50'
   | 'yearSummary'
   | 'flamePrelude'
+  | 'finalElection'
   | 'finalEnding';
 
 export type HalfYear = 'first' | 'second';
@@ -98,6 +99,26 @@ export type WorkCgKey =
   | 'brand_mark'
   | 'flame';
 
+export type TimelineCgKey =
+  | 'timeline_x_team_debut'
+  | 'timeline_quick_report_first'
+  | 'timeline_eighteen_shining_moments'
+  | 'timeline_color_girls'
+  | 'timeline_vice_captain'
+  | 'timeline_demoon'
+  | 'timeline_captain';
+
+export type WorkGalleryId =
+  | 'work_girls_revolution'
+  | 'work_yy_ds'
+  | 'work_xiaoyi'
+  | 'work_meteor_stream'
+  | 'work_triones'
+  | 'work_fu'
+  | 'work_super_tata'
+  | 'work_brand_mark'
+  | 'work_flame';
+
 export type AnnualCgKey = 'election_champion' | 'b50_highlight';
 
 export type EndingId =
@@ -112,6 +133,11 @@ export type EndingId =
   | 'regretGraduation';
 
 export type EndingCgKey =
+  | 'ending_butterfly'
+  | 'ending_spark'
+  | 'ending_halfway'
+  | 'ending_goodnight'
+  | 'ending_risk_pause'
   | 'idolPeakEndingCg'
   | 'kamiSevenEndingCg'
   | 'top16CoreEndingCg'
@@ -122,9 +148,22 @@ export type EndingCgKey =
   | 'steadyOperationEndingCg'
   | 'regretGraduationEndingCg';
 
-export type GalleryId = CharacterImageKey | EventCgKey | WorkCgKey | AnnualCgKey | EndingCgKey;
+export type GalleryId =
+  | CharacterImageKey
+  | EventCgKey
+  | TimelineCgKey
+  | WorkGalleryId
+  | AnnualCgKey
+  | EndingCgKey;
 
-export type VisualAssetKey = CharacterImageKey | ActionVisualKey | EventCgKey | WorkCgKey | AnnualCgKey | EndingCgKey;
+export type VisualAssetKey =
+  | CharacterImageKey
+  | ActionVisualKey
+  | EventCgKey
+  | TimelineCgKey
+  | WorkCgKey
+  | AnnualCgKey
+  | EndingCgKey;
 
 export type FeedbackVisual =
   | {
@@ -134,6 +173,10 @@ export type FeedbackVisual =
   | {
       type: 'eventCg';
       key: EventCgKey;
+    }
+  | {
+      type: 'timelineCg';
+      key: TimelineCgKey;
     }
   | {
       type: 'workCg';
@@ -366,6 +409,10 @@ export interface YearSummary {
 
 export type AnnualResultType = 'election' | 'b50';
 
+export type FinalElectionTier = ElectionTier;
+
+export type EndingType = 'S' | 'A' | 'B' | 'C' | 'Risk';
+
 export interface AnnualResult {
   id: string;
   year: number;
@@ -426,6 +473,7 @@ export interface WorkResult {
   relatedEventIds?: string[];
   relatedActionSummary?: Record<string, number>;
   potentialVisualKey?: WorkCgKey;
+  galleryId?: WorkGalleryId;
   createdAtMonth: number;
 }
 
@@ -439,9 +487,47 @@ export interface WorkMilestone {
   sourceWorkResultId: string;
   grade: WorkGrade;
   potentialVisualKey?: WorkCgKey;
+  galleryId?: WorkGalleryId;
 }
 
-export type GallerySourceType = 'event' | 'work' | 'annual' | 'ending';
+export interface FinalElectionResult {
+  id: string;
+  year: number;
+  currentYear: number;
+  month: number;
+  type: 'finalElection';
+  score: number;
+  tier: FinalElectionTier;
+  resultLabel: string;
+  narrative: string;
+  deltas: StatDeltas;
+  createdAtMonth: number;
+}
+
+export interface EndingResult {
+  id: string;
+  endingType: EndingType;
+  title: string;
+  subtitle?: string;
+  narrative: string;
+  year: number;
+  currentYear: number;
+  month: number;
+  sourceSummary: string;
+  keyReasons: string[];
+  unlockedGalleryId?: GalleryId;
+  createdAtMonth: number;
+}
+
+export interface FinalChapterState {
+  started: boolean;
+  flameResolved: boolean;
+  finalElectionResolved: boolean;
+  endingResolved: boolean;
+  currentStep: 'prelude' | 'prep' | 'flame' | 'finalElection' | 'ending' | 'completed';
+}
+
+export type GallerySourceType = 'event' | 'timeline' | 'work' | 'annual' | 'ending';
 
 export interface GalleryUnlockRecord {
   id: string;
@@ -474,7 +560,7 @@ export interface VisualUnlock {
 }
 
 export interface GameState {
-  saveVersion: 10;
+  saveVersion: 11;
   year: number;
   currentYear: number;
   currentMonth: number;
@@ -511,7 +597,12 @@ export interface GameState {
   unlockedGalleryIds: GalleryId[];
   galleryUnlockHistory: GalleryUnlockRecord[];
   pendingVisualUnlock: VisualUnlock | null;
+  pendingVisualUnlocks: VisualUnlock[];
   seenVisualUnlockIds: GalleryId[];
+  finalElectionResult: FinalElectionResult | null;
+  endingResult: EndingResult | null;
+  finalChapterState: FinalChapterState;
+  isGameCompleted: boolean;
   yearSummaries: YearSummary[];
   growthLogs: GrowthLog[];
   unlockedGallery: GalleryId[];
@@ -542,7 +633,7 @@ export interface GameFeedback {
 export interface GalleryItem {
   id: GalleryId;
   name: string;
-  category: 'character' | 'event' | 'work' | 'annual' | 'ending';
+  category: 'character' | 'timeline' | 'event' | 'work' | 'annual' | 'ending';
   sourceType?: GallerySourceType;
   sourceId?: string;
   rarity?: 'normal' | 'key' | 'rare';
@@ -550,7 +641,11 @@ export interface GalleryItem {
   sortOrder?: number;
   lockedTitle?: string;
   lockedHint?: string;
-  visual: Extract<FeedbackVisual, { type: 'legacy' | 'eventCg' | 'workCg' | 'annualCg' | 'endingCg' }>;
+  assetReady?: boolean;
+  visual: Extract<
+    FeedbackVisual,
+    { type: 'legacy' | 'eventCg' | 'timelineCg' | 'workCg' | 'annualCg' | 'endingCg' }
+  >;
   description: string;
   conditionText: string;
   isUnlocked: (state: GameState) => boolean;

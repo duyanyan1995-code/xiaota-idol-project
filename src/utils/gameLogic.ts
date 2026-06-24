@@ -1,14 +1,18 @@
 import {
-  CAREER_END_YEAR,
+  CAREER_MAX_YEAR,
   CAREER_START_YEAR,
+  FINAL_CHAPTER_ELECTION_MONTH,
+  FINAL_CHAPTER_FLAME_MONTH,
+  FINAL_CHAPTER_YEAR,
   MONTHS_PER_YEAR,
   getAnnualCalendar,
   getCareerYear,
   isFinalCareerMonth,
+  isFinalChapterYear,
 } from '../config/annualCalendar';
 import { CHARACTER_IMAGES } from '../config/characterImages';
 import { FALLBACK_EVENT, RANDOM_EVENTS } from '../config/events';
-import { GALLERY_ITEMS } from '../config/gallery';
+import { GALLERY_ITEMS, isGalleryAssetReady } from '../config/gallery';
 import { PLAN_BY_ID } from '../config/plans';
 import {
   DEFAULT_WORK_GRADE,
@@ -21,6 +25,7 @@ import {
 } from '../config/stats';
 import { getVisualAsset } from '../config/visualAssets';
 import { calculateB50Result, calculateElectionResult } from './nodeLogic';
+import { calculateFinalElectionResult, resolveFinalEndingResult } from './finalChapterLogic';
 import { formatMonthlyActionLabel, formatYearMonth } from './dateDisplay';
 import { isB50AtLeast, isElectionAtLeast } from './routeLogic';
 import { getPlanLockedReason, isPlanUnlocked } from './unlockLogic';
@@ -38,9 +43,14 @@ import {
 import type {
   CharacterImage,
   CharacterImageKey,
+  ElectionTier,
   AnnualResult,
   AnnualResultType,
   EventHistoryEntry,
+  EndingResult,
+  EndingType,
+  FinalChapterState,
+  FinalElectionResult,
   GallerySourceType,
   GalleryUnlockRecord,
   GameFeedback,
@@ -66,11 +76,12 @@ import type {
   VisualUnlock,
   WorkMilestone,
   WorkResult,
+  WorkGalleryId,
   YearSummary,
 } from '../types/game';
 
-const SAVE_VERSION = 10;
-const SUPPORTED_SAVE_VERSIONS = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+const SAVE_VERSION = 11;
+const SUPPORTED_SAVE_VERSIONS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 export function createInitialGameState(): GameState {
   return {
@@ -111,7 +122,12 @@ export function createInitialGameState(): GameState {
     unlockedGalleryIds: [],
     galleryUnlockHistory: [],
     pendingVisualUnlock: null,
+    pendingVisualUnlocks: [],
     seenVisualUnlockIds: [],
+    finalElectionResult: null,
+    endingResult: null,
+    finalChapterState: createInitialFinalChapterState(),
+    isGameCompleted: false,
     yearSummaries: [],
     growthLogs: [],
     unlockedGallery: ['base'],
@@ -144,7 +160,8 @@ export function normalizeGameState(value: Partial<GameState> | null | undefined)
   const source = value as Record<string, unknown> | null | undefined;
   const currentYear = normalizeCurrentYear(value);
   const currentMonth = normalizeCurrentMonth(value);
-  const phase = normalizePhase((value as { phase?: string } | null | undefined)?.phase);
+  const rawPhase = normalizePhase((value as { phase?: string } | null | undefined)?.phase);
+  const phase = rawPhase === 'finalEnding' && !value?.endingResult ? 'flamePrelude' : rawPhase;
   const migratedStats = buildMigratedStats(source, initial);
   const merged: GameState = {
     ...initial,
@@ -172,7 +189,12 @@ export function normalizeGameState(value: Partial<GameState> | null | undefined)
     ]),
     galleryUnlockHistory: normalizeGalleryUnlockHistory(value?.galleryUnlockHistory ?? []),
     pendingVisualUnlock: normalizeNullableVisualUnlock(value?.pendingVisualUnlock ?? null),
+    pendingVisualUnlocks: normalizeVisualUnlocks(value?.pendingVisualUnlocks ?? []),
     seenVisualUnlockIds: normalizeGalleryIds(value?.seenVisualUnlockIds ?? []),
+    finalElectionResult: normalizeNullableFinalElectionResult(value?.finalElectionResult ?? null),
+    endingResult: normalizeNullableEndingResult(value?.endingResult ?? null),
+    finalChapterState: normalizeFinalChapterState(value?.finalChapterState),
+    isGameCompleted: Boolean(value?.isGameCompleted),
     yearSummaries: normalizeYearSummaries(value?.yearSummaries ?? []),
     growthLogs: normalizeGrowthLogs(value?.growthLogs ?? []),
     unlockedGallery: ensureBaseGallery(value?.unlockedGallery ?? initial.unlockedGallery),
@@ -180,7 +202,10 @@ export function normalizeGameState(value: Partial<GameState> | null | undefined)
     pendingEventId: typeof value?.pendingEventId === 'string' ? value.pendingEventId : null,
     eventCooldowns: normalizeNumberRecord(value?.eventCooldowns),
     riskWarningCounts: normalizeNumberRecord(value?.riskWarningCounts),
-    gameStatus: phase === 'flamePrelude' ? 'playing' : value?.gameStatus ?? 'playing',
+    gameStatus:
+      phase === 'finalEnding' || value?.isGameCompleted || value?.endingResult
+        ? 'completed'
+        : 'playing',
     workGrade: isValidWorkGrade(source?.workGrade) ? source.workGrade : initial.workGrade,
     monthlyActionOptions: normalizeMonthlyActionOptions(value?.monthlyActionOptions ?? []),
   };
@@ -256,35 +281,62 @@ export function advancePhase(state: GameState): GameSnapshot {
     if (isFinalCareerMonth(state.currentYear, state.currentMonth)) {
       nextState = clampGameState({
         ...state,
-        // TODO Phase 8: 接入 2026 FLAME 终章、最终总选与正式结局判定。
         phase: 'flamePrelude',
         gameStatus: 'playing',
+        finalChapterState: {
+          ...state.finalChapterState,
+          started: true,
+          currentStep: 'prelude',
+        },
         eventFlags: {
           ...state.eventFlags,
           summerActive: false,
         },
       });
       title = '即将进入 2026 FLAME 终章';
-      message = '2015—2025 的主养成期已经完成。2026 终章、最终总选、FLAME 舞台和结局判定会在后续 Phase 中开放。';
+      message = '2015—2025 的主养成期已经完成。接下来进入 2026 终章准备。';
     } else {
       nextState = advanceToNextMonth(state);
       title = formatYearMonth(nextState.currentYear, nextState.currentMonth);
       message = '新的月份开始了，小獭还会继续向舞台靠近。';
     }
+  } else if (state.phase === 'flamePrelude') {
+    nextState = ensureMonthlyActionOptions(clampGameState({
+      ...state,
+      currentYear: FINAL_CHAPTER_YEAR,
+      currentMonth: 1,
+      year: getCareerYear(FINAL_CHAPTER_YEAR),
+      phase: 'monthStart',
+      finalChapterState: {
+        ...state.finalChapterState,
+        started: true,
+        currentStep: 'prep',
+      },
+    }));
+    title = '2026 FLAME 终章';
+    message = '终章准备期开始了。1 月到 5 月仍可安排行动，6 月将正式进入 FLAME。';
   } else if (state.phase === 'themeNode' || state.phase === 'workNode') {
+    const pendingThemeNodeResult = state.pendingThemeNodeResult;
     const pendingWorkResult = state.pendingWorkResult;
     const stateAfterThemeNode = clampGameState({
       ...state,
       pendingThemeNodeResult: null,
       pendingWorkResult: null,
     });
+    const visualUnlock = pendingWorkResult
+      ? buildWorkVisualUnlock(stateAfterThemeNode, pendingWorkResult)
+      : pendingThemeNodeResult
+        ? buildThemeVisualUnlock(stateAfterThemeNode, pendingThemeNodeResult)
+        : null;
     nextState = applyVisualUnlock(
       resolveAfterThemeOrWorkNode(stateAfterThemeNode),
-      pendingWorkResult ? buildWorkVisualUnlock(stateAfterThemeNode, pendingWorkResult) : null,
+      visualUnlock,
     );
     title = getPhaseLabel(nextState.phase);
     message = nextState.phase === 'election'
       ? '年度主题节点已经记录，接下来进入总选 / 年度人气结算。'
+      : nextState.phase === 'finalElection'
+        ? 'FLAME 已经记录，接下来进入最终总选。'
       : nextState.phase === 'b50'
         ? '年度作品节点已经记录，接下来进入 B50 / 舞台记忆结算。'
         : nextState.phase === 'yearSummary'
@@ -571,6 +623,66 @@ export function resolveElectionNode(state: GameState): GameSnapshot {
   };
 }
 
+export function resolveFinalElectionNode(state: GameState): GameSnapshot {
+  if (state.phase !== 'finalElection') {
+    return makeNoopSnapshot(state, '当前阶段不能进行最终总选。');
+  }
+
+  if (state.finalElectionResult && state.endingResult) {
+    return {
+      state: clampGameState({
+        ...state,
+        phase: 'finalEnding',
+        gameStatus: 'completed',
+        isGameCompleted: true,
+        finalChapterState: {
+          ...state.finalChapterState,
+          finalElectionResolved: true,
+          endingResolved: true,
+          currentStep: 'completed',
+        },
+      }),
+      lastPlanId: null,
+      lastResult: buildFinalElectionFeedback(state, state.finalElectionResult, []),
+      pendingEventId: null,
+    };
+  }
+
+  const before = state;
+  const finalElectionResult = calculateFinalElectionResult(state);
+  const afterRewards = applyDeltas(state, finalElectionResult.deltas);
+  const stateWithFinalElection = clampGameState({
+    ...afterRewards,
+    finalElectionResult,
+    finalChapterState: {
+      ...afterRewards.finalChapterState,
+      finalElectionResolved: true,
+      currentStep: 'ending',
+    },
+  });
+  const endingResult = resolveFinalEndingResult(stateWithFinalElection);
+  const stateWithEnding = clampGameState({
+    ...stateWithFinalElection,
+    phase: 'finalEnding',
+    endingResult,
+    gameStatus: 'completed',
+    isGameCompleted: true,
+    finalChapterState: {
+      ...stateWithFinalElection.finalChapterState,
+      endingResolved: true,
+      currentStep: 'completed',
+    },
+  });
+  const nextState = applyVisualUnlock(stateWithEnding, buildEndingVisualUnlock(stateWithEnding, endingResult));
+
+  return {
+    state: nextState,
+    lastPlanId: null,
+    lastResult: buildFinalElectionFeedback(nextState, finalElectionResult, collectChanges(before, nextState)),
+    pendingEventId: null,
+  };
+}
+
 export function getCurrentYearSummary(state: GameState): YearSummary | null {
   return state.yearSummaries.find((summary) => summary.currentYear === state.currentYear) ?? null;
 }
@@ -581,6 +693,7 @@ export function mergeUnlockedGallery(
 ): GalleryId[] {
   const next = new Set<GalleryId>(ensureBaseGallery(currentUnlocked));
   state.unlockedGallery.forEach((id) => next.add(id));
+  state.unlockedGalleryIds.forEach((id) => next.add(id));
   GALLERY_ITEMS.forEach((item) => {
     if (item.isUnlocked(state)) {
       next.add(item.id);
@@ -609,7 +722,8 @@ export function getPhaseLabel(phase: GamePhase): string {
     themeNode: '年度主题节点',
     workNode: '年度作品节点',
     yearSummary: '年度总结',
-    flamePrelude: '终章占位',
+    flamePrelude: 'FLAME 终章',
+    finalElection: '最终总选',
     finalEnding: '终章结算',
   };
 
@@ -626,6 +740,17 @@ function resolveAfterMonthActivity(state: GameState): GameState {
     return themeNodeState;
   }
 
+  if (shouldResolveFinalElection(state)) {
+    return clampGameState({
+      ...state,
+      phase: 'finalElection',
+      finalChapterState: {
+        ...state.finalChapterState,
+        currentStep: 'finalElection',
+      },
+    });
+  }
+
   if (shouldResolveElection(state)) {
     return clampGameState({
       ...state,
@@ -637,6 +762,19 @@ function resolveAfterMonthActivity(state: GameState): GameState {
 }
 
 function resolveAfterThemeOrWorkNode(state: GameState): GameState {
+  if (shouldResolveFinalElection(state) || shouldEnterFinalElectionAfterFlame(state)) {
+    return clampGameState({
+      ...state,
+      currentMonth: FINAL_CHAPTER_ELECTION_MONTH,
+      phase: 'finalElection',
+      finalChapterState: {
+        ...state.finalChapterState,
+        flameResolved: Boolean(getWorkResultById(state, 'flame')) || state.finalChapterState.flameResolved,
+        currentStep: 'finalElection',
+      },
+    });
+  }
+
   if (shouldResolveElection(state)) {
     return clampGameState({
       ...state,
@@ -681,6 +819,30 @@ function resolveThemeOrWorkNodeState(state: GameState): GameState | null {
 }
 
 function resolveAfterNode(state: GameState): GameState {
+  if (shouldResolveFinalElection(state)) {
+    return clampGameState({
+      ...state,
+      phase: 'finalElection',
+      finalChapterState: {
+        ...state.finalChapterState,
+        currentStep: 'finalElection',
+      },
+    });
+  }
+
+  if (isFinalChapterYear(state.currentYear)) {
+    return state.currentMonth >= FINAL_CHAPTER_ELECTION_MONTH
+      ? clampGameState({
+          ...state,
+          phase: 'finalElection',
+          finalChapterState: {
+            ...state.finalChapterState,
+            currentStep: 'finalElection',
+          },
+        })
+      : advanceToNextMonth(state);
+  }
+
   if (shouldResolveB50(state)) {
     return clampGameState({
       ...state,
@@ -698,6 +860,7 @@ function resolveAfterNode(state: GameState): GameState {
 function shouldResolveElection(state: GameState): boolean {
   const calendar = getAnnualCalendar(state.currentYear);
   return (
+    !isFinalChapterYear(state.currentYear) &&
     calendar.electionMonth === state.currentMonth &&
     !hasNodeResult(state.electionResults, state.currentYear) &&
     !hasAnnualResult(state.annualResults, 'election', state.currentYear)
@@ -707,10 +870,34 @@ function shouldResolveElection(state: GameState): boolean {
 function shouldResolveB50(state: GameState): boolean {
   const calendar = getAnnualCalendar(state.currentYear);
   return (
+    !isFinalChapterYear(state.currentYear) &&
     calendar.b50Month === state.currentMonth &&
     !hasNodeResult(state.b50Results, state.currentYear) &&
     !hasAnnualResult(state.annualResults, 'b50', state.currentYear)
   );
+}
+
+function shouldResolveFinalElection(state: GameState): boolean {
+  const calendar = getAnnualCalendar(state.currentYear);
+  return (
+    isFinalChapterYear(state.currentYear) &&
+    calendar.finalElectionMonth === state.currentMonth &&
+    !state.finalElectionResult &&
+    Boolean(getWorkResultById(state, 'flame'))
+  );
+}
+
+function shouldEnterFinalElectionAfterFlame(state: GameState): boolean {
+  return (
+    isFinalChapterYear(state.currentYear) &&
+    state.currentMonth >= FINAL_CHAPTER_FLAME_MONTH &&
+    !state.finalElectionResult &&
+    Boolean(getWorkResultById(state, 'flame'))
+  );
+}
+
+function getWorkResultById(state: GameState, workId: string): WorkResult | null {
+  return state.workResults.find((result) => result.workId === workId) ?? null;
 }
 
 function hasNodeResult(history: { currentYear: number; year: number }[], currentYear: number): boolean {
@@ -917,7 +1104,7 @@ function randomIntInRange(min: number, max: number): number {
 function clampGameState(state: GameState): GameState {
   const next = { ...state };
 
-  next.currentYear = clamp(Math.round(next.currentYear), CAREER_START_YEAR, CAREER_END_YEAR);
+  next.currentYear = clamp(Math.round(next.currentYear), CAREER_START_YEAR, CAREER_MAX_YEAR);
   next.currentMonth = clamp(Math.round(next.currentMonth), 1, MONTHS_PER_YEAR);
   next.year = getCareerYear(next.currentYear);
 
@@ -1101,6 +1288,21 @@ function buildAnnualResultFeedback(
     message: result.narrative,
     score: result.score,
     grade: result.grade,
+    suppressFallbackVisual: true,
+    changes,
+    details: [`档位 ${result.resultLabel}`],
+  };
+}
+
+function buildFinalElectionFeedback(
+  state: GameState,
+  result: FinalElectionResult,
+  changes: StatChange[],
+): GameFeedback {
+  return {
+    title: '最终总选 / 终章总选',
+    message: `${result.narrative} 最终通向：${state.endingResult?.title ?? '终章结算'}。`,
+    score: result.score,
     suppressFallbackVisual: true,
     changes,
     details: [`档位 ${result.resultLabel}`],
@@ -1364,13 +1566,13 @@ function normalizeNumberRecord(value: unknown): Record<string, number> {
 
 function normalizeCurrentYear(value: Partial<GameState> | null | undefined): number {
   if (typeof value?.currentYear === 'number') {
-    return clamp(Math.round(value.currentYear), CAREER_START_YEAR, CAREER_END_YEAR);
+    return clamp(Math.round(value.currentYear), CAREER_START_YEAR, CAREER_MAX_YEAR);
   }
 
   return clamp(
-    CAREER_START_YEAR + clamp(Math.round(value?.year ?? 1), 1, 11) - 1,
+    CAREER_START_YEAR + clamp(Math.round(value?.year ?? 1), 1, getCareerYear(CAREER_MAX_YEAR)) - 1,
     CAREER_START_YEAR,
-    CAREER_END_YEAR,
+    CAREER_MAX_YEAR,
   );
 }
 
@@ -1402,12 +1604,9 @@ function normalizePhase(phase: string | undefined): GamePhase {
     phase === 'b50' ||
     phase === 'yearSummary' ||
     phase === 'flamePrelude' ||
+    phase === 'finalElection' ||
     phase === 'finalEnding'
   ) {
-    if (phase === 'finalEnding') {
-      return 'flamePrelude';
-    }
-
     return phase;
   }
 
@@ -1595,6 +1794,7 @@ function normalizeWorkMilestones(history: Partial<WorkMilestone>[]): WorkMilesto
       sourceWorkResultId: entry.sourceWorkResultId || '',
       grade,
       potentialVisualKey: isValidWorkCgKey(entry.potentialVisualKey) ? entry.potentialVisualKey : undefined,
+      galleryId: isValidWorkGalleryId(entry.galleryId) ? entry.galleryId : undefined,
     };
   });
 }
@@ -1656,6 +1856,9 @@ function normalizeNullableWorkResult(entry: Partial<WorkResult> | null | undefin
       : [],
     relatedActionSummary: normalizeNumberRecord(entry.relatedActionSummary),
     potentialVisualKey: isValidWorkCgKey(entry.potentialVisualKey) ? entry.potentialVisualKey : undefined,
+    galleryId: isValidWorkGalleryId(entry.galleryId)
+      ? entry.galleryId
+      : getWorkGalleryId(workId),
     createdAtMonth: clamp(Math.round(entry.createdAtMonth ?? month), 1, MONTHS_PER_YEAR),
   };
 }
@@ -1666,25 +1869,33 @@ function normalizeGalleryUnlockHistory(history: Partial<GalleryUnlockRecord>[]):
   }
 
   return history
-    .filter((entry) => isValidGalleryId(entry.galleryId))
+    .map((entry) => ({
+      entry,
+      galleryId: toCurrentGalleryId(entry.galleryId),
+    }))
+    .filter((item): item is { entry: Partial<GalleryUnlockRecord>; galleryId: GalleryId } =>
+      Boolean(item.galleryId),
+    )
     .map((entry, index) => {
+      const galleryId = entry.galleryId;
+      const sourceEntry = entry.entry;
       const currentYear =
-        entry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(entry.year ?? 1), 1, 11) - 1;
-      const month = clamp(Math.round(entry.month ?? entry.unlockedAtMonth ?? 1), 1, MONTHS_PER_YEAR);
-      const sourceType = normalizeGallerySourceType(entry.sourceType);
+        sourceEntry.currentYear ?? CAREER_START_YEAR + clamp(Math.round(sourceEntry.year ?? 1), 1, 11) - 1;
+      const month = clamp(Math.round(sourceEntry.month ?? sourceEntry.unlockedAtMonth ?? 1), 1, MONTHS_PER_YEAR);
+      const sourceType = normalizeGallerySourceType(sourceEntry.sourceType);
 
       return {
-        id: entry.id || `gallery-${entry.galleryId}-${currentYear}-${month}-${index + 1}`,
-        galleryId: entry.galleryId as GalleryId,
+        id: sourceEntry.id || `gallery-${galleryId}-${currentYear}-${month}-${index + 1}`,
+        galleryId,
         sourceType,
-        sourceId: entry.sourceId || String(entry.galleryId),
+        sourceId: sourceEntry.sourceId || String(galleryId),
         year: getCareerYear(currentYear),
         currentYear,
         month,
-        title: entry.title || '视觉记忆',
-        unlockedAtMonth: clamp(Math.round(entry.unlockedAtMonth ?? month), 1, MONTHS_PER_YEAR),
-        grade: isValidWorkGrade(entry.grade) ? entry.grade : undefined,
-        eventChoiceId: typeof entry.eventChoiceId === 'string' ? entry.eventChoiceId : undefined,
+        title: sourceEntry.title || '视觉记忆',
+        unlockedAtMonth: clamp(Math.round(sourceEntry.unlockedAtMonth ?? month), 1, MONTHS_PER_YEAR),
+        grade: isValidWorkGrade(sourceEntry.grade) ? sourceEntry.grade : undefined,
+        eventChoiceId: typeof sourceEntry.eventChoiceId === 'string' ? sourceEntry.eventChoiceId : undefined,
       };
     });
 }
@@ -1692,7 +1903,9 @@ function normalizeGalleryUnlockHistory(history: Partial<GalleryUnlockRecord>[]):
 function normalizeNullableVisualUnlock(
   entry: Partial<VisualUnlock> | null | undefined,
 ): VisualUnlock | null {
-  if (!entry || !isValidGalleryId(entry.galleryId)) {
+  const galleryId = toCurrentGalleryId(entry?.galleryId);
+
+  if (!entry || !galleryId) {
     return null;
   }
 
@@ -1700,10 +1913,10 @@ function normalizeNullableVisualUnlock(
   const month = clamp(Math.round(entry.month ?? entry.unlockedAtMonth ?? 1), 1, MONTHS_PER_YEAR);
 
   return {
-    id: entry.id || `visual-${entry.galleryId}-${currentYear}-${month}`,
-    galleryId: entry.galleryId as GalleryId,
+    id: entry.id || `visual-${galleryId}-${currentYear}-${month}`,
+    galleryId,
     sourceType: normalizeGallerySourceType(entry.sourceType),
-    sourceId: entry.sourceId || String(entry.galleryId),
+    sourceId: entry.sourceId || String(galleryId),
     year: getCareerYear(currentYear),
     currentYear,
     month,
@@ -1714,6 +1927,140 @@ function normalizeNullableVisualUnlock(
     grade: isValidWorkGrade(entry.grade) ? entry.grade : undefined,
     eventChoiceId: typeof entry.eventChoiceId === 'string' ? entry.eventChoiceId : undefined,
   };
+}
+
+function normalizeVisualUnlocks(value: unknown): VisualUnlock[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const seen = new Set<GalleryId>();
+  return value
+    .map((entry) => normalizeNullableVisualUnlock(entry))
+    .filter((entry): entry is VisualUnlock => {
+      if (!entry || seen.has(entry.galleryId)) {
+        return false;
+      }
+      seen.add(entry.galleryId);
+      return true;
+    });
+}
+
+function normalizeNullableFinalElectionResult(
+  entry: Partial<FinalElectionResult> | null | undefined,
+): FinalElectionResult | null {
+  if (!entry) {
+    return null;
+  }
+
+  const tier = normalizeElectionTier(entry.tier);
+  const month = clamp(
+    Math.round(entry.month ?? entry.createdAtMonth ?? FINAL_CHAPTER_ELECTION_MONTH),
+    1,
+    MONTHS_PER_YEAR,
+  );
+
+  return {
+    id: entry.id || `final-election-${FINAL_CHAPTER_YEAR}`,
+    year: getCareerYear(FINAL_CHAPTER_YEAR),
+    currentYear: FINAL_CHAPTER_YEAR,
+    month,
+    type: 'finalElection',
+    score: Number.isFinite(entry.score) ? clamp(Math.round(Number(entry.score)), 0, 100) : 0,
+    tier,
+    resultLabel: entry.resultLabel || String(tier),
+    narrative: entry.narrative || '',
+    deltas: normalizeDeltas(entry.deltas),
+    createdAtMonth: clamp(Math.round(entry.createdAtMonth ?? month), 1, MONTHS_PER_YEAR),
+  };
+}
+
+function normalizeNullableEndingResult(
+  entry: Partial<EndingResult> | null | undefined,
+): EndingResult | null {
+  if (!entry || !isValidEndingType(entry.endingType)) {
+    return null;
+  }
+
+  const month = clamp(
+    Math.round(entry.month ?? entry.createdAtMonth ?? FINAL_CHAPTER_ELECTION_MONTH),
+    1,
+    MONTHS_PER_YEAR,
+  );
+
+  return {
+    id: entry.id || `ending-${entry.endingType}-${FINAL_CHAPTER_YEAR}`,
+    endingType: entry.endingType,
+    title: entry.title || '终章结算',
+    subtitle: entry.subtitle,
+    narrative: entry.narrative || '',
+    year: getCareerYear(FINAL_CHAPTER_YEAR),
+    currentYear: FINAL_CHAPTER_YEAR,
+    month,
+    sourceSummary: entry.sourceSummary || '',
+    keyReasons: Array.isArray(entry.keyReasons)
+      ? entry.keyReasons.filter((item): item is string => typeof item === 'string').slice(0, 5)
+      : [],
+    unlockedGalleryId: isValidGalleryId(entry.unlockedGalleryId) ? entry.unlockedGalleryId : undefined,
+    createdAtMonth: clamp(Math.round(entry.createdAtMonth ?? month), 1, MONTHS_PER_YEAR),
+  };
+}
+
+function createInitialFinalChapterState(): FinalChapterState {
+  return {
+    started: false,
+    flameResolved: false,
+    finalElectionResolved: false,
+    endingResolved: false,
+    currentStep: 'prelude',
+  };
+}
+
+function normalizeFinalChapterState(value: Partial<FinalChapterState> | null | undefined): FinalChapterState {
+  const initial = createInitialFinalChapterState();
+  const currentStep = normalizeFinalChapterStep(value?.currentStep);
+
+  return {
+    ...initial,
+    started: Boolean(value?.started),
+    flameResolved: Boolean(value?.flameResolved),
+    finalElectionResolved: Boolean(value?.finalElectionResolved),
+    endingResolved: Boolean(value?.endingResolved),
+    currentStep,
+  };
+}
+
+function normalizeFinalChapterStep(value: unknown): FinalChapterState['currentStep'] {
+  const validSteps: FinalChapterState['currentStep'][] = [
+    'prelude',
+    'prep',
+    'flame',
+    'finalElection',
+    'ending',
+    'completed',
+  ];
+
+  return validSteps.includes(value as FinalChapterState['currentStep'])
+    ? (value as FinalChapterState['currentStep'])
+    : 'prelude';
+}
+
+function normalizeElectionTier(value: unknown): ElectionTier {
+  const tiers: ElectionTier[] = [
+    'outside',
+    'ranked',
+    'top48',
+    'top32',
+    'top16',
+    'kami7',
+    'top3',
+    'center',
+  ];
+  return tiers.includes(value as ElectionTier) ? (value as ElectionTier) : 'outside';
+}
+
+function isValidEndingType(value: unknown): value is EndingType {
+  return value === 'S' || value === 'A' || value === 'B' || value === 'C' || value === 'Risk';
 }
 
 function normalizeYearSummaries(history: YearSummary[]): YearSummary[] {
@@ -1750,7 +2097,13 @@ function buildEventVisualUnlock(
 ): VisualUnlock | null {
   const galleryId = event.galleryId;
   const visualKey = event.eventCgKey ?? event.visualKey;
-  if (!galleryId || !visualKey || galleryId !== visualKey || hasVisualUnlocked(state, galleryId)) {
+  if (
+    !galleryId ||
+    !visualKey ||
+    galleryId !== visualKey ||
+    !isGalleryAssetReady(galleryId) ||
+    hasVisualUnlocked(state, galleryId)
+  ) {
     return null;
   }
 
@@ -1766,17 +2119,17 @@ function buildEventVisualUnlock(
 }
 
 function buildWorkVisualUnlock(state: GameState, result: WorkResult): VisualUnlock | null {
-  if ((result.grade !== 'A' && result.grade !== 'S') || !result.potentialVisualKey) {
+  if ((result.grade !== 'A' && result.grade !== 'S') || !result.galleryId) {
     return null;
   }
 
-  if (hasVisualUnlocked(state, result.potentialVisualKey)) {
+  if (!isGalleryAssetReady(result.galleryId) || hasVisualUnlocked(state, result.galleryId)) {
     return null;
   }
 
   return createVisualUnlock({
     state,
-    galleryId: result.potentialVisualKey,
+    galleryId: result.galleryId,
     sourceType: 'work',
     sourceId: result.workId,
     title: result.title,
@@ -1784,6 +2137,41 @@ function buildWorkVisualUnlock(state: GameState, result: WorkResult): VisualUnlo
       ? '年度级高光已经收录进作品记忆。'
       : '代表作记忆已经收录进作品图鉴。',
     grade: result.grade,
+  });
+}
+
+function buildThemeVisualUnlock(state: GameState, result: ThemeNodeResult): VisualUnlock | null {
+  const galleryId = result.potentialVisualKey;
+  if (!galleryId || !isGalleryAssetReady(galleryId) || hasVisualUnlocked(state, galleryId)) {
+    return null;
+  }
+
+  return createVisualUnlock({
+    state,
+    galleryId,
+    sourceType: 'timeline',
+    sourceId: result.nodeId,
+    title: result.title,
+    description: result.narrative,
+  });
+}
+
+function buildEndingVisualUnlock(state: GameState, result: EndingResult): VisualUnlock | null {
+  if (
+    !result.unlockedGalleryId ||
+    !isGalleryAssetReady(result.unlockedGalleryId) ||
+    hasVisualUnlocked(state, result.unlockedGalleryId)
+  ) {
+    return null;
+  }
+
+  return createVisualUnlock({
+    state,
+    galleryId: result.unlockedGalleryId,
+    sourceType: 'ending',
+    sourceId: result.id,
+    title: result.title,
+    description: result.narrative,
   });
 }
 
@@ -1845,6 +2233,19 @@ function applyVisualUnlock(state: GameState, unlock: VisualUnlock | null): GameS
     eventChoiceId: unlock.eventChoiceId,
   };
 
+  const queuedIds = new Set<GalleryId>([
+    ...(state.pendingVisualUnlock ? [state.pendingVisualUnlock.galleryId] : []),
+    ...state.pendingVisualUnlocks.map((item) => item.galleryId),
+  ]);
+  const pendingVisualUnlock = state.pendingVisualUnlock ?? unlock;
+  const pendingVisualUnlocks =
+    state.pendingVisualUnlock || queuedIds.has(unlock.galleryId)
+      ? [...state.pendingVisualUnlocks, unlock].filter(
+          (item, index, list) =>
+            list.findIndex((candidate) => candidate.galleryId === item.galleryId) === index,
+        )
+      : state.pendingVisualUnlocks;
+
   return clampGameState({
     ...state,
     unlockedGallery: addGalleryId(state.unlockedGallery, unlock.galleryId),
@@ -1852,16 +2253,19 @@ function applyVisualUnlock(state: GameState, unlock: VisualUnlock | null): GameS
       (id) => id !== 'base',
     ),
     galleryUnlockHistory: mergeGalleryUnlockHistory(state.galleryUnlockHistory, record),
-    pendingVisualUnlock: unlock,
+    pendingVisualUnlock,
+    pendingVisualUnlocks,
   });
 }
 
 function consumePendingVisualUnlock(state: GameState): GameState {
   const pendingId = state.pendingVisualUnlock?.galleryId;
+  const [nextUnlock, ...restUnlocks] = state.pendingVisualUnlocks;
 
   return clampGameState({
     ...state,
-    pendingVisualUnlock: null,
+    pendingVisualUnlock: nextUnlock ?? null,
+    pendingVisualUnlocks: restUnlocks,
     seenVisualUnlockIds: pendingId
       ? normalizeGalleryIds([...state.seenVisualUnlockIds, pendingId])
       : state.seenVisualUnlockIds,
@@ -1907,8 +2311,40 @@ const WORK_CG_KEYS = new Set<WorkCgKey>([
   'flame',
 ]);
 
+const WORK_GALLERY_IDS = new Set<WorkGalleryId>([
+  'work_girls_revolution',
+  'work_yy_ds',
+  'work_xiaoyi',
+  'work_meteor_stream',
+  'work_triones',
+  'work_fu',
+  'work_super_tata',
+  'work_brand_mark',
+  'work_flame',
+]);
+
+const WORK_TO_GALLERY_ID: Record<WorkCgKey, WorkGalleryId> = {
+  girls_revolution: 'work_girls_revolution',
+  yy_ds: 'work_yy_ds',
+  xiaoyi: 'work_xiaoyi',
+  meteor_stream: 'work_meteor_stream',
+  triones: 'work_triones',
+  fu: 'work_fu',
+  super_tata: 'work_super_tata',
+  brand_mark: 'work_brand_mark',
+  flame: 'work_flame',
+};
+
 function isValidWorkCgKey(value: unknown): value is WorkCgKey {
   return typeof value === 'string' && WORK_CG_KEYS.has(value as WorkCgKey);
+}
+
+function isValidWorkGalleryId(value: unknown): value is WorkGalleryId {
+  return typeof value === 'string' && WORK_GALLERY_IDS.has(value as WorkGalleryId);
+}
+
+function getWorkGalleryId(workId: WorkCgKey): WorkGalleryId {
+  return WORK_TO_GALLERY_ID[workId];
 }
 
 function isValidGalleryId(value: unknown): value is GalleryId {
@@ -1924,12 +2360,26 @@ function normalizeGalleryIds(value: unknown): GalleryId[] {
   }
 
   return Array.from(
-    new Set(value.filter((item): item is GalleryId => isValidGalleryId(item))),
+    new Set(value.map(toCurrentGalleryId).filter((item): item is GalleryId => Boolean(item))),
   );
 }
 
+function toCurrentGalleryId(value: unknown): GalleryId | null {
+  if (isValidGalleryId(value)) {
+    return value;
+  }
+
+  if (isValidWorkCgKey(value)) {
+    return getWorkGalleryId(value);
+  }
+
+  return null;
+}
+
 function normalizeGallerySourceType(value: unknown): GallerySourceType {
-  return value === 'work' || value === 'annual' || value === 'ending' ? value : 'event';
+  return value === 'timeline' || value === 'work' || value === 'annual' || value === 'ending'
+    ? value
+    : 'event';
 }
 
 function isNodeGrade(value: unknown): value is NodeGrade {
