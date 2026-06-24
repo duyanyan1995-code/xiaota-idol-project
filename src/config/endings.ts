@@ -25,16 +25,16 @@ export const ENDINGS: EndingConfig[] = [
     priority: 100,
     isMatched: (state) =>
       hasElectionTier(state, 'center') &&
-      state.fans >= 6500 &&
-      state.fanLoyalty >= 80 &&
-      state.popularity >= 80 &&
+      state.fanCount >= 6500 &&
+      state.supportPower >= 80 &&
+      state.influence >= 80 &&
       countNegativeEvents(state) <= 8,
   },
   {
     id: 'kamiSeven',
     name: '神七高位',
     title: '神七高位结局',
-    routeTag: '高位人气路线',
+    routeTag: '高位影响力路线',
     text: '小獭没有只靠一瞬间的热度，而是用稳定的努力和回应，把名字留在了更高的位置。',
     finalLine: '“能被大家推到这里，我真的有好好接住这份喜欢。”',
     endingCgKey: 'kamiSevenEndingCg',
@@ -42,9 +42,9 @@ export const ENDINGS: EndingConfig[] = [
     priority: 90,
     isMatched: (state) =>
       hasElectionTier(state, 'kami7') &&
-      state.fans >= 4300 &&
-      state.fanLoyalty >= 65 &&
-      state.popularity >= 65,
+      state.fanCount >= 4300 &&
+      state.supportPower >= 65 &&
+      state.influence >= 65,
   },
   {
     id: 'top16Core',
@@ -72,7 +72,7 @@ export const ENDINGS: EndingConfig[] = [
     priority: 70,
     isMatched: (state) =>
       getPlanCount(state, 'theaterTraining') >= 24 &&
-      state.vocal + state.dance + state.performance >= 520 &&
+      state.vocal + state.dance + state.stagePower >= 520 &&
       hasRoute(state, 'stage', 90),
   },
   {
@@ -87,7 +87,7 @@ export const ENDINGS: EndingConfig[] = [
     priority: 68,
     isMatched: (state) =>
       hasB50Tier(state, 'highlight') &&
-      state.performance >= 180 &&
+      state.stagePower >= 180 &&
       getPlanCount(state, 'stageFocus') + getPlanCount(state, 'specialIntensiveTraining') >= 16,
   },
   {
@@ -101,7 +101,7 @@ export const ENDINGS: EndingConfig[] = [
     galleryId: 'fanBondEndingCg',
     priority: 60,
     isMatched: (state) =>
-      state.fanLoyalty >= 180 &&
+      state.supportPower >= 180 &&
       getPlanCount(state, 'fanService') + getPlanCount(state, 'specialBirthdaySupport') >= 18,
   },
   {
@@ -115,7 +115,7 @@ export const ENDINGS: EndingConfig[] = [
     galleryId: 'outsideBreakthroughEndingCg',
     priority: 55,
     isMatched: (state) =>
-      state.popularity >= 180 &&
+      state.influence >= 180 &&
       state.charm >= 120 &&
       getPlanCount(state, 'outsideExposure') + getPlanCount(state, 'specialSoloWork') >= 16,
   },
@@ -131,8 +131,8 @@ export const ENDINGS: EndingConfig[] = [
     priority: 50,
     isMatched: (state) =>
       hasRoute(state, 'stable', 70) &&
-      state.energy >= 50 &&
-      state.stress <= 45 &&
+      state.stamina >= 50 &&
+      state.pressure <= 45 &&
       state.yearSummaries.length >= 10,
   },
 ];

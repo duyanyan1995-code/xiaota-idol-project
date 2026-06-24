@@ -4,13 +4,13 @@ import type { GameSnapshot, GameState, PlanId, RandomEventConfig, StatChange, St
 import type { MonthlySummaryData } from '../types/flow';
 import {
   advancePhase,
-  applyEventChoice,
   applyPlan,
   isEventPhase,
   resolveNoEventAfterPlan,
 } from './gameLogic';
+import { getCurrentMonthlyActionOptions } from './actionRoll';
 import { pickMonthlyEvent } from './eventLogic';
-import { getCriticalGameStateReason, getEventPauseReason, shouldPauseForEvent } from './flowImportance';
+import { getCriticalGameStateReason, getEventPauseReason } from './flowImportance';
 import { getTopRoutes } from './routeLogic';
 import { getStatLabel } from './statDisplay';
 import { getPlanAvailability, isPlanUnlocked } from './unlockLogic';
@@ -201,7 +201,7 @@ export function runAutoAdvanceStep(initialState: GameState): AutoAdvanceStepResu
   }
 
   const eventPick = pickMonthlyEvent(workingState);
-  if (eventPick.type === 'event' && shouldPauseForEvent(eventPick.event, workingState)) {
+  if (eventPick.type === 'event') {
     const changes = planFeedback?.changes ?? [];
 
     return {
@@ -228,29 +228,15 @@ export function runAutoAdvanceStep(initialState: GameState): AutoAdvanceStepResu
     };
   }
 
-  let eventFeedback: GameSnapshot['lastResult'] = null;
-  let eventLabel = '平稳度过';
-  let noEventText: string | undefined = '这个月平稳度过。';
+  const noEventSnapshot = resolveNoEventAfterPlan(workingState);
+  workingSnapshot = {
+    ...noEventSnapshot,
+    lastPlanId: planSnapshot.lastPlanId,
+    lastResult: planSnapshot.lastResult,
+  };
+  workingState = workingSnapshot.state;
 
-  if (eventPick.type === 'event') {
-    const choice = eventPick.event.choices[0];
-    const eventSnapshot = applyEventChoice(workingState, eventPick.event, choice);
-    workingSnapshot = eventSnapshot;
-    workingState = eventSnapshot.state;
-    eventFeedback = eventSnapshot.lastResult;
-    eventLabel = eventPick.event.title;
-    noEventText = undefined;
-  } else {
-    const noEventSnapshot = resolveNoEventAfterPlan(workingState);
-    workingSnapshot = {
-      ...noEventSnapshot,
-      lastPlanId: planSnapshot.lastPlanId,
-      lastResult: planSnapshot.lastResult,
-    };
-    workingState = workingSnapshot.state;
-  }
-
-  const changes = mergeStatChanges(planFeedback?.changes, eventFeedback?.changes);
+  const changes = mergeStatChanges(planFeedback?.changes, undefined);
   const unlockedSpecialAction = findNewSpecialAction(beforeSpecialActions, workingState);
   const stopReason =
     unlockedSpecialAction ??
@@ -266,11 +252,11 @@ export function runAutoAdvanceStep(initialState: GameState): AutoAdvanceStepResu
       currentYear: actionYear,
       currentMonth: actionMonth,
       actionFeedback: planFeedback,
-      eventFeedback,
-      noEventText,
+      eventFeedback: null,
+      noEventText: '这个月平稳度过。',
       changes,
       actionLabel,
-      eventLabel,
+      eventLabel: '平稳度过',
       completedMonth: true,
     },
   };
@@ -281,9 +267,14 @@ export function chooseAutoAdvancePlan(state: GameState): PlanId {
   const monthsUntilElection = getMonthsUntil(state.currentMonth, calendar.electionMonth);
   const monthsUntilB50 = getMonthsUntil(state.currentMonth, calendar.b50Month);
   const topRoute = getTopRoutes(state, 1)[0]?.id;
+  const monthlyOptions = getCurrentMonthlyActionOptions(state).filter((option) => {
+    const plan = PLAN_BY_ID[option.planId];
+    return plan && isPlanUnlocked(plan, state);
+  });
+  const monthlyPlanIds = monthlyOptions.map((option) => option.planId);
   const candidates: PlanId[] = [];
 
-  if (state.energy <= 35 || state.stress >= 70) {
+  if (state.stamina <= 35 || state.pressure >= 70) {
     candidates.push('restAndReflect', 'stableOperation', 'restAndReflect');
   }
 
@@ -306,6 +297,15 @@ export function chooseAutoAdvancePlan(state: GameState): PlanId {
   }
 
   candidates.push('stableOperation', 'theaterTraining', 'fanService');
+
+  const candidateFromMonthlyOptions = candidates.filter((planId) => monthlyPlanIds.includes(planId));
+  if (candidateFromMonthlyOptions.length > 0) {
+    return candidateFromMonthlyOptions[Math.floor(Math.random() * candidateFromMonthlyOptions.length)];
+  }
+
+  if (monthlyOptions.length > 0) {
+    return monthlyOptions[Math.floor(Math.random() * monthlyOptions.length)].planId;
+  }
 
   return pickAvailablePlan(state, candidates);
 }
@@ -336,25 +336,44 @@ export function mergeStatChanges(
 }
 
 export function getAutoAdvanceStopReason(state: GameState): string | null {
+  if (state.pendingVisualUnlock) {
+    return '视觉记忆解锁';
+  }
+
+  if (state.phase === 'flamePrelude') {
+    return '2026 FLAME 终章开启';
+  }
+
   if (state.phase === 'finalEnding') {
     return '进入终章结算';
+  }
+
+  if (state.isGameCompleted) {
+    return 'V4 通关完成';
   }
 
   if (state.phase === 'yearSummary') {
     return '年度总结';
   }
 
+  if (state.phase === 'themeNode') {
+    return '年度主题节点';
+  }
+
+  if (state.phase === 'workNode') {
+    return '年度作品节点';
+  }
+
   if (state.phase === 'election') {
     return '本月总选';
   }
 
-  if (state.phase === 'b50') {
-    return '本月 B50';
+  if (state.phase === 'finalElection') {
+    return '最终总选';
   }
 
-  if ((state.phase === 'monthStart' || state.phase === 'monthlyPlan') && isUnresolvedNodeMonth(state)) {
-    const calendar = getAnnualCalendar(state.currentYear);
-    return state.currentMonth === calendar.electionMonth ? '本月总选' : '本月 B50';
+  if (state.phase === 'b50') {
+    return '本月 B50';
   }
 
   if (state.phase === 'monthlyEvent') {
@@ -362,18 +381,6 @@ export function getAutoAdvanceStopReason(state: GameState): string | null {
   }
 
   return getCriticalGameStateReason(state);
-}
-
-function isUnresolvedNodeMonth(state: GameState): boolean {
-  const calendar = getAnnualCalendar(state.currentYear);
-  const needsElection =
-    calendar.electionMonth === state.currentMonth &&
-    !state.electionResults.some((result) => result.currentYear === state.currentYear);
-  const needsB50 =
-    calendar.b50Month === state.currentMonth &&
-    !state.b50Results.some((result) => result.currentYear === state.currentYear);
-
-  return Boolean(needsElection || needsB50);
 }
 
 function getMonthsUntil(currentMonth: number, targetMonth: number | undefined): number {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import type { GameState, GrowthStat, StatChange, StatKey } from '../types/game';
-import { getRouteSummaryLabel } from '../utils/routeLogic';
+import { DETAIL_STAT_GROUPS, MAIN_STAT_KEYS, STAT_CONFIG_BY_ID } from '../config/stats';
+import type { GameState, StatChange, StatKey } from '../types/game';
 import { formatDeltaValue, getStatChangeTone } from '../utils/statDisplay';
 
 interface StatPanelProps {
@@ -8,48 +8,48 @@ interface StatPanelProps {
   recentChanges?: StatChange[] | null;
 }
 
-const growthStats: { key: GrowthStat; label: string }[] = [
-  { key: 'vocal', label: '唱功' },
-  { key: 'dance', label: '舞蹈' },
-  { key: 'performance', label: '舞台表现' },
-  { key: 'charm', label: '魅力' },
-  { key: 'popularity', label: '人气' },
-  { key: 'fanLoyalty', label: '粉丝黏性' },
-  { key: 'resources', label: '资源' },
-  { key: 'style', label: '风格' },
-];
-
 export function StatPanel({ state, recentChanges = null }: StatPanelProps) {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
     <>
-      <section className="quick-status" aria-label="关键状态">
-        <QuickStatusItem label="体力" value={state.energy} statKey="energy" changes={recentChanges} />
-        <QuickStatusItem label="心情" value={state.mood} statKey="mood" changes={recentChanges} />
-        <QuickStatusItem label="压力" value={state.stress} statKey="stress" changes={recentChanges} />
-        <QuickStatusItem label="粉丝" value={state.fans} statKey="fans" changes={recentChanges} />
-        <QuickStatusItem label="人气" value={state.popularity} statKey="popularity" changes={recentChanges} />
-        <button className="status-route" type="button" onClick={() => setShowDetails(true)}>
-          <span>倾向</span>
-          <strong>{getRouteSummaryLabel(state)}</strong>
+      <div className="quick-status-panel">
+        <section className="quick-status" aria-label="关键状态">
+          {MAIN_STAT_KEYS.map((statKey) => (
+            <QuickStatusItem
+              changes={recentChanges}
+              key={statKey}
+              label={STAT_CONFIG_BY_ID[statKey].statName}
+              statKey={statKey}
+              value={state[statKey]}
+            />
+          ))}
+        </section>
+        <button className="status-detail-button" type="button" onClick={() => setShowDetails(true)}>
+          查看完整属性
         </button>
-      </section>
+      </div>
 
       {showDetails ? (
         <div className="modal-backdrop" role="presentation">
           <section className="modal-card status-detail" role="dialog" aria-modal="true">
             <p className="eyebrow">状态详情</p>
             <h2>小獭当前状态</h2>
-            <div className="status-detail-grid">
-              <DetailItem label="体力" value={state.energy} />
-              <DetailItem label="心情" value={state.mood} />
-              <DetailItem label="压力" value={state.stress} />
-              <DetailItem label="粉丝数" value={state.fans} />
-              {growthStats.map((stat) => (
-                <DetailItem key={stat.key} label={stat.label} value={state[stat.key]} />
-              ))}
-            </div>
+            {DETAIL_STAT_GROUPS.map((group) => (
+              <div className="status-detail-group" key={group.title}>
+                <h3>{group.title}</h3>
+                <div className="status-detail-grid">
+                  {group.stats.map((statKey) => (
+                    <DetailItem
+                      key={statKey}
+                      label={STAT_CONFIG_BY_ID[statKey].statName}
+                      value={state[statKey]}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+            <p className="status-detail-note">作品完成度：{state.workGrade}（仅为后续关键事件预留）</p>
             <button className="button button--primary" type="button" onClick={() => setShowDetails(false)}>
               关闭
             </button>

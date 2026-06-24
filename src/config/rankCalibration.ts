@@ -46,10 +46,12 @@ export const RANK_CALIBRATION_STAGES: RankCalibrationStage[] = [
     maxElectionTier: 'top32',
     maxB50Tier: 'middle',
     electionThresholds: {
+      ranked: 26,
       top48: 36,
       top32: 56,
       top16: 78,
       kami7: 90,
+      top3: 96,
       center: 98,
     },
     b50Thresholds: {
@@ -72,10 +74,12 @@ export const RANK_CALIBRATION_STAGES: RankCalibrationStage[] = [
     maxElectionTier: 'top16',
     maxB50Tier: 'high',
     electionThresholds: {
+      ranked: 24,
       top48: 34,
       top32: 50,
       top16: 68,
       kami7: 84,
+      top3: 91,
       center: 95,
     },
     b50Thresholds: {
@@ -98,10 +102,12 @@ export const RANK_CALIBRATION_STAGES: RankCalibrationStage[] = [
     maxElectionTier: 'kami7',
     maxB50Tier: 'highlight',
     electionThresholds: {
+      ranked: 22,
       top48: 32,
       top32: 48,
       top16: 64,
       kami7: 82,
+      top3: 89,
       center: 94,
     },
     b50Thresholds: {
@@ -141,10 +147,12 @@ export const RANK_CALIBRATION_STAGES: RankCalibrationStage[] = [
     maxElectionTier: 'center',
     maxB50Tier: 'legend',
     electionThresholds: {
+      ranked: 20,
       top48: 30,
       top32: 46,
       top16: 62,
       kami7: 78,
+      top3: 86,
       center: 92,
     },
     b50Thresholds: {

@@ -1,0 +1,1279 @@
+category,sourceFile,textKey,scene,field,currentText,revisedText,note
+ui,src/App.tsx,ui.App.line181.1,全局流程 / 弹窗,continueLabel,继续,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line184.1,全局流程 / 弹窗,title,本月行动完成,,疑似硬编码，修改前确认上下文
+event,src/App.tsx,event.App.line204.1,全局流程 / 弹窗,title,事件处理完成,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line249.1,全局流程 / 弹窗,continueLabel,进入下个月,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line252.1,全局流程 / 弹窗,title,本月平稳度过,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line253.1,全局流程 / 弹窗,noEventText,这个月平稳度过，小獭稳稳地完成了自己的节奏。,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line302.1,全局流程 / 弹窗,stringLiteral,当前阶段需要手动处理,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line328.1,全局流程 / 弹窗,title,"正在推进：${formatYearMonth(result.step.currentYear, result.step.currentMonth)}",,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line329.1,全局流程 / 弹窗,subtitle,普通月份会自动继续，遇到关键节点会停下。,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line364.1,全局流程 / 弹窗,continueLabel,继续,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line367.1,全局流程 / 弹窗,title,自动推进摘要,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line368.1,全局流程 / 弹窗,subtitle,推进了 ${monthCount} 个月,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ending,src/App.tsx,ending.App.line514.1,全局流程 / 弹窗,label,结局 CG 解锁,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line516.1,全局流程 / 弹窗,label,年度主题 CG 解锁,,疑似硬编码，修改前确认上下文
+event,src/App.tsx,event.App.line518.1,全局流程 / 弹窗,label,事件 CG 解锁,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line519.1,全局流程 / 弹窗,stringLiteral,图鉴解锁,,疑似硬编码，修改前确认上下文
+ending,src/App.tsx,ending.App.line521.1,全局流程 / 弹窗,stringLiteral,${item.name} 已加入结局相册。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/App.tsx,annual.App.line564.1,总选结算,stringLiteral,继续到总选,,疑似硬编码，修改前确认上下文
+b50,src/App.tsx,b50.App.line568.1,B50结算,stringLiteral,继续到 B50,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line572.1,全局流程 / 弹窗,stringLiteral,继续到年度总结,,疑似硬编码，修改前确认上下文
+annual,src/App.tsx,annual.App.line576.1,总选结算,stringLiteral,继续到最终总选,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line579.1,全局流程 / 弹窗,stringLiteral,进入下个月,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line480.jsx,全局流程 / 弹窗,description,玩法说明,,疑似硬编码，修改前确认上下文
+ui,src/App.tsx,ui.App.line481.jsx,全局流程 / 弹窗,title,11 年偶像生涯,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line9.1,行动选择,stringLiteral,舞台,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line9.2,行动选择,stringLiteral,唱功,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line9.3,行动选择,stringLiteral,舞蹈,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line10.1,行动选择,stringLiteral,粉丝,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line10.2,行动选择,stringLiteral,应援,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line10.3,行动选择,stringLiteral,魅力,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line11.1,行动选择,stringLiteral,影响,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line11.2,行动选择,stringLiteral,资源,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line11.3,行动选择,stringLiteral,粉丝,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line12.1,行动选择,stringLiteral,舞台,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line12.2,行动选择,stringLiteral,舞蹈,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line12.3,行动选择,stringLiteral,唱功,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line13.1,行动选择,stringLiteral,魅力,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line13.2,行动选择,stringLiteral,影响,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line13.3,行动选择,stringLiteral,粉丝,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line14.1,行动选择,stringLiteral,体力,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line14.2,行动选择,stringLiteral,心情,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line14.3,行动选择,stringLiteral,降压,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line15.1,行动选择,stringLiteral,应援,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line15.2,行动选择,stringLiteral,运营,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line15.3,行动选择,stringLiteral,疲劳↓,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line19.1,行动选择,stamina,体力,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line20.1,行动选择,mood,心情,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line21.1,行动选择,pressure,压力,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line22.1,行动选择,vocal,唱功,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line23.1,行动选择,dance,舞蹈,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line24.1,行动选择,stagePower,舞台,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line25.1,行动选择,fanCount,粉丝,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line26.1,行动选择,supportPower,应援,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line27.1,行动选择,influence,影响,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line28.1,行动选择,resource,资源,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line29.1,行动选择,charm,魅力,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line30.1,行动选择,operation,运营,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line31.1,行动选择,fanFatigue,疲劳,,疑似硬编码，修改前确认上下文
+action,src/components/ActionPanel.tsx,action.components.ActionPanel.line46.1,行动选择,ariaLabel,本月行动,,疑似硬编码，修改前确认上下文
+action,src/components/ActionResultCard.tsx,action.components.ActionResultCard.line41.1,行动结果,ariaLabel,行动结果,,疑似硬编码，修改前确认上下文
+action,src/components/ActionResultCard.tsx,action.components.ActionResultCard.line87.1,行动结果,stringLiteral,本月行动：,,疑似硬编码，修改前确认上下文
+action,src/components/ActionResultCard.tsx,action.components.ActionResultCard.line88.1,行动结果,stringLiteral,本月行动：,,疑似硬编码，修改前确认上下文
+action,src/components/ActionResultCard.tsx,action.components.ActionResultCard.line53.jsx,行动结果,jsxText,行动视觉,,疑似硬编码，修改前确认上下文
+action,src/components/ActionResultCard.tsx,action.components.ActionResultCard.line54.jsx,行动结果,jsxText,待接入,,疑似硬编码，修改前确认上下文
+visual,src/components/CharacterDisplay.tsx,visual.components.CharacterDisplay.line46.1,通用 UI,ariaLabel,查看大图：${title},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+visual,src/components/CharacterDisplay.tsx,visual.components.CharacterDisplay.line71.1,通用 UI,stringLiteral,杨小獭,,疑似硬编码，修改前确认上下文
+visual,src/components/CharacterDisplay.tsx,visual.components.CharacterDisplay.line77.jsx,通用 UI,jsxText,点击查看大图,,疑似硬编码，修改前确认上下文
+ending,src/components/EndingView.tsx,ending.components.EndingView.line48.1,结局页,stringLiteral,未结算,,疑似硬编码，修改前确认上下文
+ending,src/components/EndingView.tsx,ending.components.EndingView.line52.1,结局页,stringLiteral,未结算,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ending,src/components/EndingView.tsx,ending.components.EndingView.line60.1,结局页,stringLiteral,暂无,,疑似硬编码，修改前确认上下文
+annual,src/components/EndingView.tsx,annual.components.EndingView.line47.jsx,总选结算,jsxText,最终总选,,疑似硬编码，修改前确认上下文
+ending,src/components/EndingView.tsx,ending.components.EndingView.line55.jsx,结局页,jsxText,A/S 作品,,疑似硬编码，修改前确认上下文
+ending,src/components/EndingView.tsx,ending.components.EndingView.line59.jsx,结局页,jsxText,S 作品,,疑似硬编码，修改前确认上下文
+annual,src/components/EndingView.tsx,annual.components.EndingView.line63.jsx,总选结算,jsxText,最高总选,,疑似硬编码，修改前确认上下文
+ending,src/components/EndingView.tsx,ending.components.EndingView.line67.jsx,B50结算,jsxText,最高 B50,,疑似硬编码，修改前确认上下文
+ending,src/components/EndingView.tsx,ending.components.EndingView.line71.jsx,结局页,jsxText,图鉴解锁,,疑似硬编码，修改前确认上下文
+ending,src/components/EndingView.tsx,ending.components.EndingView.line75.jsx,结局页,jsxText,完成时间,,疑似硬编码，修改前确认上下文
+ending,src/components/EndingView.tsx,ending.components.EndingView.line80.jsx,结局页,jsxText,关键达成原因,,疑似硬编码，修改前确认上下文
+event,src/components/EventModal.tsx,event.components.EventModal.line16.jsx,通用 UI,description,随机事件,,疑似硬编码，修改前确认上下文
+gallery,src/components/GalleryGrid.tsx,gallery.components.GalleryGrid.line18.1,图鉴,title,小獭状态,,疑似硬编码，修改前确认上下文
+gallery,src/components/GalleryGrid.tsx,gallery.components.GalleryGrid.line19.1,图鉴,description,日常状态和旧版形象记录,,疑似硬编码，修改前确认上下文
+event,src/components/GalleryGrid.tsx,event.components.GalleryGrid.line23.1,图鉴,title,事件回忆,,疑似硬编码，修改前确认上下文
+event,src/components/GalleryGrid.tsx,event.components.GalleryGrid.line24.1,图鉴,description,完成剧情事件后解锁的回忆 CG,,疑似硬编码，修改前确认上下文
+gallery,src/components/GalleryGrid.tsx,gallery.components.GalleryGrid.line28.1,图鉴,title,年度主题,,疑似硬编码，修改前确认上下文
+gallery,src/components/GalleryGrid.tsx,gallery.components.GalleryGrid.line29.1,图鉴,description,固定年度节点触发后收录的成长 CG,,疑似硬编码，修改前确认上下文
+gallery,src/components/GalleryGrid.tsx,gallery.components.GalleryGrid.line33.1,图鉴,title,作品记忆,,疑似硬编码，修改前确认上下文
+gallery,src/components/GalleryGrid.tsx,gallery.components.GalleryGrid.line34.1,图鉴,description,年度作品达到高光后收录的视觉记忆,,疑似硬编码，修改前确认上下文
+gallery,src/components/GalleryGrid.tsx,gallery.components.GalleryGrid.line38.1,图鉴,title,年度节点,,疑似硬编码，修改前确认上下文
+b50,src/components/GalleryGrid.tsx,b50.components.GalleryGrid.line39.1,总选结算,description,总选和 B50 相关视觉预留,,疑似硬编码，修改前确认上下文
+gallery,src/components/GalleryGrid.tsx,gallery.components.GalleryGrid.line43.1,图鉴,title,结局相册,,疑似硬编码，修改前确认上下文
+gallery,src/components/GalleryGrid.tsx,gallery.components.GalleryGrid.line44.1,图鉴,description,达成终章结局后收录的结局 CG,,疑似硬编码，修改前确认上下文
+gallery,src/components/GalleryGrid.tsx,gallery.components.GalleryGrid.line88.1,图鉴,stringLiteral,未解锁,,疑似硬编码，修改前确认上下文
+gallery,src/components/GalleryGrid.tsx,gallery.components.GalleryGrid.line89.1,图鉴,stringLiteral,点击查看详情,,疑似硬编码，修改前确认上下文
+visual,src/components/ImageLightbox.tsx,visual.components.ImageLightbox.line48.1,CG解锁 / Lightbox,ariaLabel,关闭大图,,疑似硬编码，修改前确认上下文
+ui,src/components/MonthlySummary.tsx,ui.components.MonthlySummary.line17.1,通用 UI,buttonText,推进中...,,按钮文案，建议短；疑似硬编码，修改前确认上下文
+ui,src/components/MonthlySummary.tsx,ui.components.MonthlySummary.line22.1,通用 UI,ariaLabel,本月行动结果,,疑似硬编码，修改前确认上下文
+ui,src/components/MonthlySummary.tsx,ui.components.MonthlySummary.line73.1,通用 UI,stringLiteral,行动,,疑似硬编码，修改前确认上下文
+event,src/components/MonthlySummary.tsx,event.components.MonthlySummary.line77.1,通用 UI,stringLiteral,事件,,疑似硬编码，修改前确认上下文
+ui,src/components/MonthlySummary.tsx,ui.components.MonthlySummary.line108.1,通用 UI,stringLiteral,本月行动结果,,疑似硬编码，修改前确认上下文
+event,src/components/MonthlySummary.tsx,event.components.MonthlySummary.line112.1,通用 UI,stringLiteral,本月事件摘要,,疑似硬编码，修改前确认上下文
+ui,src/components/MonthlySummary.tsx,ui.components.MonthlySummary.line116.1,通用 UI,stringLiteral,自动推进中,,疑似硬编码，修改前确认上下文
+ui,src/components/MonthlySummary.tsx,ui.components.MonthlySummary.line119.1,通用 UI,stringLiteral,自动推进摘要,,疑似硬编码，修改前确认上下文
+ui,src/components/MonthlySummary.tsx,ui.components.MonthlySummary.line82.jsx,通用 UI,jsxText,变化,,疑似硬编码，修改前确认上下文
+ui,src/components/StatChangeList.tsx,ui.components.StatChangeList.line33.1,通用 UI,ariaLabel,属性变化,,疑似硬编码，修改前确认上下文
+status,src/components/StatPanel.tsx,status.components.StatPanel.line17.1,通用 UI,ariaLabel,关键状态,,疑似硬编码，修改前确认上下文
+status,src/components/StatPanel.tsx,status.components.StatPanel.line36.jsx,通用 UI,description,状态详情,,疑似硬编码，修改前确认上下文
+status,src/components/StatPanel.tsx,status.components.StatPanel.line37.jsx,通用 UI,title,小獭当前状态,,疑似硬编码，修改前确认上下文
+status,src/components/StateStage.tsx,status.components.StateStage.line33.1,主界面状态区,ariaLabel,状态舞台区,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+status,src/components/StateStage.tsx,status.components.StateStage.line39.1,主界面状态区,ariaLabel,查看大图：${portrait.alt},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+status,src/components/StateStage.tsx,status.components.StateStage.line59.1,主界面状态区,ariaLabel,当前状态标签,,疑似硬编码，修改前确认上下文
+status,src/components/StateStage.tsx,status.components.StateStage.line66.1,主界面状态区,ariaLabel,状态提醒,,疑似硬编码，修改前确认上下文
+status,src/components/StateStage.tsx,status.components.StateStage.line78.1,主界面状态区,stringLiteral,杨小獭,,疑似硬编码，修改前确认上下文
+status,src/components/StateStage.tsx,status.components.StateStage.line51.jsx,主界面状态区,jsxText,杨小獭,,疑似硬编码，修改前确认上下文
+status,src/components/StateStage.tsx,status.components.StateStage.line60.jsx,主界面状态区,jsxText,杨小獭,,疑似硬编码，修改前确认上下文
+ui,src/components/YearTimeline.tsx,ui.components.YearTimeline.line26.1,通用 UI,ariaLabel,年度时间线,,疑似硬编码，修改前确认上下文
+annual,src/components/YearTimeline.tsx,annual.components.YearTimeline.line35.1,总选结算,stringLiteral,最终总选,,疑似硬编码，修改前确认上下文
+annual,src/components/YearTimeline.tsx,annual.components.YearTimeline.line39.1,总选结算,stringLiteral,总选,,疑似硬编码，修改前确认上下文
+ui,src/components/YearTimeline.tsx,ui.components.YearTimeline.line44.1,通用 UI,ariaLabel,${state.currentYear} 年月份进度,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/components/YearTimeline.tsx,ui.components.YearTimeline.line66.1,通用 UI,stringLiteral,终选,,疑似硬编码，修改前确认上下文
+annual,src/components/YearTimeline.tsx,annual.components.YearTimeline.line66.2,总选结算,stringLiteral,总选,,疑似硬编码，修改前确认上下文
+action,src/config/actionVariants.ts,action.config.actionVariants.line5.1,通用 UI,stringLiteral,加练新公演走位,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line6.1,通用 UI,stringLiteral,复盘整场公演站位,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line7.1,通用 UI,stringLiteral,抠一遍副歌动作,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line8.1,通用 UI,stringLiteral,和队友合练 Unit,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line9.1,通用 UI,stringLiteral,补强体能和动作稳定性,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line10.1,通用 UI,stringLiteral,练习开场曲的气口,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line11.1,通用 UI,stringLiteral,对着镜子修正表情管理,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line12.1,通用 UI,stringLiteral,重新熟悉换装和动线,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line13.1,通用 UI,stringLiteral,把失误段落单独拉出来练,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line14.1,通用 UI,stringLiteral,为下一场剧场做完整彩排,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line17.1,通用 UI,stringLiteral,准备握手会话题,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line18.1,通用 UI,stringLiteral,整理近期粉丝留言,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line19.1,通用 UI,stringLiteral,认真回复口袋房间,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line20.1,通用 UI,stringLiteral,设计一次小型互动,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line21.1,通用 UI,stringLiteral,录一段营业小视频,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line22.1,通用 UI,stringLiteral,准备生日应援回应,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line23.1,通用 UI,stringLiteral,复盘粉丝反馈,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line24.1,通用 UI,stringLiteral,和粉丝分享练习日常,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line25.1,通用 UI,stringLiteral,维护核心粉丝情绪,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line26.1,通用 UI,stringLiteral,让更多人记住今天的她,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line29.1,通用 UI,stringLiteral,接一次外部拍摄,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line30.1,通用 UI,stringLiteral,参加小型媒体采访,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line31.1,通用 UI,stringLiteral,录制团体宣传物料,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line32.1,通用 UI,stringLiteral,尝试短视频曝光,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line33.1,通用 UI,stringLiteral,配合一次写真企划,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line34.1,通用 UI,stringLiteral,参与外部舞台活动,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line35.1,通用 UI,stringLiteral,学习镜头前的表达方式,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line36.1,通用 UI,stringLiteral,把剧场魅力带到更大的舞台,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line37.1,通用 UI,stringLiteral,为新作品做宣传,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line38.1,通用 UI,stringLiteral,争取一次破圈机会,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line41.1,通用 UI,stringLiteral,打磨一首高难度 Unit,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line42.1,通用 UI,stringLiteral,设计更有记忆点的 ending pose,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line43.1,通用 UI,stringLiteral,加强舞台眼神和表情,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line44.1,通用 UI,stringLiteral,练习更强烈的舞台爆发,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line45.1,通用 UI,stringLiteral,重新理解歌词情绪,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line46.1,通用 UI,stringLiteral,为 solo 段落做专项训练,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line47.1,通用 UI,stringLiteral,调整舞台动作的力度层次,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line48.1,通用 UI,stringLiteral,尝试更成熟的舞台风格,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line49.1,通用 UI,stringLiteral,强化个人 part 的存在感,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line50.1,通用 UI,stringLiteral,让这一场成为被记住的舞台,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line53.1,通用 UI,stringLiteral,尝试新的造型方向,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line54.1,通用 UI,stringLiteral,调整妆发风格,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line55.1,通用 UI,stringLiteral,设计更鲜明的人设标签,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line56.1,通用 UI,stringLiteral,在可爱和帅气之间找到平衡,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line57.1,通用 UI,stringLiteral,试一次更有冲击力的舞台服装,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line58.1,通用 UI,stringLiteral,经营社交平台视觉风格,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line59.1,通用 UI,stringLiteral,强化“可瓜可花”的反差感,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line60.1,通用 UI,stringLiteral,选择更适合当前阶段的表达方式,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line61.1,通用 UI,stringLiteral,让粉丝看到新的可能性,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line62.1,通用 UI,stringLiteral,把个人气质变成记忆点,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line65.1,通用 UI,stringLiteral,暂停冲刺，整理状态,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line66.1,通用 UI,stringLiteral,好好睡一觉恢复体力,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line67.1,通用 UI,stringLiteral,复盘最近的压力来源,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line68.1,通用 UI,stringLiteral,给自己一点安静时间,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line69.1,通用 UI,stringLiteral,调整训练和营业节奏,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line70.1,通用 UI,stringLiteral,写下阶段性目标,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line71.1,通用 UI,stringLiteral,和可靠的人聊聊近况,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line72.1,通用 UI,stringLiteral,从连续高压中缓一口气,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line73.1,通用 UI,stringLiteral,找回最初喜欢舞台的感觉,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line74.1,通用 UI,stringLiteral,把情绪沉淀成下一次表达,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line77.1,通用 UI,stringLiteral,复盘近期运营节奏,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line78.1,通用 UI,stringLiteral,规划下一阶段目标,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line79.1,通用 UI,stringLiteral,稳住队伍和个人状态,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line80.1,通用 UI,stringLiteral,平衡剧场、外务和粉丝互动,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line81.1,通用 UI,stringLiteral,检查当前成长短板,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line82.1,通用 UI,stringLiteral,维持核心粉丝信心,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line83.1,通用 UI,stringLiteral,调整资源投入优先级,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line84.1,通用 UI,stringLiteral,避免连续高压带来的风险,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line85.1,通用 UI,stringLiteral,把好状态延续到下一场,,配置文案，可改
+action,src/config/actionVariants.ts,action.config.actionVariants.line86.1,通用 UI,stringLiteral,为关键节点提前蓄力,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line4.1,总选结算,outside,圈外,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line5.1,总选结算,ranked,入围,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line9.1,总选结算,kami7,神七,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line11.1,总选结算,center,第1,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line15.1,总选结算,notRanked,未入围,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line16.1,总选结算,ranked,入围,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line17.1,总选结算,middle,入围,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line20.1,总选结算,legend,年度高光,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line24.1,总选结算,outside,这一年的支持还没有汇聚成足够大的声量。小獭仍在积累自己的基本盘，也在等待下一次被更多人看见的机会。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line25.1,总选结算,ranked,这一年，更多人开始记住她的名字。虽然还不是最耀眼的位置，但每一份支持都在慢慢把她往前推。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line26.1,总选结算,top48,她第一次站进了更大的名单里。粉丝的声音被听见了，而她也开始意识到，自己正在被更多人认真期待。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line27.1,总选结算,top32,这一年的努力有了更稳定的回应。粉丝盘开始成形，她不再只是被偶然看见，而是被持续记住。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line28.1,总选结算,top16,她走进了更核心的位置。灯光更亮，压力也更近，但属于她的名字已经开始有了重量。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line29.1,总选结算,kami7,她站到了真正的高位。欢呼声变得更近，期待也变得更重，这一年会成为粉丝和她都记得的节点。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line30.1,总选结算,top3,离最高处只差一步。她已经证明自己能站在风暴中心，接下来要面对的，是更强的期待和更真实的压力。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line31.1,总选结算,center,这一刻，所有长期的陪伴、应援和等待终于汇成了名字前的第一位。她站上了最高处，也接住了属于自己的光。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line35.1,总选结算,notRanked,这一年的舞台记忆还没有抵达足够多人心里。她仍在积累经验，也在等待下一次真正被舞台记住的机会。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line36.1,总选结算,ranked,今年的舞台留下了一点回声。也许还不够响亮，但已经有人愿意为这一刻投下记忆。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line37.1,总选结算,middle,今年的舞台留下了一点回声。也许还不够响亮，但已经有人愿意为这一刻投下记忆。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line38.1,总选结算,high,她的舞台开始被更多人反复提起。那些训练、走位和眼神，终于在某一首歌里留下了痕迹。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line39.1,总选结算,highlight,这一年的舞台成为了重要记忆。粉丝记住的不只是名次，还有她在灯光下真正撑住的一瞬间。,,配置文案，可改
+annual,src/config/annualResults.ts,annual.config.annualResults.line40.1,总选结算,legend,这一场舞台成为了年度记忆点。不是短暂的热闹，而是会被反复想起、反复提到的高光时刻。,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line8.1,通用 UI,alt,杨小獭初始主形象,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line9.1,通用 UI,label,初始主形象,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line14.1,通用 UI,alt,杨小獭开心版,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line15.1,通用 UI,label,开心版,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line20.1,通用 UI,alt,杨小獭疲惫版,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line21.1,通用 UI,label,疲惫版,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line26.1,通用 UI,alt,杨小獭 wink 营业版,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line27.1,通用 UI,label,wink 营业版,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line32.1,通用 UI,alt,杨小獭舞台服版,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line33.1,通用 UI,label,舞台服版,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line38.1,通用 UI,alt,杨小獭练习服版,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line39.1,通用 UI,label,练习服版,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line44.1,通用 UI,alt,杨小獭夏日版,,配置文案，可改
+ui,src/config/characterImages.ts,ui.config.characterImages.line45.1,通用 UI,label,夏日版,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line18.1,通用 UI,name,偶像顶点,,配置文案，可改
+ending,src/config/endings.ts,ending.config.endings.line19.1,通用 UI,title,偶像顶点结局,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line20.1,通用 UI,routeTag,顶点路线,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line21.1,通用 UI,text,十一年的舞台、营业和一次次选择，终于把小獭推向了最亮的位置。她把自己的光传递给更多人，也把这段陪伴变成了真正的顶点时刻。,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line22.1,通用 UI,finalLine,“如果这束光能照到你那里，那我就还想继续唱下去。”,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line35.1,通用 UI,name,神七高位,,配置文案，可改
+ending,src/config/endings.ts,ending.config.endings.line36.1,通用 UI,title,神七高位结局,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line37.1,通用 UI,routeTag,高位影响力路线,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line38.1,通用 UI,text,小獭没有只靠一瞬间的热度，而是用稳定的努力和回应，把名字留在了更高的位置。,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line39.1,通用 UI,finalLine,“能被大家推到这里，我真的有好好接住这份喜欢。”,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line51.1,通用 UI,name,TOP16 稳定核心,,配置文案，可改
+ending,src/config/endings.ts,ending.config.endings.line52.1,通用 UI,title,TOP16 稳定核心结局,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line53.1,通用 UI,routeTag,核心成员路线,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line54.1,通用 UI,text,她逐渐成为队伍里可靠又闪亮的存在。不是每一年都轰轰烈烈，但每一次上升都扎实地留下了痕迹。,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line55.1,通用 UI,finalLine,“我会继续站在这里，让大家每次回头都能看到我。”,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line65.1,通用 UI,name,剧场传说,,配置文案，可改
+ending,src/config/endings.ts,ending.config.endings.line66.1,通用 UI,title,剧场传说结局,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line67.1,通用 UI,routeTag,剧场成长路线,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line68.1,通用 UI,text,她把一次次剧场公演练到可靠，把并不起眼的日常变成了粉丝心里最踏实的传说。,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line69.1,通用 UI,finalLine,“慢一点也没关系，我会把每一步都走稳。”,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line80.1,通用 UI,name,舞台记忆,,配置文案，可改
+ending,src/config/endings.ts,ending.config.endings.line81.1,通用 UI,title,舞台记忆结局,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line82.1,通用 UI,routeTag,舞台名场面路线,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line83.1,通用 UI,text,这一年的舞台被反复提起。灯光亮起的时候，小獭终于留下了会被许多人记住的代表性瞬间。,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line84.1,通用 UI,finalLine,“每一次站上舞台，我都能听见大家的声音。”,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line95.1,通用 UI,name,粉丝羁绊,,配置文案，可改
+ending,src/config/endings.ts,ending.config.endings.line96.1,通用 UI,title,粉丝羁绊结局,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line97.1,通用 UI,routeTag,长期陪伴路线,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line98.1,通用 UI,text,她没有错过每一次回应，也把粉丝的喜欢认真放在心上。那些普通月份堆在一起，变成了最珍贵的羁绊。,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line99.1,通用 UI,finalLine,“是你们让我相信，温柔也可以很有力量。”,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line109.1,通用 UI,name,外务突破,,配置文案，可改
+ending,src/config/endings.ts,ending.config.endings.line110.1,通用 UI,title,外务突破结局,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line111.1,通用 UI,routeTag,外部认知路线,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line112.1,通用 UI,text,小獭开始被更多舞台之外的人看见。节目、企划和讨论声里，她的名字逐渐有了新的位置。,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line113.1,通用 UI,finalLine,“原来我也可以走到更远的地方，被更多人记住。”,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line124.1,通用 UI,name,稳定运营,,配置文案，可改
+ending,src/config/endings.ts,ending.config.endings.line125.1,通用 UI,title,稳定运营结局,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line126.1,通用 UI,routeTag,低风险稳定路线,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line127.1,通用 UI,text,她没有选择最冒险的路线，却认真走完了每一个月份。稳定、健康、持续，也是偶像生涯里很难得的答案。,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line128.1,通用 UI,finalLine,“谢谢你一直都在，我也一直都记得。”,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line142.1,通用 UI,name,遗憾毕业,,配置文案，可改
+ending,src/config/endings.ts,ending.config.endings.line143.1,通用 UI,title,遗憾毕业 / 未能进圈结局,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line144.1,通用 UI,routeTag,遗憾完成路线,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line145.1,通用 UI,text,这一路并不总是顺利。她已经很努力了，只是这一次还没能把光传到足够远的地方。,,配置文案，可改
+ui,src/config/endings.ts,ui.config.endings.line146.1,通用 UI,finalLine,“谢谢你陪我走到这里，哪怕有遗憾，这些日子也是真的。”,,配置文案，可改
+event,src/config/events.ts,event.config.events.line7.1,事件浮层,title,剧场小高光,,配置文案，可改
+event,src/config/events.ts,event.config.events.line8.1,事件浮层,description,这场表演里，她有一个瞬间被观众记住了。也许不是最中心的位置，但那一秒足够闪亮。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line14.1,事件浮层,stringLiteral,练习,,配置文案，可改
+event,src/config/events.ts,event.config.events.line14.2,事件浮层,stringLiteral,舞台,,配置文案，可改
+event,src/config/events.ts,event.config.events.line21.1,事件浮层,label,记住这个瞬间,,配置文案，可改
+event,src/config/events.ts,event.config.events.line22.1,事件浮层,description,把有效的表现方式继续打磨。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line23.1,事件浮层,resultText,小獭把被记住的那个动作反复拆开，舞台上的确定感更强了。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line29.1,事件浮层,label,分享舞台感受,,配置文案，可改
+event,src/config/events.ts,event.config.events.line30.1,事件浮层,description,把这份开心传递给粉丝。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line31.1,事件浮层,resultText,她认真说起舞台上的心情，粉丝也更愿意为下一次应援。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line39.1,事件浮层,title,粉丝反馈热烈,,配置文案，可改
+event,src/config/events.ts,event.config.events.line40.1,事件浮层,description,一次普通的回应被粉丝反复提起。那些细小的真诚，慢慢变成了继续支持她的理由。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line46.1,事件浮层,stringLiteral,粉丝,,配置文案，可改
+event,src/config/events.ts,event.config.events.line46.2,事件浮层,stringLiteral,营业,,配置文案，可改
+event,src/config/events.ts,event.config.events.line46.3,事件浮层,stringLiteral,应援,,配置文案，可改
+event,src/config/events.ts,event.config.events.line53.1,事件浮层,label,认真回应,,配置文案，可改
+event,src/config/events.ts,event.config.events.line54.1,事件浮层,description,把陪伴感继续接住。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line55.1,事件浮层,resultText,小獭把粉丝的喜欢稳稳接住，核心应援力也更踏实了。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line61.1,事件浮层,label,稳稳陪伴,,配置文案，可改
+event,src/config/events.ts,event.config.events.line62.1,事件浮层,description,不催促，慢慢经营。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line63.1,事件浮层,resultText,没有突然的爆发，但留下来的人更愿意继续陪她走下去。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line71.1,事件浮层,title,外部关注,,配置文案，可改
+event,src/config/events.ts,event.config.events.line72.1,事件浮层,description,一次外部露出让更多人开始搜索她的名字。陌生的目光正在变成新的入口。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line78.1,事件浮层,stringLiteral,外务,,配置文案，可改
+event,src/config/events.ts,event.config.events.line78.2,事件浮层,stringLiteral,曝光,,配置文案，可改
+event,src/config/events.ts,event.config.events.line78.3,事件浮层,stringLiteral,路人盘,,配置文案，可改
+event,src/config/events.ts,event.config.events.line85.1,事件浮层,label,顺势接住,,配置文案，可改
+event,src/config/events.ts,event.config.events.line86.1,事件浮层,description,把路人关注转成真实入口。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line87.1,事件浮层,resultText,小獭没有被突然的目光吓住，反而让更多人看见了她的可爱。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line93.1,事件浮层,label,自然表达,,配置文案，可改
+event,src/config/events.ts,event.config.events.line94.1,事件浮层,description,保持自己的节奏。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line95.1,事件浮层,resultText,她没有刻意迎合，松弛的表达反而留下了更好的印象。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line103.1,事件浮层,title,风格被记住,,配置文案，可改
+event,src/config/events.ts,event.config.events.line104.1,事件浮层,description,她的风格开始变得清晰。不是复制别人，而是让人一眼能想起她。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line110.1,事件浮层,stringLiteral,风格,,配置文案，可改
+event,src/config/events.ts,event.config.events.line110.2,事件浮层,stringLiteral,形象,,配置文案，可改
+event,src/config/events.ts,event.config.events.line110.3,事件浮层,stringLiteral,物料,,配置文案，可改
+event,src/config/events.ts,event.config.events.line117.1,事件浮层,label,强化记忆点,,配置文案，可改
+event,src/config/events.ts,event.config.events.line118.1,事件浮层,description,把辨识度做得更清楚。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line119.1,事件浮层,resultText,小獭找到了一种更像自己的表达，可爱和锋芒都更清晰了。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line124.1,事件浮层,label,听取反馈,,配置文案，可改
+event,src/config/events.ts,event.config.events.line125.1,事件浮层,description,让风格变化更稳。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line126.1,事件浮层,resultText,她认真听完不同意见，新的尝试没有变成距离感。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line134.1,事件浮层,title,军心稳定,,配置文案，可改
+event,src/config/events.ts,event.config.events.line135.1,事件浮层,description,没有突然爆发的声量，但粉丝盘变得更稳了。有人留下来，也有人重新找回继续陪伴的理由。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line138.1,事件浮层,stringLiteral,运营,,配置文案，可改
+event,src/config/events.ts,event.config.events.line138.2,事件浮层,stringLiteral,恢复,,配置文案，可改
+event,src/config/events.ts,event.config.events.line138.3,事件浮层,stringLiteral,粉丝,,配置文案，可改
+event,src/config/events.ts,event.config.events.line145.1,事件浮层,label,稳定节奏,,配置文案，可改
+event,src/config/events.ts,event.config.events.line146.1,事件浮层,description,让粉丝盘慢慢恢复。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line147.1,事件浮层,resultText,小獭没有急着追声量，而是把陪伴变成更稳定的日常。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line152.1,事件浮层,label,给一个小约定,,配置文案，可改
+event,src/config/events.ts,event.config.events.line153.1,事件浮层,description,用温柔的话稳住期待。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line154.1,事件浮层,resultText,一个小小的约定让大家安心了很多，继续陪伴也变得更有方向。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line162.1,事件浮层,title,训练消耗过度,,配置文案，可改
+event,src/config/events.ts,event.config.events.line163.1,事件浮层,description,加练的效果确实出现了，但身体也开始提醒她，不能一直硬撑。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line169.1,事件浮层,stringLiteral,练习,,配置文案，可改
+event,src/config/events.ts,event.config.events.line169.2,事件浮层,stringLiteral,舞台,,配置文案，可改
+event,src/config/events.ts,event.config.events.line169.3,事件浮层,stringLiteral,透支,,配置文案，可改
+event,src/config/events.ts,event.config.events.line176.1,事件浮层,label,把这组练完,,配置文案，可改
+event,src/config/events.ts,event.config.events.line177.1,事件浮层,description,继续换一点成长。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line178.1,事件浮层,resultText,她还是咬牙练完了这一组，舞台理解更深，但状态更吃紧。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line184.1,事件浮层,label,及时停下,,配置文案，可改
+event,src/config/events.ts,event.config.events.line185.1,事件浮层,description,先避免疲劳扩大。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line186.1,事件浮层,resultText,小獭把训练记录好，先让身体缓下来。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line194.1,事件浮层,title,营业疲劳,,配置文案，可改
+event,src/config/events.ts,event.config.events.line195.1,事件浮层,description,营业频率变高之后，一部分粉丝开始担心这份热闹会不会太消耗她。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line198.1,事件浮层,stringLiteral,粉丝,,配置文案，可改
+event,src/config/events.ts,event.config.events.line198.2,事件浮层,stringLiteral,营业,,配置文案，可改
+event,src/config/events.ts,event.config.events.line198.3,事件浮层,stringLiteral,应援,,配置文案，可改
+event,src/config/events.ts,event.config.events.line205.1,事件浮层,label,维持热度,,配置文案，可改
+event,src/config/events.ts,event.config.events.line206.1,事件浮层,description,短期继续冲一把。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line207.1,事件浮层,resultText,热度确实继续上去了，但疲惫感也一起被推高。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line213.1,事件浮层,label,放软节奏,,配置文案，可改
+event,src/config/events.ts,event.config.events.line214.1,事件浮层,description,让喜欢变得不那么紧绷。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line215.1,事件浮层,resultText,小獭把节奏放轻，粉丝也更愿意用舒服的方式陪着她。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line223.1,事件浮层,title,曝光压力,,配置文案，可改
+event,src/config/events.ts,event.config.events.line224.1,事件浮层,description,新的关注带来了机会，也带来了更多评价。小獭开始有点在意自己是不是表现得足够好。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line227.1,事件浮层,stringLiteral,外务,,配置文案，可改
+event,src/config/events.ts,event.config.events.line227.2,事件浮层,stringLiteral,曝光,,配置文案，可改
+event,src/config/events.ts,event.config.events.line227.3,事件浮层,stringLiteral,压力,,配置文案，可改
+event,src/config/events.ts,event.config.events.line234.1,事件浮层,label,正面接住,,配置文案，可改
+event,src/config/events.ts,event.config.events.line235.1,事件浮层,description,把压力转成可见度。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line236.1,事件浮层,resultText,她认真接住外界的评价，影响力上去了，压力也更明显。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line241.1,事件浮层,label,过滤噪音,,配置文案，可改
+event,src/config/events.ts,event.config.events.line242.1,事件浮层,description,让团队帮她挡掉一部分消耗。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line243.1,事件浮层,resultText,团队帮她整理反馈，小獭不用把每一句话都背在身上。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line251.1,事件浮层,title,路线争议,,配置文案，可改
+event,src/config/events.ts,event.config.events.line252.1,事件浮层,description,新的形象方向让讨论变多了，有人喜欢，也有人一时不适应。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line255.1,事件浮层,stringLiteral,风格,,配置文案，可改
+event,src/config/events.ts,event.config.events.line255.2,事件浮层,stringLiteral,形象,,配置文案，可改
+event,src/config/events.ts,event.config.events.line255.3,事件浮层,stringLiteral,舆论,,配置文案，可改
+event,src/config/events.ts,event.config.events.line262.1,事件浮层,label,坚持方向,,配置文案，可改
+event,src/config/events.ts,event.config.events.line263.1,事件浮层,description,把风格做得更明确。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line264.1,事件浮层,resultText,小獭没有马上退回去，辨识度更强了，但争议也带来压力。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line269.1,事件浮层,label,微调表达,,配置文案，可改
+event,src/config/events.ts,event.config.events.line270.1,事件浮层,description,保留新鲜感，也照顾粉丝接受度。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line271.1,事件浮层,resultText,她把新风格调得更贴近自己，讨论慢慢变得温和。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line279.1,事件浮层,title,体力透支,,配置文案，可改
+event,src/config/events.ts,event.config.events.line280.1,事件浮层,description,连月的训练和外务让身体开始发出警讯。她还是想撑住，但状态已经不再像之前那样稳定。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line283.1,事件浮层,stringLiteral,透支,,配置文案，可改
+event,src/config/events.ts,event.config.events.line283.2,事件浮层,stringLiteral,恢复,,配置文案，可改
+event,src/config/events.ts,event.config.events.line283.3,事件浮层,stringLiteral,舞台,,配置文案，可改
+event,src/config/events.ts,event.config.events.line293.1,事件浮层,label,咬牙坚持,,配置文案，可改
+event,src/config/events.ts,event.config.events.line294.1,事件浮层,description,继续换舞台和声量。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line295.1,事件浮层,resultText,小獭撑住了这次安排，但身体发出的警讯更明显了。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line301.1,事件浮层,label,调整节奏,,配置文案，可改
+event,src/config/events.ts,event.config.events.line302.1,事件浮层,description,先把身体稳回来。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line303.1,事件浮层,resultText,她暂时放慢安排，身体终于得到一点喘息。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line308.1,事件浮层,label,稳定沟通,,配置文案，可改
+event,src/config/events.ts,event.config.events.line309.1,事件浮层,description,让粉丝理解节奏调整。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line310.1,事件浮层,resultText,小獭认真说明自己的状态，核心粉反而更愿意保护她。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line318.1,事件浮层,title,高压失衡,,配置文案，可改
+event,src/config/events.ts,event.config.events.line319.1,事件浮层,description,高位期待让每一次失误都被放大。她开始变得更在意评价，也更难放松下来。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line322.1,事件浮层,stringLiteral,压力,,配置文案，可改
+event,src/config/events.ts,event.config.events.line322.2,事件浮层,stringLiteral,舆论,,配置文案，可改
+event,src/config/events.ts,event.config.events.line322.3,事件浮层,stringLiteral,高位,,配置文案，可改
+event,src/config/events.ts,event.config.events.line332.1,事件浮层,label,正面回应期待,,配置文案，可改
+event,src/config/events.ts,event.config.events.line333.1,事件浮层,description,用更高声量接住压力。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line334.1,事件浮层,resultText,她努力把期待转化成表达，影响力上升，但压力没有真正消失。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line340.1,事件浮层,label,休整沉淀,,配置文案，可改
+event,src/config/events.ts,event.config.events.line341.1,事件浮层,description,先让心情和压力回落。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line342.1,事件浮层,resultText,她把脚步放慢一点，终于重新听见自己的呼吸。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line347.1,事件浮层,label,团队分担,,配置文案，可改
+event,src/config/events.ts,event.config.events.line348.1,事件浮层,description,用运营力分摊压力。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line349.1,事件浮层,resultText,团队帮她拆解评价和安排，小獭不再一个人硬扛。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line357.1,事件浮层,title,应援盘透支,,配置文案，可改
+event,src/config/events.ts,event.config.events.line358.1,事件浮层,description,粉丝仍然愿意支持她，但长期高强度应援已经让一部分人感到疲惫。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line361.1,事件浮层,stringLiteral,粉丝,,配置文案，可改
+event,src/config/events.ts,event.config.events.line361.2,事件浮层,stringLiteral,应援,,配置文案，可改
+event,src/config/events.ts,event.config.events.line361.3,事件浮层,stringLiteral,疲劳,,配置文案，可改
+event,src/config/events.ts,event.config.events.line371.1,事件浮层,label,继续冲榜,,配置文案，可改
+event,src/config/events.ts,event.config.events.line372.1,事件浮层,description,短期把数字再推上去。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line373.1,事件浮层,resultText,粉丝数短期又涨了一点，但疲劳也被继续推高。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line379.1,事件浮层,label,安抚核心粉,,配置文案，可改
+event,src/config/events.ts,event.config.events.line380.1,事件浮层,description,先修复应援盘。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line381.1,事件浮层,resultText,小獭没有催促大家，只是认真把感谢说清楚。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line386.1,事件浮层,label,稳定运营,,配置文案，可改
+event,src/config/events.ts,event.config.events.line387.1,事件浮层,description,降低消耗，慢慢恢复。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line388.1,事件浮层,resultText,节奏慢下来以后，粉丝盘终于不再那么紧绷。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line396.1,事件浮层,title,状态低落,,配置文案，可改
+event,src/config/events.ts,event.config.events.line397.1,事件浮层,description,她没有停下脚步，只是偶尔会在练习室的镜子前沉默很久。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line403.1,事件浮层,stringLiteral,压力,,配置文案，可改
+event,src/config/events.ts,event.config.events.line403.2,事件浮层,stringLiteral,恢复,,配置文案，可改
+event,src/config/events.ts,event.config.events.line403.3,事件浮层,stringLiteral,低落,,配置文案，可改
+event,src/config/events.ts,event.config.events.line413.1,事件浮层,label,继续训练,,配置文案，可改
+event,src/config/events.ts,event.config.events.line414.1,事件浮层,description,用训练找回确定感。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line415.1,事件浮层,resultText,练习让她暂时找到了方向，但低落并没有完全散开。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line421.1,事件浮层,label,放慢节奏,,配置文案，可改
+event,src/config/events.ts,event.config.events.line422.1,事件浮层,description,先把心情照顾好。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line423.1,事件浮层,resultText,小獭给自己留出一点空白，心情慢慢回到了可承受的位置。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line428.1,事件浮层,label,和粉丝连接,,配置文案，可改
+event,src/config/events.ts,event.config.events.line429.1,事件浮层,description,用陪伴感重新获得力量。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line430.1,事件浮层,resultText,她从粉丝那里重新感受到被需要，眼睛又亮了一点。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line438.1,事件浮层,title,安静恢复日,,配置文案，可改
+event,src/config/events.ts,event.config.events.line439.1,事件浮层,description,难得有一个能慢下来的日子。没有大声量，但这份平静很重要。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line442.1,事件浮层,stringLiteral,恢复,,配置文案，可改
+event,src/config/events.ts,event.config.events.line442.2,事件浮层,stringLiteral,休息,,配置文案，可改
+event,src/config/events.ts,event.config.events.line442.3,事件浮层,stringLiteral,日常,,配置文案，可改
+event,src/config/events.ts,event.config.events.line450.1,事件浮层,label,好好睡一觉,,配置文案，可改
+event,src/config/events.ts,event.config.events.line451.1,事件浮层,description,优先恢复体力。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line452.1,事件浮层,resultText,小獭睡了一个很长的觉，醒来时终于没有那么沉了。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line457.1,事件浮层,label,整理留言,,配置文案，可改
+event,src/config/events.ts,event.config.events.line458.1,事件浮层,description,从陪伴里恢复心情。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line459.1,事件浮层,resultText,她慢慢看完大家的留言，知道自己不是一个人在前进。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line467.1,事件浮层,title,团队节奏调整,,配置文案，可改
+event,src/config/events.ts,event.config.events.line468.1,事件浮层,description,团队意识到近期安排有些紧，于是重新整理了训练、营业和休息的比例。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line471.1,事件浮层,stringLiteral,运营,,配置文案，可改
+event,src/config/events.ts,event.config.events.line471.2,事件浮层,stringLiteral,恢复,,配置文案，可改
+event,src/config/events.ts,event.config.events.line471.3,事件浮层,stringLiteral,压力,,配置文案，可改
+event,src/config/events.ts,event.config.events.line479.1,事件浮层,label,重排日程,,配置文案，可改
+event,src/config/events.ts,event.config.events.line480.1,事件浮层,description,用运营力降低消耗。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line481.1,事件浮层,resultText,安排变得更有余地，小獭终于不用每件事都硬扛。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line486.1,事件浮层,label,保护粉丝盘,,配置文案，可改
+event,src/config/events.ts,event.config.events.line487.1,事件浮层,description,先让应援节奏降温。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line488.1,事件浮层,resultText,粉丝盘被好好照顾了一次，紧绷感明显下降。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line496.1,事件浮层,title,第一次千人基本盘,,配置文案，可改
+event,src/config/events.ts,event.config.events.line497.1,事件浮层,description,粉丝数跨过了一个小小的门槛。数字不是全部，但它说明，已经有人愿意认真留下来。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line500.1,事件浮层,stringLiteral,粉丝,,配置文案，可改
+event,src/config/events.ts,event.config.events.line500.2,事件浮层,stringLiteral,里程碑,,配置文案，可改
+event,src/config/events.ts,event.config.events.line500.3,事件浮层,stringLiteral,应援,,配置文案，可改
+event,src/config/events.ts,event.config.events.line508.1,事件浮层,label,认真道谢,,配置文案，可改
+event,src/config/events.ts,event.config.events.line509.1,事件浮层,description,把这份支持变成新的约定。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line510.1,事件浮层,resultText,小獭认真把感谢说出口，粉丝也更确定自己没有喜欢错人。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line515.1,事件浮层,label,继续前进,,配置文案，可改
+event,src/config/events.ts,event.config.events.line516.1,事件浮层,description,把里程碑当成新的起点。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line517.1,事件浮层,resultText,她没有停在这个数字上，而是把它当作下一段路的起点。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line525.1,事件浮层,title,舞台力突破,,配置文案，可改
+event,src/config/events.ts,event.config.events.line526.1,事件浮层,description,她的舞台力终于到了一个新的层级。练习室里的反复确认，开始变成台上的稳定感。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line529.1,事件浮层,stringLiteral,舞台,,配置文案，可改
+event,src/config/events.ts,event.config.events.line529.2,事件浮层,stringLiteral,里程碑,,配置文案，可改
+event,src/config/events.ts,event.config.events.line529.3,事件浮层,stringLiteral,练习,,配置文案，可改
+event,src/config/events.ts,event.config.events.line537.1,事件浮层,label,继续打磨,,配置文案，可改
+event,src/config/events.ts,event.config.events.line538.1,事件浮层,description,把突破变成稳定实力。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line539.1,事件浮层,resultText,小獭没有被一次突破冲昏头，而是继续把舞台力磨得更稳。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line545.1,事件浮层,label,分享自信,,配置文案，可改
+event,src/config/events.ts,event.config.events.line546.1,事件浮层,description,让粉丝一起记住这次成长。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line547.1,事件浮层,resultText,粉丝看见了她的成长，也更愿意把下一次舞台交给她。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line557.1,事件浮层,title,普通但重要的一天,,配置文案，可改
+event,src/config/events.ts,event.config.events.line558.1,事件浮层,description,没有特别大的事件，但小獭还是认真完成了今天的安排。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line561.1,事件浮层,stringLiteral,日常,,配置文案，可改
+event,src/config/events.ts,event.config.events.line561.2,事件浮层,stringLiteral,恢复,,配置文案，可改
+event,src/config/events.ts,event.config.events.line567.1,事件浮层,label,稳稳收尾,,配置文案，可改
+event,src/config/events.ts,event.config.events.line568.1,事件浮层,description,保持节奏。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line569.1,事件浮层,resultText,平凡的一天也有小小积累，小獭把状态保持住了。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line577.1,事件浮层,label,早点休息,,配置文案，可改
+event,src/config/events.ts,event.config.events.line578.1,事件浮层,description,让状态轻轻恢复。,,配置文案，可改
+event,src/config/events.ts,event.config.events.line579.1,事件浮层,resultText,小獭早早睡下，第二天醒来时眼睛又亮了起来。,,配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line17.1,结局页,title,化茧为蝶,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line18.1,结局页,subtitle,终章高光结局,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line20.1,结局页,stringLiteral,从最初的起点到最终的舞台，她一次次被推到更亮的灯光下，也一次次接住了那些期待。所有训练、压力、应援、沉默和高光，终于在这一刻汇成了完整的蜕变。,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line27.1,结局页,title,星火将燃：蝶翼未满,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line28.1,结局页,subtitle,高位未满结局,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line30.1,结局页,stringLiteral,她已经点燃了足够明亮的火光，也几乎触碰到完整蜕变的边缘。只是最后一段路仍有遗憾，但星火已经燃起，蝶翼也已经展开了一半。,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line37.1,结局页,title,仍在半山：烙印未成,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line38.1,结局页,subtitle,稳定成长结局,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line40.1,结局页,stringLiteral,她确实走了很远。那些被记住的舞台、稳定下来的粉丝、一次次向前的排名，都证明这不是一段空白旅程。只是距离真正留下不可替代的烙印，还差最后一次突破。,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line47.1,结局页,title,那么，晚安：应援断层,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line48.1,结局页,subtitle,未成闭环结局,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line50.1,结局页,stringLiteral,这一路并不是没有光，只是那些光没有汇成足够稳定的方向。有人短暂地看见她，也有人在中途离开。舞台落幕后，声音慢慢散去。,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line57.1,结局页,title,暂停休整,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line58.1,结局页,subtitle,风险优先结局,,结局名/结局正文，谨慎修改；配置文案，可改
+ending,src/config/finalEndings.ts,ending.config.finalEndings.line60.1,结局页,stringLiteral,她不是没有努力，只是一路撑到最后时，身体、情绪和粉丝盘都已经发出了太多警讯。暂停不是失败，而是为了让她还能在未来重新站回灯光下。,,结局名/结局正文，谨慎修改；配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line49.1,图鉴,name,初始主形象,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line55.1,图鉴,description,刚开始踏上偶像养成之路的杨小獭，元气已经满满冒出来了。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line56.1,图鉴,conditionText,默认解锁,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line61.1,图鉴,name,开心版,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line67.1,图鉴,description,心情亮晶晶的小獭，笑容会让练习室都变暖。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line68.1,图鉴,conditionText,心情达到 85 或以上,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line73.1,图鉴,name,疲惫版,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line79.1,图鉴,description,努力到有点累的小獭，需要被好好照顾。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line80.1,图鉴,conditionText,体力低于 30,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line85.1,图鉴,name,wink 营业版,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line91.1,图鉴,description,把元气 wink 送给粉丝的小獭，是营业天才预备役。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line92.1,图鉴,conditionText,完成 3 次粉丝营业计划,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line98.1,图鉴,name,舞台服版,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line104.1,图鉴,description,站上舞台的小獭，正在把自己的光传递出去。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line105.1,B50结算,conditionText,完成 3 次 B50 舞台记忆节点,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line110.1,图鉴,name,练习服版,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line116.1,图鉴,description,在练习室一点点变强的小獭，每一滴汗水都有意义。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line117.1,图鉴,conditionText,完成剧场训练或舞台专项累计 5 次,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line125.1,图鉴,name,夏日版,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line131.1,图鉴,description,参加夏日活动的小獭，像蜂蜜汽水一样清爽闪亮。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line132.1,图鉴,conditionText,触发“夏日邀约”并选择参加活动,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line137.1,图鉴,label,粉丝来信 CG,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line138.1,图鉴,stringLiteral,收到粉丝来信时，小獭把那份喜欢认真收进心里。,,配置文案，可改
+event,src/config/gallery.ts,event.config.gallery.line139.1,图鉴,stringLiteral,完成“粉丝来信”事件,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line143.1,图鉴,label,粉丝二创出圈 CG,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line144.1,图鉴,stringLiteral,粉丝创作让更多人看见小獭，也让这份陪伴轻轻扩散。,,配置文案，可改
+event,src/config/gallery.ts,event.config.gallery.line145.1,图鉴,stringLiteral,完成“粉丝二创出圈”事件,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line149.1,图鉴,label,舞台小失误 CG,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line150.1,图鉴,stringLiteral,一次小失误之后，小獭学会了把不安拆成下一次进步。,,配置文案，可改
+event,src/config/gallery.ts,event.config.gallery.line151.1,图鉴,stringLiteral,完成“舞台小失误”事件,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line155.1,图鉴,label,练习室加练 CG,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line156.1,图鉴,stringLiteral,练习室里多留的一会儿，也会变成舞台上的一点光。,,配置文案，可改
+event,src/config/gallery.ts,event.config.gallery.line157.1,图鉴,stringLiteral,完成“练习室加练”事件,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line161.1,图鉴,label,风格挑战 CG,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line162.1,图鉴,stringLiteral,新的风格提案让小獭看见了自己更多面的可能。,,配置文案，可改
+event,src/config/gallery.ts,event.config.gallery.line163.1,图鉴,stringLiteral,完成“想挑战不同风格”事件,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line167.1,图鉴,label,夏日邀约 CG,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line168.1,图鉴,stringLiteral,夏日活动里的小獭，像蜂蜜汽水一样清爽闪亮。,,配置文案，可改
+event,src/config/gallery.ts,event.config.gallery.line169.1,图鉴,stringLiteral,完成“夏日邀约”事件,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line173.1,图鉴,label,心情低落 CG,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line174.1,图鉴,stringLiteral,状态低落的时候，陪伴和照顾也会成为很重要的养成。,,配置文案，可改
+event,src/config/gallery.ts,event.config.gallery.line175.1,图鉴,stringLiteral,完成“心情低落”事件,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line179.1,图鉴,label,偷偷开心 CG,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line180.1,图鉴,stringLiteral,被夸奖后偷偷开心的小獭，把这句话藏进了练习本。,,配置文案，可改
+event,src/config/gallery.ts,event.config.gallery.line181.1,图鉴,stringLiteral,完成“被夸奖后偷偷开心”事件,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line185.1,图鉴,stringLiteral,X队初登场,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line186.1,图鉴,stringLiteral,她第一次以正式身份站上这个起点。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line187.1,图鉴,stringLiteral,2015 年 4 月触发 X队初登场,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line192.1,图鉴,stringLiteral,冰帝传说,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line193.1,图鉴,stringLiteral,一次突然而来的高位信号，让更多人开始意识到这个名字。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line194.1,图鉴,stringLiteral,2015 年 5 月触发冰帝传说,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line199.1,图鉴,stringLiteral,十八个闪耀瞬间,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line200.1,图鉴,stringLiteral,早期成长里被记录下来的闪光片段。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line201.1,图鉴,stringLiteral,2016 年 4 月触发十八个闪耀瞬间,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line206.1,图鉴,stringLiteral,卡拉卡拉狗,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line207.1,图鉴,stringLiteral,新的位置带来新的目光，也让她开始找到自己的颜色。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line208.1,图鉴,stringLiteral,2017 年 7 月触发卡拉卡拉狗,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line213.1,图鉴,stringLiteral,肩负旗帜,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line214.1,图鉴,stringLiteral,身份变化意味着责任，也意味着新的成长。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line215.1,图鉴,stringLiteral,2018 年 2 月触发肩负旗帜,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line221.1,图鉴,stringLiteral,更锋利的节奏和更强的舞台冲击，留下不同以往的一面。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line222.1,图鉴,stringLiteral,2019 年 1 月触发 DEMOON,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line227.1,图鉴,stringLiteral,队长,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line228.1,图鉴,stringLiteral,责任落到肩上之后，她面对的不只是自己的舞台。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line229.1,图鉴,stringLiteral,2020 年 11 月触发队长,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line234.1,图鉴,stringLiteral,少女革命作品记忆,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line235.1,图鉴,stringLiteral,成长不只是变得更强，也是在一次次舞台里重新定义自己。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line236.1,图鉴,stringLiteral,少女革命达到 A 或 S,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line241.1,图鉴,stringLiteral,歪歪DS作品记忆,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line242.1,图鉴,stringLiteral,把陪伴、回应和个人色彩认真放进同一个夜晚。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line243.1,图鉴,stringLiteral,歪歪DS达到 A 或 S,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line248.1,图鉴,stringLiteral,小一作品记忆,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line249.1,图鉴,stringLiteral,那些不夸张却足够清晰的瞬间，让人记住她的个人质感。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line250.1,图鉴,stringLiteral,小一达到 A 或 S,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line255.1,图鉴,stringLiteral,meteor stream作品记忆,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line256.1,图鉴,stringLiteral,像流星划过夜空一样，被看见的瞬间成为舞台记忆。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line257.1,图鉴,stringLiteral,meteor stream达到 A 或 S,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line262.1,图鉴,stringLiteral,Triones作品记忆,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line263.1,图鉴,stringLiteral,稳定、完整、默契和舞台掌控力在这里被放大。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line264.1,图鉴,stringLiteral,Triones达到 A 或 S,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line269.1,图鉴,stringLiteral,Fu作品记忆,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line270.1,图鉴,stringLiteral,风格、表达和粉丝记忆在这一刻汇合。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line271.1,图鉴,stringLiteral,Fu达到 A 或 S,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line276.1,图鉴,stringLiteral,SuperTATA作品记忆,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line277.1,图鉴,stringLiteral,轻快、鲜明、带有个人符号的舞台记忆被好好收录。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line278.1,图鉴,stringLiteral,SuperTATA达到 A 或 S,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line283.1,图鉴,stringLiteral,烙印作品记忆,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line284.1,图鉴,stringLiteral,高位阶段的代表作，把名字刻进这一年的记忆里。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line285.1,图鉴,stringLiteral,烙印达到 A 或 S,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line290.1,图鉴,stringLiteral,FLAME终章记忆,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line291.1,图鉴,stringLiteral,终章舞台视觉预留，正式触发将在 Phase 8 接入。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line292.1,图鉴,stringLiteral,终章阶段开放,,配置文案，可改
+annual,src/config/gallery.ts,annual.config.gallery.line298.1,总选结算,stringLiteral,总选高光记忆,,配置文案，可改
+annual,src/config/gallery.ts,annual.config.gallery.line299.1,图鉴,stringLiteral,年度人气顶点的视觉记忆预留。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line300.1,图鉴,stringLiteral,后续年度视觉开放,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line305.1,B50结算,stringLiteral,B50高光记忆,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line306.1,图鉴,stringLiteral,年度舞台名场面的视觉记忆预留。,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line307.1,图鉴,stringLiteral,后续年度视觉开放,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line315.1,图鉴,stringLiteral,达成“${ending.title}”,,动态模板，保留变量；配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line340.1,图鉴,stringLiteral,未收录,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line340.2,图鉴,label,CG待补充,,配置文案，可改；缺图/占位提示
+gallery,src/config/gallery.ts,gallery.config.gallery.line341.1,图鉴,conditionText,素材未就绪，暂不在流程中弹出,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line380.1,图鉴,stringLiteral,未收录,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line380.2,图鉴,label,CG待补充,,配置文案，可改；缺图/占位提示
+gallery,src/config/gallery.ts,gallery.config.gallery.line381.1,图鉴,conditionText,素材未就绪，暂不在流程中弹出,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line415.1,图鉴,stringLiteral,未收录,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line415.2,图鉴,label,CG待补充,,配置文案，可改；缺图/占位提示
+gallery,src/config/gallery.ts,gallery.config.gallery.line416.1,图鉴,conditionText,素材缺失，已列入补图清单,,配置文案，可改；缺图/占位提示
+gallery,src/config/gallery.ts,gallery.config.gallery.line447.1,图鉴,lockedTitle,后续开放,,配置文案，可改
+gallery,src/config/gallery.ts,gallery.config.gallery.line472.1,图鉴,lockedTitle,结局CG待补充,,配置文案，可改；缺图/占位提示
+gallery,src/config/gallery.ts,gallery.config.gallery.line473.1,图鉴,lockedHint,素材未就绪，暂不在流程中弹出,,配置文案，可改
+ui,src/config/homeVisual.ts,ui.config.homeVisual.line9.1,通用 UI,alt,杨小獭首页主视觉,,配置文案，可改
+ui,src/config/homeVisual.ts,ui.config.homeVisual.line10.1,通用 UI,label,首页主视觉,,配置文案，可改
+ui,src/config/homeVisual.ts,ui.config.homeVisual.line11.1,通用 UI,placeholderText,杨小獭,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line9.1,通用 UI,name,剧场加练,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line10.1,通用 UI,description,把基础唱跳和舞台力重新打磨一轮。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line14.1,通用 UI,stringLiteral,体力下降,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line14.2,通用 UI,stringLiteral,压力上升,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line15.1,通用 UI,stringLiteral,练习,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line15.2,通用 UI,stringLiteral,舞台,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line15.3,通用 UI,stringLiteral,透支,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line38.1,通用 UI,feedbackText,小獭在剧场里一遍遍练习，基础实力稳稳变强了。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line43.1,通用 UI,name,粉丝营业,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line44.1,通用 UI,description,认真回应粉丝，把陪伴感和元气传递出去。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line48.1,通用 UI,stringLiteral,压力上升,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line48.2,通用 UI,stringLiteral,体力下降,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line49.1,通用 UI,stringLiteral,粉丝,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line49.2,通用 UI,stringLiteral,营业,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line49.3,通用 UI,stringLiteral,应援,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line72.1,通用 UI,feedbackText,小獭给粉丝送出元气 wink，握在手心里的喜欢变多了。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line77.1,通用 UI,name,外务曝光,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line78.1,通用 UI,description,参加外部活动和节目，让更多人看见小獭。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line82.1,通用 UI,stringLiteral,压力上升,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line82.2,通用 UI,stringLiteral,基础训练不足,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line83.1,通用 UI,stringLiteral,外务,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line83.2,通用 UI,stringLiteral,曝光,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line83.3,通用 UI,stringLiteral,路人盘,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line108.1,通用 UI,feedbackText,外务让小獭被更多人记住，影响力和认知度都打开了一点。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line113.1,通用 UI,name,舞台专项,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line114.1,通用 UI,description,集中打磨舞台记忆点，为重要节点蓄力。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line118.1,通用 UI,stringLiteral,体力下降,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line118.2,通用 UI,stringLiteral,压力上升,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line119.1,通用 UI,stringLiteral,舞台,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line119.2,通用 UI,stringLiteral,透支,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line142.1,通用 UI,feedbackText,小獭把每一个走位都练到发亮，舞台力明显更稳了。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line147.1,通用 UI,name,形象经营,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line148.1,通用 UI,description,尝试造型、物料和表达方式，建立更鲜明的风格。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line152.1,通用 UI,stringLiteral,风格争议,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line152.2,通用 UI,stringLiteral,压力上升,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line153.1,通用 UI,stringLiteral,风格,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line153.2,通用 UI,stringLiteral,物料,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line153.3,通用 UI,stringLiteral,讨论,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line174.1,通用 UI,feedbackText,新的形象方向很适合小獭，可爱里多了一点闪亮的锋芒。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line179.1,通用 UI,name,休整沉淀,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line180.1,通用 UI,description,放慢节奏，恢复状态，也重新整理自己的方向。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line184.1,通用 UI,stringLiteral,成长收益低,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line184.2,通用 UI,stringLiteral,粉丝增长停滞,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line185.1,通用 UI,stringLiteral,休息,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line185.2,通用 UI,stringLiteral,恢复,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line185.3,通用 UI,stringLiteral,沉淀,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line202.1,通用 UI,feedbackText,小獭好好睡了一觉，也把心里的小结轻轻解开了。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line207.1,通用 UI,name,稳定运营,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line208.1,通用 UI,description,不冒进也不停摆，保持训练、营业和粉丝互动的节奏。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line212.1,通用 UI,stringLiteral,爆发低,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line212.2,通用 UI,stringLiteral,难以冲顶,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line213.1,通用 UI,stringLiteral,运营,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line213.2,通用 UI,stringLiteral,日常,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line213.3,通用 UI,stringLiteral,低风险,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line238.1,通用 UI,feedbackText,小獭按自己的节奏稳稳前进，细小的进步也会累积成光。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line242.1,通用 UI,name,个人外务,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line243.1,通用 UI,description,独立参加外部企划，扩大路人认知和讨论度。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line247.1,通用 UI,stringLiteral,压力明显上升,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line247.2,通用 UI,stringLiteral,体力下降,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line248.1,通用 UI,stringLiteral,外务,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line248.2,通用 UI,stringLiteral,曝光,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line248.3,通用 UI,stringLiteral,舆论,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line252.1,总选结算,lockedReason,需要影响力 ≥ 40，或总选达到 TOP32，或经历过正向外务 / 曝光事件。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line256.1,通用 UI,type,外务,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line257.1,通用 UI,type,曝光,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line273.1,通用 UI,feedbackText,这次个人外务让更多人记住了小獭，也让她背上了更高期待。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line277.1,通用 UI,name,高强度集训,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line278.1,通用 UI,description,短期集中冲刺基础能力，但需要扛住透支风险。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line282.1,通用 UI,stringLiteral,体力大幅下降,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line282.2,通用 UI,stringLiteral,压力明显上升,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line283.1,通用 UI,stringLiteral,练习,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line283.2,通用 UI,stringLiteral,舞台,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line283.3,通用 UI,stringLiteral,透支,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line286.1,通用 UI,lockedReason,需要体力 ≥ 60，且压力 ≤ 65。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line307.1,通用 UI,feedbackText,小獭咬牙完成了高强度集训，实力被狠狠向前推了一步。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line311.1,通用 UI,name,生日应援筹备,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line312.1,通用 UI,description,提前凝聚粉丝心意，把重要月份变成共同记忆。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line316.1,通用 UI,stringLiteral,压力小幅上升,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line317.1,通用 UI,stringLiteral,粉丝,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line317.2,通用 UI,stringLiteral,应援,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line317.3,通用 UI,stringLiteral,生日,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line321.1,通用 UI,lockedReason,仅 ${CHARACTER_BIRTH_MONTH - 1} 月 / ${CHARACTER_BIRTH_MONTH} 月开放，且核心应援力 ≥ 35。,,动态模板，保留变量；配置文案，可改
+action,src/config/plans.ts,action.config.plans.line338.1,通用 UI,feedbackText,生日应援的准备让小獭和粉丝靠得更近，喜欢也变得更有形状。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line342.1,通用 UI,name,风格转型,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line343.1,通用 UI,description,尝试更鲜明的表达方式，提高辨识度也承担争议。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line347.1,通用 UI,stringLiteral,风格争议,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line347.2,通用 UI,stringLiteral,压力上升,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line348.1,通用 UI,stringLiteral,风格,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line348.2,通用 UI,stringLiteral,形象,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line348.3,通用 UI,stringLiteral,舆论,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line351.1,通用 UI,lockedReason,需要魅力 ≥ 45，且形象经营累计 ≥ 3 次。,,配置文案，可改
+action,src/config/plans.ts,action.config.plans.line372.1,通用 UI,feedbackText,新的风格让小獭更有辨识度，也让讨论声变得更热烈。,,配置文案，可改
+ui,src/config/rankCalibration.ts,ui.config.rankCalibration.line40.1,通用 UI,name,新人期,,配置文案，可改
+ui,src/config/rankCalibration.ts,ui.config.rankCalibration.line64.1,通用 UI,simulationTarget,前期进圈困难，TOP48 就是明显阶段胜利。,,配置文案，可改
+ui,src/config/rankCalibration.ts,ui.config.rankCalibration.line68.1,通用 UI,name,成长期,,配置文案，可改
+ui,src/config/rankCalibration.ts,ui.config.rankCalibration.line92.1,通用 UI,simulationTarget,中期稳定进圈，好路线可以冲 TOP32 / TOP16 边缘。,,配置文案，可改
+ui,src/config/rankCalibration.ts,ui.config.rankCalibration.line96.1,通用 UI,name,核心期,,配置文案，可改
+ui,src/config/rankCalibration.ts,ui.config.rankCalibration.line137.1,通用 UI,simulationTarget,核心期经营合理可以进 TOP16，极好路线摸到神七或名场面边缘。,,配置文案，可改
+ui,src/config/rankCalibration.ts,ui.config.rankCalibration.line141.1,通用 UI,name,成熟期,,配置文案，可改
+ui,src/config/rankCalibration.ts,ui.config.rankCalibration.line205.1,通用 UI,simulationTarget,成熟期好路线能冲神七 / 名场面，顶点和年度舞台记忆必须满足额外条件。,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line22.1,通用 UI,statName,体力,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line33.1,通用 UI,statName,心情,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line44.1,通用 UI,statName,压力,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line55.1,通用 UI,statName,唱功,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line66.1,通用 UI,statName,舞蹈,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line77.1,通用 UI,statName,舞台力,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line88.1,通用 UI,statName,粉丝数,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line99.1,通用 UI,statName,核心应援力,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line110.1,通用 UI,statName,影响力,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line121.1,通用 UI,statName,资源,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line132.1,通用 UI,statName,魅力,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line143.1,通用 UI,statName,运营力,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line154.1,通用 UI,statName,粉丝疲劳,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line178.1,通用 UI,title,状态,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line179.1,通用 UI,title,舞台能力,,配置文案，可改
+annual,src/config/stats.ts,annual.config.stats.line180.1,总选结算,title,粉丝 / 总选,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line181.1,通用 UI,title,个人经营,,配置文案，可改
+ui,src/config/stats.ts,ui.config.stats.line182.1,通用 UI,title,隐藏 / 半隐藏,,配置文案，可改
+status,src/config/statusPortraits.ts,status.config.statusPortraits.line16.1,主界面状态区,label,普通状态立绘,,配置文案，可改
+status,src/config/statusPortraits.ts,status.config.statusPortraits.line17.1,主界面状态区,label,开心状态立绘,,配置文案，可改
+status,src/config/statusPortraits.ts,status.config.statusPortraits.line18.1,主界面状态区,label,疲惫状态立绘,,配置文案，可改
+status,src/config/statusPortraits.ts,status.config.statusPortraits.line19.1,主界面状态区,label,高压状态立绘,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line22.1,CG解锁 / Lightbox,label,剧场训练行动立绘,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line28.1,CG解锁 / Lightbox,label,粉丝营业行动立绘,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line34.1,CG解锁 / Lightbox,label,外务曝光行动立绘,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line40.1,CG解锁 / Lightbox,label,舞台专项行动立绘,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line46.1,CG解锁 / Lightbox,label,形象经营行动立绘,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line52.1,CG解锁 / Lightbox,label,休整沉淀行动立绘,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line58.1,CG解锁 / Lightbox,label,稳定运营行动立绘,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line64.1,CG解锁 / Lightbox,label,个人外务行动立绘,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line70.1,CG解锁 / Lightbox,label,高强度集训行动立绘,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line76.1,CG解锁 / Lightbox,label,生日应援筹备行动立绘,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line82.1,CG解锁 / Lightbox,label,风格转型行动立绘,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line91.1,CG解锁 / Lightbox,label,粉丝来信剧情 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line97.1,CG解锁 / Lightbox,label,粉丝二创出圈剧情 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line103.1,CG解锁 / Lightbox,label,舞台小失误剧情 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line109.1,CG解锁 / Lightbox,label,练习室加练剧情 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line115.1,CG解锁 / Lightbox,label,挑战不同风格剧情 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line121.1,CG解锁 / Lightbox,label,夏日邀约剧情 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line127.1,CG解锁 / Lightbox,label,心情低落剧情 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line133.1,CG解锁 / Lightbox,label,被夸奖后偷偷开心剧情 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line139.1,CG解锁 / Lightbox,label,普通但重要的一天剧情 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line147.1,CG解锁 / Lightbox,label,X队初登场 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line152.1,CG解锁 / Lightbox,label,冰帝传说 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line157.1,CG解锁 / Lightbox,label,十八个闪耀瞬间 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line162.1,CG解锁 / Lightbox,label,卡拉卡拉狗 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line167.1,CG解锁 / Lightbox,label,肩负旗帜 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line177.1,CG解锁 / Lightbox,label,队长 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line185.1,CG解锁 / Lightbox,label,少女革命作品 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line190.1,CG解锁 / Lightbox,label,歪歪DS作品 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line195.1,CG解锁 / Lightbox,label,小一作品 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line200.1,CG解锁 / Lightbox,label,meteor stream作品 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line205.1,CG解锁 / Lightbox,label,Triones作品 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line207.1,CG解锁 / Lightbox,label,Fu作品 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line211.1,CG解锁 / Lightbox,label,SuperTATA作品 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line216.1,CG解锁 / Lightbox,label,烙印作品 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line218.1,CG解锁 / Lightbox,label,FLAME作品 CG,,配置文案，可改
+annual,src/config/visualAssets.ts,annual.config.visualAssets.line225.1,总选结算,label,总选高光 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line230.1,B50结算,label,B50高光 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line238.1,CG解锁 / Lightbox,label,化茧为蝶结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line243.1,CG解锁 / Lightbox,label,星火将燃结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line248.1,CG解锁 / Lightbox,label,仍在半山结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line253.1,CG解锁 / Lightbox,label,那么晚安结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line258.1,CG解锁 / Lightbox,label,暂停休整结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line263.1,CG解锁 / Lightbox,label,偶像顶点结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line268.1,CG解锁 / Lightbox,label,神七高位结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line273.1,CG解锁 / Lightbox,label,TOP16 稳定核心结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line278.1,CG解锁 / Lightbox,label,剧场传说结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line283.1,CG解锁 / Lightbox,label,舞台记忆结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line288.1,CG解锁 / Lightbox,label,粉丝羁绊结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line293.1,CG解锁 / Lightbox,label,外务突破结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line298.1,CG解锁 / Lightbox,label,稳定运营结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line303.1,CG解锁 / Lightbox,label,遗憾毕业结局 CG,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line371.1,CG解锁 / Lightbox,placeholderText,结局 CG 待接入,,配置文案，可改
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line386.1,CG解锁 / Lightbox,placeholderText,视觉资源待补充,,配置文案，可改；缺图/占位提示
+visual,src/config/visualAssets.ts,visual.config.visualAssets.line421.1,CG解锁 / Lightbox,placeholderText,年度主题 CG 待补充,,配置文案，可改；缺图/占位提示
+work,src/config/works.ts,work.config.works.line45.1,年度主题节点 / 作品节点,C,完成但记忆点不足,,配置文案，可改
+work,src/config/works.ts,work.config.works.line46.1,年度主题节点 / 作品节点,B,稳定完成，有一定反馈,,配置文案，可改
+work,src/config/works.ts,work.config.works.line47.1,年度主题节点 / 作品节点,A,形成代表性记忆,,配置文案，可改
+work,src/config/works.ts,work.config.works.line48.1,年度主题节点 / 作品节点,S,年度级高光,,配置文案，可改
+work,src/config/works.ts,work.config.works.line52.1,年度主题节点 / 作品节点,C,她完成了这一次舞台，但还没有真正留下足够鲜明的记忆点。不是失败，只是还需要更多时间，等她把自己想表达的东西磨得更清楚。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line53.1,年度主题节点 / 作品节点,B,这一次作品稳定地完成了。有人记住了她的表现，也有人开始期待她下一次能不能再往前一步。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line54.1,年度主题节点 / 作品节点,A,这一次，她不只是完成了作品，而是真的留下了属于自己的瞬间。那些被反复提起的细节，开始变成她成长路上的标记。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line55.1,年度主题节点 / 作品节点,S,这一刻成为了她这一阶段最重要的高光。不是偶然的闪亮，而是长期积累终于汇聚成能够被记住、被回望的作品记忆。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line70.1,年度主题节点 / 作品节点,sourceName,X队出道,,配置文案，可改
+work,src/config/works.ts,work.config.works.line71.1,年度主题节点 / 作品节点,title,X队初登场,,配置文案，可改
+work,src/config/works.ts,work.config.works.line74.1,年度主题节点 / 作品节点,description,她第一次以正式身份站上这个起点。灯光还没有完全偏向她，但那一刻开始，她拥有了被记住的可能。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line85.1,年度主题节点 / 作品节点,sourceName,速报第一,,配置文案，可改
+work,src/config/works.ts,work.config.works.line86.1,年度主题节点 / 作品节点,title,冰帝传说,,配置文案，可改
+work,src/config/works.ts,work.config.works.line89.1,年度主题节点 / 作品节点,description,一次突然而来的高位信号，让更多人开始意识到：这个名字也许不该被轻易忽略。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line100.1,年度主题节点 / 作品节点,sourceName,十八个闪耀瞬间,,配置文案，可改
+work,src/config/works.ts,work.config.works.line101.1,年度主题节点 / 作品节点,title,十八个闪耀瞬间,,配置文案，可改
+work,src/config/works.ts,work.config.works.line104.1,年度主题节点 / 作品节点,description,那些被记录下来的闪光片段，构成了她早期成长里最清晰的证明。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line115.1,年度主题节点 / 作品节点,sourceName,加入 COLOR GIRLS,,配置文案，可改
+work,src/config/works.ts,work.config.works.line116.1,年度主题节点 / 作品节点,title,卡拉卡拉狗,,配置文案，可改
+work,src/config/works.ts,work.config.works.line119.1,年度主题节点 / 作品节点,description,新的位置带来新的目光，也让她开始学习如何在更大的舞台体系里找到自己的颜色。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line130.1,年度主题节点 / 作品节点,sourceName,成为副队长,,配置文案，可改
+work,src/config/works.ts,work.config.works.line131.1,年度主题节点 / 作品节点,title,肩负旗帜,,配置文案，可改
+work,src/config/works.ts,work.config.works.line134.1,年度主题节点 / 作品节点,description,身份的变化意味着责任。她不只是向前走，也开始学会把身边的人一起带向前。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line149.1,年度主题节点 / 作品节点,description,这不是一次普通的舞台尝试。更锋利的节奏、更明确的表情和更强的舞台冲击，让她开始显露出不同于以往的一面。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line160.1,年度主题节点 / 作品节点,sourceName,队长责任,,配置文案，可改
+work,src/config/works.ts,work.config.works.line161.1,年度主题节点 / 作品节点,title,队长,,配置文案，可改
+work,src/config/works.ts,work.config.works.line164.1,年度主题节点 / 作品节点,description,责任落到肩上之后，她要面对的不只是自己的舞台，还有更多人的期待、节奏和方向。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line175.1,年度主题节点 / 作品节点,sourceName,少女革命,,配置文案，可改
+work,src/config/works.ts,work.config.works.line178.1,年度主题节点 / 作品节点,title,少女革命,,配置文案，可改
+theme,src/config/works.ts,theme.config.works.line179.1,年度主题节点 / 作品节点,description,成长不只是变得更强，也是在一次次舞台里重新定义自己。这个节点记录的是她从青涩走向坚定的瞬间。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line187.1,年度主题节点 / 作品节点,sourceName,歪歪DS,,配置文案，可改
+work,src/config/works.ts,work.config.works.line190.1,年度主题节点 / 作品节点,title,歪歪DS,,配置文案，可改
+work,src/config/works.ts,work.config.works.line191.1,年度主题节点 / 作品节点,description,这是一场更靠近粉丝记忆的舞台。不是宏大的宣告，而是把陪伴、回应和个人色彩认真地放进同一个夜晚。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line199.1,年度主题节点 / 作品节点,sourceName,小一,,配置文案，可改
+work,src/config/works.ts,work.config.works.line202.1,年度主题节点 / 作品节点,title,小一,,配置文案，可改
+work,src/config/works.ts,work.config.works.line203.1,年度主题节点 / 作品节点,description,她把更细腻的表达放进作品里。那些不夸张却足够清晰的瞬间，开始让人意识到她的个人质感。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line215.1,年度主题节点 / 作品节点,description,像流星划过夜空一样，这个舞台需要速度、冲击力和被看见的瞬间。它考验的不只是完成度，也考验她能不能抓住目光。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line227.1,年度主题节点 / 作品节点,description,稳定、完整、默契和舞台掌控力在这里被放大。她需要证明自己不是偶然闪光，而是能够持续撑住舞台。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line239.1,年度主题节点 / 作品节点,description,风格、表达和粉丝记忆在这一刻汇合。她不再只是完成作品，而是在作品里留下了自己的烙印。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line251.1,年度主题节点 / 作品节点,description,轻快、鲜明、带有个人符号的舞台记忆，需要她把可爱、灵气和自我表达融合成一个容易被记住的瞬间。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line259.1,年度主题节点 / 作品节点,sourceName,烙印,,配置文案，可改
+work,src/config/works.ts,work.config.works.line262.1,年度主题节点 / 作品节点,title,烙印,,配置文案，可改
+work,src/config/works.ts,work.config.works.line263.1,年度主题节点 / 作品节点,description,这是高位阶段留下的证明。舞台不只是表演，也是一种宣告：她曾经走到这里，并把名字刻进这一年的记忆里。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line275.1,年度主题节点 / 作品节点,description,这是终章前被点燃的火焰。过去所有积累、压力、期待与陪伴，都会在这里汇成最后的舞台。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line306.1,年度主题节点 / 作品节点,title,代表作成形,,配置文案，可改
+work,src/config/works.ts,work.config.works.line307.1,年度主题节点 / 作品节点,description,这一阶段的作品开始被粉丝稳定记住。,,配置文案，可改
+work,src/config/works.ts,work.config.works.line310.1,年度主题节点 / 作品节点,title,年度作品高光,,配置文案，可改
+work,src/config/works.ts,work.config.works.line311.1,年度主题节点 / 作品节点,description,这一作品成为本阶段的关键记忆点。,,配置文案，可改
+gallery,src/pages/GalleryPage.tsx,gallery.pages.GalleryPage.line17.jsx,图鉴,jsxText,小獭图鉴,,疑似硬编码，修改前确认上下文
+gallery,src/pages/GalleryPage.tsx,gallery.pages.GalleryPage.line21.jsx,图鉴,description,角色收集册,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line88.1,主界面 / 流程浮层,ariaLabel,流程交互区,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line128.1,主界面 / 流程浮层,buttonText,返回首页,,按钮文案，建议短；疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line135.1,主界面 / 流程浮层,buttonText,重新开始,,按钮文案，建议短；疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line175.1,主界面 / 流程浮层,ariaLabel,月份操作,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line180.1,主界面 / 流程浮层,stringLiteral,推进中...,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line180.2,主界面 / 流程浮层,stringLiteral,自动推进到下个关键节点,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line203.1,主界面 / 流程浮层,stringLiteral,推进中...,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line203.2,主界面 / 流程浮层,stringLiteral,自动推进到下个关键节点,,疑似硬编码，修改前确认上下文
+flame,src/pages/GamePage.tsx,flame.pages.GamePage.line296.1,主界面 / 流程浮层,stringLiteral,进入 2026 FLAME 终章,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line296.2,主界面 / 流程浮层,stringLiteral,进入下一年,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line329.1,主界面 / 流程浮层,title,准备中,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line332.1,主界面 / 流程浮层,description,小獭正在整理下一步日程。,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line333.1,主界面 / 流程浮层,description,上一项计划：${lastPlanId},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line333.2,主界面 / 流程浮层,description,等待下一阶段。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line350.1,主界面 / 流程浮层,ariaLabel,视觉记忆解锁,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line373.1,主界面 / 流程浮层,stringLiteral,· ${unlock.grade} 级作品,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line390.1,主界面 / 流程浮层,stringLiteral,年度作品,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line394.1,主界面 / 流程浮层,stringLiteral,年度主题,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line398.1,主界面 / 流程浮层,stringLiteral,年度节点,,疑似硬编码，修改前确认上下文
+flame,src/pages/GamePage.tsx,flame.pages.GamePage.line402.1,主界面 / 流程浮层,stringLiteral,终章,,疑似硬编码，修改前确认上下文
+event,src/pages/GamePage.tsx,event.pages.GamePage.line405.1,主界面 / 流程浮层,stringLiteral,事件,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line419.1,主界面 / 流程浮层,title,年度主题节点,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line422.1,主界面 / 流程浮层,description,${result.currentYear} 年 ${result.month} 月,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line422.2,主界面 / 流程浮层,description,节点记录整理中,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line423.1,主界面 / 流程浮层,description,这一年的重要记忆正在整理。,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line448.1,主界面 / 流程浮层,title,年度作品节点,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line451.1,主界面 / 流程浮层,description,${result.currentYear} 年 ${result.month} 月,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line451.2,主界面 / 流程浮层,description,作品记录整理中,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line457.1,主界面 / 流程浮层,description,这一年的作品节点正在整理。,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line464.1,主界面 / 流程浮层,stringLiteral,年度作品高光,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line464.2,主界面 / 流程浮层,stringLiteral,代表作成形,,疑似硬编码，修改前确认上下文
+event,src/pages/GamePage.tsx,event.pages.GamePage.line526.1,主界面 / 流程浮层,positive,机会事件,,疑似硬编码，修改前确认上下文
+event,src/pages/GamePage.tsx,event.pages.GamePage.line527.1,主界面 / 流程浮层,negative,波动事件,,疑似硬编码，修改前确认上下文
+event,src/pages/GamePage.tsx,event.pages.GamePage.line528.1,主界面 / 流程浮层,risk,风险事件,,疑似硬编码，修改前确认上下文
+event,src/pages/GamePage.tsx,event.pages.GamePage.line529.1,主界面 / 流程浮层,recovery,补救事件,,疑似硬编码，修改前确认上下文
+event,src/pages/GamePage.tsx,event.pages.GamePage.line530.1,主界面 / 流程浮层,milestone,里程碑事件,,疑似硬编码，修改前确认上下文
+annual,src/pages/GamePage.tsx,annual.pages.GamePage.line627.1,总选结算,stringLiteral,总选,,疑似硬编码，修改前确认上下文
+annual,src/pages/GamePage.tsx,annual.pages.GamePage.line627.2,总选结算,stringLiteral,总选 / 年度人气,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line630.1,主界面 / 流程浮层,stringLiteral,档位,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line656.1,主界面 / 流程浮层,stringLiteral,结果：${nodeResultLabel},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line656.2,主界面 / 流程浮层,stringLiteral,${feedback.score} 分,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line703.1,主界面 / 流程浮层,stringLiteral,新人期,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line707.1,主界面 / 流程浮层,stringLiteral,成长期,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line711.1,主界面 / 流程浮层,stringLiteral,突破期,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line715.1,主界面 / 流程浮层,stringLiteral,成熟期,,疑似硬编码，修改前确认上下文
+flame,src/pages/GamePage.tsx,flame.pages.GamePage.line718.1,主界面 / 流程浮层,stringLiteral,终章年,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line190.jsx,主界面 / 流程浮层,title,本月行动,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line191.jsx,主界面 / 流程浮层,description,选择一个方向陪小獭度过这个月,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line232.jsx,主界面 / 流程浮层,description,配置月份节点,,疑似硬编码，修改前确认上下文
+annual,src/pages/GamePage.tsx,annual.pages.GamePage.line233.jsx,总选结算,title,总选 / 年度人气,,疑似硬编码，修改前确认上下文
+event,src/pages/GamePage.tsx,event.pages.GamePage.line236.jsx,主界面 / 流程浮层,description,结算本年度到当前月份积累的粉丝支持。评分参考粉丝数、核心应援力、影响力、魅力、资源和事件加成。,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line251.jsx,主界面 / 流程浮层,description,配置月份节点,,疑似硬编码，修改前确认上下文
+b50,src/pages/GamePage.tsx,b50.pages.GamePage.line252.jsx,B50结算,title,B50 / 舞台记忆,,疑似硬编码，修改前确认上下文
+event,src/pages/GamePage.tsx,event.pages.GamePage.line255.jsx,主界面 / 流程浮层,description,结算本年度积累的舞台记忆。评分参考舞台力、唱功、舞蹈、核心应援力、影响力和事件加成。,,疑似硬编码，修改前确认上下文
+flame,src/pages/GamePage.tsx,flame.pages.GamePage.line270.jsx,主界面 / 流程浮层,description,FLAME 终章节点,,疑似硬编码，修改前确认上下文
+annual,src/pages/GamePage.tsx,annual.pages.GamePage.line271.jsx,总选结算,title,最终总选 / 终章总选,,疑似硬编码，修改前确认上下文
+flame,src/pages/GamePage.tsx,flame.pages.GamePage.line307.jsx,主界面 / 流程浮层,description,V4 终章,,疑似硬编码，修改前确认上下文
+flame,src/pages/GamePage.tsx,flame.pages.GamePage.line308.jsx,主界面 / 流程浮层,title,即将进入 2026 FLAME 终章,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line328.jsx,主界面 / 流程浮层,description,最近反馈,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line352.jsx,主界面 / 流程浮层,description,新的记忆已收录,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line367.jsx,主界面 / 流程浮层,jsxText,视觉资源待补充,,疑似硬编码，修改前确认上下文；缺图/占位提示
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line377.jsx,主界面 / 流程浮层,description,已加入图鉴,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line418.jsx,主界面 / 流程浮层,description,年度主题节点,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line447.jsx,主界面 / 流程浮层,description,年度作品节点,,疑似硬编码，修改前确认上下文
+event,src/pages/GamePage.tsx,event.pages.GamePage.line488.jsx,主界面 / 流程浮层,description,事件,,疑似硬编码，修改前确认上下文
+event,src/pages/GamePage.tsx,event.pages.GamePage.line489.jsx,主界面 / 流程浮层,title,事件准备中,,疑似硬编码，修改前确认上下文
+event,src/pages/GamePage.tsx,event.pages.GamePage.line492.jsx,主界面 / 流程浮层,description,这一阶段会触发一个简版事件。,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line564.jsx,主界面 / 流程浮层,description,年度总结,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line565.jsx,主界面 / 流程浮层,title,这一年的记录正在整理中,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line581.jsx,主界面 / 流程浮层,jsxText,本年行动,,疑似硬编码，修改前确认上下文
+annual,src/pages/GamePage.tsx,annual.pages.GamePage.line585.jsx,总选结算,jsxText,总选结果,,疑似硬编码，修改前确认上下文
+b50,src/pages/GamePage.tsx,b50.pages.GamePage.line589.jsx,B50结算,jsxText,B50 结果,,疑似硬编码，修改前确认上下文
+ui,src/pages/GamePage.tsx,ui.pages.GamePage.line642.jsx,主界面 / 流程浮层,description,结果反馈,,疑似硬编码，修改前确认上下文
+ui,src/pages/HomePage.tsx,ui.pages.HomePage.line30.1,首页,ariaLabel,杨小獭首页主视觉,,疑似硬编码，修改前确认上下文
+ui,src/pages/HomePage.tsx,ui.pages.HomePage.line35.1,首页,stringLiteral,杨小獭,,疑似硬编码，修改前确认上下文
+ui,src/pages/HomePage.tsx,ui.pages.HomePage.line39.1,首页,ariaLabel,主页操作,,疑似硬编码，修改前确认上下文
+ui,src/pages/HomePage.tsx,ui.pages.HomePage.line25.jsx,首页,description,粉丝向 Q 版偶像养成 Demo,,疑似硬编码，修改前确认上下文
+ui,src/pages/HomePage.tsx,ui.pages.HomePage.line26.jsx,首页,title,杨小獭偶像养成计划,,疑似硬编码，修改前确认上下文
+event,src/pages/HomePage.tsx,event.pages.HomePage.line27.jsx,首页,description,从 2015 到 2025，每月陪小獭安排行动、经历事件、冲击总选和 B50。,,疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line92.1,通用 UI,stringLiteral,当前阶段需要手动处理,,疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line98.1,通用 UI,stringLiteral,已达到自动推进安全上限,,疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line110.1,通用 UI,title,自动推进摘要,,疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line111.1,通用 UI,subtitle,推进了 ${accumulator.monthCount} 个月,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line172.1,通用 UI,stringLiteral,当前阶段需要手动处理,,疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line256.1,通用 UI,noEventText,这个月平稳度过。,,疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line259.1,通用 UI,eventLabel,平稳度过,,疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line340.1,通用 UI,stringLiteral,视觉记忆解锁,,疑似硬编码，修改前确认上下文
+flame,src/utils/autoAdvanceLogic.ts,flame.utils.autoAdvanceLogic.line344.1,通用 UI,stringLiteral,2026 FLAME 终章开启,,疑似硬编码，修改前确认上下文
+flame,src/utils/autoAdvanceLogic.ts,flame.utils.autoAdvanceLogic.line348.1,通用 UI,stringLiteral,进入终章结算,,疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line352.1,通用 UI,stringLiteral,V4 通关完成,,疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line356.1,通用 UI,stringLiteral,年度总结,,疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line360.1,通用 UI,stringLiteral,年度主题节点,,疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line364.1,通用 UI,stringLiteral,年度作品节点,,疑似硬编码，修改前确认上下文
+annual,src/utils/autoAdvanceLogic.ts,annual.utils.autoAdvanceLogic.line368.1,总选结算,stringLiteral,本月总选,,疑似硬编码，修改前确认上下文
+annual,src/utils/autoAdvanceLogic.ts,annual.utils.autoAdvanceLogic.line372.1,总选结算,stringLiteral,最终总选,,疑似硬编码，修改前确认上下文
+b50,src/utils/autoAdvanceLogic.ts,b50.utils.autoAdvanceLogic.line376.1,B50结算,stringLiteral,本月 B50,,疑似硬编码，修改前确认上下文
+event,src/utils/autoAdvanceLogic.ts,event.utils.autoAdvanceLogic.line380.1,通用 UI,stringLiteral,本月事件待处理,,疑似硬编码，修改前确认上下文
+ui,src/utils/autoAdvanceLogic.ts,ui.utils.autoAdvanceLogic.line420.1,通用 UI,stringLiteral,特殊行动解锁：${unlocked.name},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/dateDisplay.ts,ui.utils.dateDisplay.line10.1,通用 UI,stringLiteral,第 ${yearIndex} 年 / 共 ${totalYears} 年,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/dateDisplay.ts,ui.utils.dateDisplay.line14.1,通用 UI,stringLiteral,${year} 年 ${month} 月,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/dateDisplay.ts,ui.utils.dateDisplay.line18.1,通用 UI,stringLiteral,年度进度 ${month} / ${totalMonths},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/dateDisplay.ts,ui.utils.dateDisplay.line25.1,通用 UI,stringLiteral,本月${label},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/dateDisplay.ts,ui.utils.dateDisplay.line29.1,通用 UI,stringLiteral,下月${label},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/dateDisplay.ts,ui.utils.dateDisplay.line34.1,通用 UI,stringLiteral,${label}${spacer}还有 ${monthDiff} 个月,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/dateDisplay.ts,ui.utils.dateDisplay.line37.1,通用 UI,stringLiteral,${label}已结束,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/dateDisplay.ts,ui.utils.dateDisplay.line41.1,通用 UI,stringLiteral,${month} 月 ${actionName},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line21.1,通用 UI,stringLiteral,透支,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line21.2,通用 UI,stringLiteral,压力,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line21.3,通用 UI,stringLiteral,疲劳,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line21.4,通用 UI,stringLiteral,低落,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line259.1,通用 UI,stringLiteral,剧场,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line259.2,通用 UI,stringLiteral,练习,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line259.3,通用 UI,stringLiteral,粉丝,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line263.1,通用 UI,stringLiteral,外务,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line263.2,通用 UI,stringLiteral,风格,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line263.3,通用 UI,stringLiteral,曝光,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line267.1,通用 UI,stringLiteral,应援,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line267.2,通用 UI,stringLiteral,舞台,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line267.3,通用 UI,stringLiteral,粉丝,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line270.1,通用 UI,stringLiteral,高位,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line280.1,通用 UI,stringLiteral,舞台,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line280.2,通用 UI,stringLiteral,练习,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line281.1,通用 UI,stringLiteral,粉丝,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line281.2,通用 UI,stringLiteral,应援,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line281.3,通用 UI,stringLiteral,营业,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line282.1,通用 UI,stringLiteral,外务,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line282.2,通用 UI,stringLiteral,曝光,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line282.3,通用 UI,stringLiteral,路人盘,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line283.1,通用 UI,stringLiteral,风格,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line283.2,通用 UI,stringLiteral,形象,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line283.3,通用 UI,stringLiteral,物料,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line284.1,通用 UI,stringLiteral,运营,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line284.2,通用 UI,stringLiteral,日常,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line285.1,通用 UI,stringLiteral,恢复,,疑似硬编码，修改前确认上下文
+event,src/utils/eventLogic.ts,event.utils.eventLogic.line285.2,通用 UI,stringLiteral,休息,,疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line193.1,通用 UI,stringLiteral,状态崩盘,,疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line197.1,通用 UI,stringLiteral,应援盘严重透支,,疑似硬编码，修改前确认上下文
+event,src/utils/finalChapterLogic.ts,event.utils.finalChapterLogic.line204.1,通用 UI,stringLiteral,风险事件连续未改善,,疑似硬编码，修改前确认上下文
+flame,src/utils/finalChapterLogic.ts,flame.utils.finalChapterLogic.line212.1,通用 UI,stringLiteral,终章失败叠加风险,,疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line228.1,通用 UI,stringLiteral,压力 / 体力 / 粉丝疲劳风险持续累积,,疑似硬编码，修改前确认上下文
+event,src/utils/finalChapterLogic.ts,event.utils.finalChapterLogic.line229.1,通用 UI,stringLiteral,风险事件 ${riskEvents} 次，恢复事件 ${recoveryEvents} 次,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+flame,src/utils/finalChapterLogic.ts,flame.utils.finalChapterLogic.line230.1,通用 UI,stringLiteral,终章前未能完全修复状态和应援节奏,,疑似硬编码，修改前确认上下文
+flame,src/utils/finalChapterLogic.ts,flame.utils.finalChapterLogic.line236.1,通用 UI,stringLiteral,FLAME 成为终章高光,,疑似硬编码，修改前确认上下文
+annual,src/utils/finalChapterLogic.ts,annual.utils.finalChapterLogic.line237.1,总选结算,stringLiteral,最终总选登顶,,疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line238.1,通用 UI,stringLiteral,2025 年已经建立高位基础,,疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line239.1,通用 UI,stringLiteral,A/S 作品累计 ${asWorks} 个，其中 S 作品 ${sWorks} 个,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line240.1,通用 UI,stringLiteral,粉丝盘在高压下仍保持稳定,,疑似硬编码，修改前确认上下文
+flame,src/utils/finalChapterLogic.ts,flame.utils.finalChapterLogic.line246.1,通用 UI,stringLiteral,FLAME 结果：${flame?.grade ?? '未结算'},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/finalChapterLogic.ts,annual.utils.finalChapterLogic.line247.1,总选结算,stringLiteral,最终总选：${finalElection?.resultLabel ?? '未结算'},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+flame,src/utils/finalChapterLogic.ts,flame.utils.finalChapterLogic.line248.1,通用 UI,stringLiteral,终章舞台表现突出,,疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line249.1,通用 UI,stringLiteral,风险控制仍有遗憾,,疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line249.2,通用 UI,stringLiteral,距离连续登顶证明还差一步,,疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line255.1,通用 UI,stringLiteral,养成过程稳定推进,,疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line256.1,通用 UI,stringLiteral,A/S 作品累计 ${asWorks} 个,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/finalChapterLogic.ts,annual.utils.finalChapterLogic.line257.1,总选结算,stringLiteral,最终总选：${finalElection?.resultLabel ?? '未结算'},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+flame,src/utils/finalChapterLogic.ts,flame.utils.finalChapterLogic.line258.1,通用 UI,stringLiteral,终章突破还不够完整,,疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line263.1,通用 UI,stringLiteral,粉丝盘未能形成稳定闭环,,疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line264.1,通用 UI,stringLiteral,A/S 作品累计 ${asWorks} 个,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/finalChapterLogic.ts,annual.utils.finalChapterLogic.line265.1,总选结算,stringLiteral,最终总选：${finalElection?.resultLabel ?? '未结算'},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/finalChapterLogic.ts,ui.utils.finalChapterLogic.line266.1,通用 UI,stringLiteral,作品记忆和应援声量仍有断层,,疑似硬编码，修改前确认上下文
+annual,src/utils/finalChapterLogic.ts,annual.utils.finalChapterLogic.line273.1,总选结算,stringLiteral,"FLAME ${flame?.grade ?? '未结算'} · 最终总选 ${finalElection?.resultLabel ?? '未结算'} · A/S作品 ${countWorksAtLeast(state, 'A')} 个",,动态模板，保留变量；疑似硬编码，修改前确认上下文
+event,src/utils/flowImportance.ts,event.utils.flowImportance.line25.1,通用 UI,stringLiteral,重要事件：${event.title},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+event,src/utils/flowImportance.ts,event.utils.flowImportance.line29.1,通用 UI,stringLiteral,风险事件：${event.title},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+event,src/utils/flowImportance.ts,event.utils.flowImportance.line33.1,通用 UI,stringLiteral,里程碑事件：${event.title},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+event,src/utils/flowImportance.ts,event.utils.flowImportance.line37.1,通用 UI,stringLiteral,超稀有事件：${event.title},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/flowImportance.ts,ui.utils.flowImportance.line41.1,通用 UI,stringLiteral,需要处理的危机：${event.title},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/flowImportance.ts,ui.utils.flowImportance.line44.1,通用 UI,stringLiteral,需要停顿：${event.title},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/flowImportance.ts,ui.utils.flowImportance.line49.1,通用 UI,stringLiteral,体力危机，需要停下来照顾小獭,,疑似硬编码，修改前确认上下文
+ui,src/utils/flowImportance.ts,ui.utils.flowImportance.line53.1,通用 UI,stringLiteral,压力过高，需要停下来调整节奏,,疑似硬编码，修改前确认上下文
+ui,src/utils/flowImportance.ts,ui.utils.flowImportance.line57.1,通用 UI,stringLiteral,粉丝疲劳过高，需要修复应援节奏,,疑似硬编码，修改前确认上下文
+ui,src/utils/flowImportance.ts,ui.utils.flowImportance.line61.1,通用 UI,stringLiteral,心情低落，需要停下来照顾状态,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line262.1,通用 UI,stringLiteral,阶段推进,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line263.1,通用 UI,stringLiteral,小獭整理好状态，准备进入下一阶段。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line267.1,通用 UI,stringLiteral,视觉记忆已收录,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line268.1,通用 UI,stringLiteral,这份记忆已经加入图鉴，后续可以随时回看。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line279.1,通用 UI,stringLiteral,选择本月行动，决定这个月的小獭如何积累。,,疑似硬编码，修改前确认上下文
+flame,src/utils/gameLogic.ts,flame.utils.gameLogic.line296.1,通用 UI,stringLiteral,即将进入 2026 FLAME 终章,,疑似硬编码，修改前确认上下文
+flame,src/utils/gameLogic.ts,flame.utils.gameLogic.line297.1,通用 UI,stringLiteral,2015—2025 的主养成期已经完成。接下来进入 2026 终章准备。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line301.1,通用 UI,stringLiteral,新的月份开始了，小獭还会继续向舞台靠近。,,疑似硬编码，修改前确认上下文
+flame,src/utils/gameLogic.ts,flame.utils.gameLogic.line316.1,通用 UI,stringLiteral,2026 FLAME 终章,,疑似硬编码，修改前确认上下文
+flame,src/utils/gameLogic.ts,flame.utils.gameLogic.line317.1,通用 UI,stringLiteral,终章准备期开始了。1 月到 5 月仍可安排行动，6 月将正式进入 FLAME。,,疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line337.1,总选结算,stringLiteral,年度主题节点已经记录，接下来进入总选 / 年度人气结算。,,疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line339.1,总选结算,stringLiteral,FLAME 已经记录，接下来进入最终总选。,,疑似硬编码，修改前确认上下文
+b50,src/utils/gameLogic.ts,b50.utils.gameLogic.line341.1,B50结算,stringLiteral,年度作品节点已经记录，接下来进入 B50 / 舞台记忆结算。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line343.1,通用 UI,stringLiteral,年度作品节点已经记录，接下来整理这一年的总结。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line344.1,通用 UI,stringLiteral,年度节点已经记录，新的月份准备开始。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line363.1,通用 UI,stringLiteral,当前阶段不能选择行动。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line420.1,通用 UI,stringLiteral,本月行动：${variantText},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+event,src/utils/gameLogic.ts,event.utils.gameLogic.line428.1,通用 UI,stringLiteral,当前阶段不能跳过事件。,,疑似硬编码，修改前确认上下文
+event,src/utils/gameLogic.ts,event.utils.gameLogic.line445.1,通用 UI,stringLiteral,当前阶段不能处理事件。,,疑似硬编码，修改前确认上下文
+b50,src/utils/gameLogic.ts,b50.utils.gameLogic.line512.1,B50结算,stringLiteral,当前阶段不能进行 B50 结算。,,疑似硬编码，修改前确认上下文
+b50,src/utils/gameLogic.ts,b50.utils.gameLogic.line542.1,B50结算,stringLiteral,B50 舞台记忆节点,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line564.1,通用 UI,stringLiteral,档位 ${annualResult.resultLabel},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line572.1,总选结算,stringLiteral,当前阶段不能进行总选结算。,,疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line600.1,总选结算,stringLiteral,年度人气总选节点,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line620.1,通用 UI,stringLiteral,档位 ${annualResult.resultLabel},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line628.1,总选结算,stringLiteral,当前阶段不能进行最终总选。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line717.1,通用 UI,monthStart,月份开始,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line718.1,通用 UI,monthlyPlan,本月行动,,疑似硬编码，修改前确认上下文
+event,src/utils/gameLogic.ts,event.utils.gameLogic.line719.1,通用 UI,monthlyEvent,本月事件,,疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line720.1,总选结算,election,本月总选,,疑似硬编码，修改前确认上下文
+b50,src/utils/gameLogic.ts,b50.utils.gameLogic.line721.1,B50结算,b50,本月 B50,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line722.1,通用 UI,themeNode,年度主题节点,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line723.1,通用 UI,workNode,年度作品节点,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line724.1,通用 UI,yearSummary,年度总结,,疑似硬编码，修改前确认上下文
+flame,src/utils/gameLogic.ts,flame.utils.gameLogic.line725.1,通用 UI,flamePrelude,FLAME 终章,,疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line726.1,总选结算,finalElection,最终总选,,疑似硬编码，修改前确认上下文
+flame,src/utils/gameLogic.ts,flame.utils.gameLogic.line727.1,通用 UI,finalEnding,终章结算,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1015.1,通用 UI,stringLiteral,新人期,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1019.1,通用 UI,stringLiteral,成长期,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1023.1,通用 UI,stringLiteral,突破期,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1027.1,通用 UI,stringLiteral,成熟期,,疑似硬编码，修改前确认上下文
+flame,src/utils/gameLogic.ts,flame.utils.gameLogic.line1030.1,通用 UI,stringLiteral,终章年,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1035.1,通用 UI,stringLiteral,需要注意状态，小獭已经背着不少压力了。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1039.1,通用 UI,text,舞台实力派路线正在成形。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1040.1,通用 UI,text,长期陪伴路线正在变得清晰。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1041.1,通用 UI,text,影响力突破路线有明显机会。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1042.1,通用 UI,text,可瓜可花的经营路线越来越鲜明。,,疑似硬编码，修改前确认上下文
+system,src/utils/gameLogic.ts,system.utils.gameLogic.line1160.1,通用 UI,title,无法推进,,疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line1259.1,总选结算,stringLiteral,总选 / 年度人气,,疑似硬编码，修改前确认上下文
+b50,src/utils/gameLogic.ts,b50.utils.gameLogic.line1259.2,B50结算,stringLiteral,B50 / 舞台记忆,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1293.1,通用 UI,stringLiteral,档位 ${result.resultLabel},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line1303.1,总选结算,title,最终总选 / 终章总选,,疑似硬编码，修改前确认上下文
+flame,src/utils/gameLogic.ts,flame.utils.gameLogic.line1304.1,通用 UI,message,${result.narrative} 最终通向：${state.endingResult?.title ?? '终章结算'}。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1308.1,通用 UI,stringLiteral,档位 ${result.resultLabel},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line1335.1,总选结算,stringLiteral,${result.currentYear} 总选入围,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line1335.2,通用 UI,stringLiteral,年度人气节点进入可见名单。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line1339.1,总选结算,stringLiteral,${result.currentYear} 总选 Top16,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1339.2,通用 UI,stringLiteral,粉丝支持进入核心档位。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line1343.1,总选结算,stringLiteral,${result.currentYear} 总选神七,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line1343.2,通用 UI,stringLiteral,年度人气走到真正高位。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line1347.1,总选结算,stringLiteral,${result.currentYear} 总选 Top3,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1347.2,通用 UI,stringLiteral,距离年度顶点只差一步。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line1351.1,总选结算,stringLiteral,${result.currentYear} 总选第1,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1351.2,通用 UI,stringLiteral,长期应援汇成最高处的名字。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+b50,src/utils/gameLogic.ts,b50.utils.gameLogic.line1372.1,B50结算,stringLiteral,${result.currentYear} B50 入围,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1372.2,通用 UI,stringLiteral,这一年的舞台留下了可见回声。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1376.1,通用 UI,stringLiteral,舞台记忆进入高位区域。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1380.1,通用 UI,stringLiteral,年度舞台成为重要记忆点。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1384.1,通用 UI,stringLiteral,${result.currentYear} 年度舞台记忆,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1384.2,通用 UI,stringLiteral,这一场舞台成为会被反复提起的高光。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1418.1,通用 UI,stringLiteral,档位 ${result.rankLabel},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+event,src/utils/gameLogic.ts,event.utils.gameLogic.line1419.1,通用 UI,stringLiteral,事件加成 ${result.eventBonus >= 0 ? '+' : ''}${result.eventBonus},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1421.1,通用 UI,stringLiteral,贡献：${factor},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1422.1,通用 UI,stringLiteral,加成：${factor},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1423.1,通用 UI,stringLiteral,拖累：${factor},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1426.1,通用 UI,stringLiteral,状态修正 0,,疑似硬编码，修改前确认上下文
+annual,src/utils/gameLogic.ts,annual.utils.gameLogic.line1712.1,总选结算,stringLiteral,总选 / 年度人气,,疑似硬编码，修改前确认上下文
+b50,src/utils/gameLogic.ts,b50.utils.gameLogic.line1712.2,B50结算,stringLiteral,B50 / 舞台记忆,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1751.1,通用 UI,stringLiteral,年度节点记录,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1792.1,通用 UI,stringLiteral,作品里程碑,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1818.1,通用 UI,stringLiteral,年度主题节点,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1844.1,通用 UI,stringLiteral,年度作品节点,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1895.1,通用 UI,stringLiteral,视觉记忆,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1923.1,通用 UI,stringLiteral,视觉记忆,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line1924.1,通用 UI,stringLiteral,这份记忆已经加入图鉴。,,疑似硬编码，修改前确认上下文
+flame,src/utils/gameLogic.ts,flame.utils.gameLogic.line1994.1,通用 UI,stringLiteral,终章结算,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line2137.1,通用 UI,stringLiteral,年度级高光已经收录进作品记忆。,,疑似硬编码，修改前确认上下文
+ui,src/utils/gameLogic.ts,ui.utils.gameLogic.line2138.1,通用 UI,stringLiteral,代表作记忆已经收录进作品图鉴。,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line284.1,通用 UI,stringLiteral,${calibration.name}最高参考档位为 ${ELECTION_TIER_LABELS[calibration.maxElectionTier]},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line290.1,通用 UI,stringLiteral,第1条件未满足，降为 Top3,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line297.1,通用 UI,stringLiteral,Top3 条件未满足，降为神七,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line304.1,通用 UI,stringLiteral,神七条件未满足，降为 TOP16,,疑似硬编码，修改前确认上下文
+b50,src/utils/rankLogic.ts,b50.utils.rankLogic.line324.1,B50结算,stringLiteral,${calibration.name}最高参考档位为 ${B50_TIER_LABELS[calibration.maxB50Tier]},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line330.1,通用 UI,stringLiteral,年度舞台记忆条件未满足，降为名场面,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line337.1,通用 UI,stringLiteral,名场面条件未满足，降为高位曲,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line432.1,通用 UI,stringLiteral,粉丝,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line432.2,通用 UI,stringLiteral,应援,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line432.3,通用 UI,stringLiteral,营业,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line436.1,通用 UI,stringLiteral,外务,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line436.2,通用 UI,stringLiteral,曝光,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line436.3,通用 UI,stringLiteral,舆论,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line440.1,通用 UI,stringLiteral,舞台,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line440.2,通用 UI,stringLiteral,练习,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line444.1,通用 UI,stringLiteral,舞台,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line444.2,通用 UI,stringLiteral,练习,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line444.3,通用 UI,stringLiteral,透支,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line463.1,通用 UI,label,压力接近透支,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line464.1,通用 UI,label,压力偏高,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line465.1,通用 UI,label,心情低落,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line466.1,通用 UI,label,心情稳定,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line467.1,通用 UI,label,体力偏低,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line468.1,通用 UI,label,状态充足,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line480.1,通用 UI,stringLiteral,粉丝数积累较强,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line481.1,通用 UI,stringLiteral,核心应援力稳定,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line482.1,通用 UI,stringLiteral,影响力稳步提升,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line483.1,通用 UI,stringLiteral,形象魅力有记忆点,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line484.1,通用 UI,stringLiteral,粉丝营业和应援筹备充足,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line494.1,通用 UI,stringLiteral,外务曝光带来路人认知,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line495.1,通用 UI,stringLiteral,形象经营强化辨识度,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line496.1,通用 UI,stringLiteral,稳定运营保持基本盘,,疑似硬编码，修改前确认上下文
+event,src/utils/rankLogic.ts,event.utils.rankLogic.line497.1,通用 UI,stringLiteral,正向粉丝事件带来加成,,疑似硬编码，修改前确认上下文
+event,src/utils/rankLogic.ts,event.utils.rankLogic.line498.1,通用 UI,stringLiteral,曝光事件扩大讨论度,,疑似硬编码，修改前确认上下文
+event,src/utils/rankLogic.ts,event.utils.rankLogic.line499.1,通用 UI,stringLiteral,事件加成 +${eventBonus},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line509.1,通用 UI,stringLiteral,粉丝数仍然不足,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line510.1,通用 UI,stringLiteral,核心应援力还不稳定,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line511.1,通用 UI,stringLiteral,外部认知偏弱,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line512.1,通用 UI,stringLiteral,压力偏高影响发挥,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line513.1,通用 UI,stringLiteral,心情低落影响营业状态,,疑似硬编码，修改前确认上下文
+event,src/utils/rankLogic.ts,event.utils.rankLogic.line514.1,通用 UI,stringLiteral,负面事件消耗支持度,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line520.1,通用 UI,stringLiteral,舞台力突出,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line521.1,通用 UI,stringLiteral,核心应援力稳定,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line522.1,通用 UI,stringLiteral,舞蹈基础扎实,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line523.1,通用 UI,stringLiteral,唱功稳定,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line524.1,通用 UI,stringLiteral,舞台专项和集训次数较多,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line535.1,通用 UI,stringLiteral,剧场训练和集训持续打底,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line536.1,通用 UI,stringLiteral,粉丝愿意为舞台投票,,疑似硬编码，修改前确认上下文
+b50,src/utils/rankLogic.ts,b50.utils.rankLogic.line537.1,B50结算,stringLiteral,B50 前集中打磨舞台,,疑似硬编码，修改前确认上下文
+event,src/utils/rankLogic.ts,event.utils.rankLogic.line538.1,通用 UI,stringLiteral,舞台相关事件形成记忆点,,疑似硬编码，修改前确认上下文
+event,src/utils/rankLogic.ts,event.utils.rankLogic.line539.1,通用 UI,stringLiteral,事件加成 +${eventBonus},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line548.1,通用 UI,stringLiteral,舞台力积累不足,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line549.1,通用 UI,stringLiteral,粉丝投票基础偏弱,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line550.1,通用 UI,stringLiteral,体力偏低影响舞台发挥,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line551.1,通用 UI,stringLiteral,压力偏高影响稳定度,,疑似硬编码，修改前确认上下文
+event,src/utils/rankLogic.ts,event.utils.rankLogic.line552.1,通用 UI,stringLiteral,负面舞台事件影响记忆点,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line622.1,通用 UI,penaltyNote,结果低于预期，压力和粉丝疲劳上升,,疑似硬编码，修改前确认上下文
+ui,src/utils/rankLogic.ts,ui.utils.rankLogic.line629.1,通用 UI,bonusNote,达到或超过预期，应援信心提升,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line8.1,通用 UI,S,顶点,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line9.1,通用 UI,A,神七,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line13.1,通用 UI,E,圈外,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line17.1,通用 UI,S,年度舞台记忆,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line18.1,通用 UI,A,名场面,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line19.1,通用 UI,B,高位曲,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line20.1,通用 UI,C,中位圈,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line21.1,通用 UI,D,入围,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line22.1,通用 UI,E,未入围,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line40.1,通用 UI,stringLiteral,未结算,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line50.1,通用 UI,stringLiteral,档位,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line51.1,通用 UI,stringLiteral,档位,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line65.1,总选结算,stringLiteral,总选,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line79.1,总选结算,stringLiteral,总选,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line79.2,通用 UI,stringLiteral,年度人气,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line97.1,总选结算,stringLiteral,总选,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line97.2,通用 UI,stringLiteral,年度人气,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line110.1,通用 UI,stringLiteral,顶点,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line110.2,通用 UI,stringLiteral,第1,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line111.1,通用 UI,stringLiteral,第1,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line118.1,通用 UI,stringLiteral,神七,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line119.1,通用 UI,stringLiteral,神七,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line134.1,通用 UI,stringLiteral,入围,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line135.1,通用 UI,stringLiteral,入围,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line138.1,通用 UI,stringLiteral,圈外,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line139.1,通用 UI,stringLiteral,圈外,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line147.1,通用 UI,S,第1,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line148.1,通用 UI,A,神七,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line152.1,通用 UI,E,圈外,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line159.1,通用 UI,stringLiteral,年度舞台记忆,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line160.1,通用 UI,stringLiteral,年度高光,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line163.1,通用 UI,stringLiteral,名场面,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line167.1,通用 UI,stringLiteral,高位曲,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line171.1,通用 UI,stringLiteral,中位圈,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line171.2,通用 UI,stringLiteral,入围,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line172.1,通用 UI,stringLiteral,入围,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line175.1,通用 UI,stringLiteral,未入围,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line176.1,通用 UI,stringLiteral,未入围,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line184.1,通用 UI,S,年度高光,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line187.1,通用 UI,C,入围,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line188.1,通用 UI,D,入围,,疑似硬编码，修改前确认上下文
+annual,src/utils/resultDisplay.ts,annual.utils.resultDisplay.line189.1,通用 UI,E,未入围,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line12.1,通用 UI,stage,舞台,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line13.1,通用 UI,fan,粉丝,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line14.1,通用 UI,outside,外务,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line15.1,通用 UI,style,风格,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line16.1,通用 UI,stable,稳定,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line17.1,通用 UI,recovery,恢复,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line21.1,通用 UI,stringLiteral,舞台,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line21.2,通用 UI,stringLiteral,练习,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line21.3,通用 UI,stringLiteral,透支,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line22.1,通用 UI,stringLiteral,粉丝,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line22.2,通用 UI,stringLiteral,应援,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line22.3,通用 UI,stringLiteral,营业,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line22.4,通用 UI,stringLiteral,生日,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line23.1,通用 UI,stringLiteral,外务,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line23.2,通用 UI,stringLiteral,曝光,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line23.3,通用 UI,stringLiteral,舆论,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line23.4,通用 UI,stringLiteral,路人盘,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line24.1,通用 UI,stringLiteral,风格,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line24.2,通用 UI,stringLiteral,形象,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line24.3,通用 UI,stringLiteral,物料,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line24.4,通用 UI,stringLiteral,舆论,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line25.1,通用 UI,stringLiteral,运营,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line25.2,通用 UI,stringLiteral,日常,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line25.3,通用 UI,stringLiteral,低风险,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line26.1,通用 UI,stringLiteral,恢复,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line26.2,通用 UI,stringLiteral,休息,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line26.3,通用 UI,stringLiteral,沉淀,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line26.4,通用 UI,stringLiteral,日常,,疑似硬编码，修改前确认上下文
+ui,src/utils/routeLogic.ts,ui.utils.routeLogic.line108.1,通用 UI,stringLiteral,未定,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line45.1,主界面状态区,label,普通状态,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line46.1,主界面状态区,description,节奏稳定，适合继续安排本月行动。,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line50.1,主界面状态区,label,状态良好,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line51.1,主界面状态区,description,心情明亮，舞台和营业都有不错的发挥空间。,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line55.1,主界面状态区,label,疲惫状态,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line56.1,主界面状态区,description,体力已经偏低，继续冲刺前最好留出恢复时间。,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line60.1,主界面状态区,label,高压状态,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line61.1,主界面状态区,description,压力或情绪状态需要关注，节奏太紧会积累风险。,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line70.1,主界面状态区,stringLiteral,状态承压,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line74.1,主界面状态区,stringLiteral,压力累积中,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line78.1,主界面状态区,stringLiteral,情绪低落中,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line82.1,主界面状态区,stringLiteral,粉丝盘疲惫,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line86.1,主界面状态区,stringLiteral,新人适应中,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line90.1,主界面状态区,stringLiteral,成长探索中,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line94.1,主界面状态区,stringLiteral,核心稳定中,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line98.1,主界面状态区,stringLiteral,作品打磨中,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line102.1,主界面状态区,stringLiteral,登顶冲刺中,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line105.1,主界面状态区,stringLiteral,终章冲刺中,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line112.1,主界面状态区,stringLiteral,体力偏低，建议安排休整沉淀。,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line116.1,主界面状态区,stringLiteral,压力较高，建议安排休整或稳定运营。,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line120.1,主界面状态区,stringLiteral,心情低落，营业和形象经营效果可能下降。,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line124.1,主界面状态区,stringLiteral,粉丝盘开始疲惫，建议稳定运营。,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line136.1,主界面状态区,theaterTraining,基础夯实,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line137.1,主界面状态区,fanService,粉丝反馈热烈,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line138.1,主界面状态区,outsideExposure,曝光破圈,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line139.1,主界面状态区,stageFocus,舞台专注,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line140.1,主界面状态区,imageBuilding,风格成形,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line141.1,主界面状态区,restAndReflect,状态回稳,,疑似硬编码，修改前确认上下文
+status,src/utils/statusStageLogic.ts,status.utils.statusStageLogic.line142.1,主界面状态区,stableOperation,军心稳定,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line55.1,通用 UI,stringLiteral,仅 ${plan.availableMonths.join(' / ')} 月开放。,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line63.1,通用 UI,stringLiteral,当前阶段暂未开放。,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line67.1,通用 UI,stringLiteral,满足其一即可：${unmetConditions.join(' / ')},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line124.1,通用 UI,stringLiteral,${condition.year} 年后开放,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line126.1,通用 UI,stringLiteral,仅 ${condition.months.join(' / ')} 月开放,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line128.1,通用 UI,stringLiteral,${getPlanLabel(condition.planId)}累计 ≥ ${condition.count} 次,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+event,src/utils/unlockLogic.ts,event.utils.unlockLogic.line130.1,通用 UI,stringLiteral,经历事件 ${condition.eventId},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+event,src/utils/unlockLogic.ts,event.utils.unlockLogic.line132.1,通用 UI,stringLiteral,经历${condition.tone === 'positive' ? '正向' : ''}${condition.tag}事件,,动态模板，保留变量；疑似硬编码，修改前确认上下文
+annual,src/utils/unlockLogic.ts,annual.utils.unlockLogic.line134.1,总选结算,stringLiteral,总选达到 ${condition.tier},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+b50,src/utils/unlockLogic.ts,b50.utils.unlockLogic.line136.1,B50结算,stringLiteral,B50 达到 ${condition.tier},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line138.1,通用 UI,stringLiteral,路线分数达到 ${condition.value},,动态模板，保留变量；疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line140.1,通用 UI,stringLiteral,条件未满足,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line152.1,通用 UI,theaterTraining,剧场训练,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line153.1,通用 UI,fanService,粉丝营业,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line154.1,通用 UI,outsideExposure,外务曝光,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line155.1,通用 UI,stageFocus,舞台专项,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line156.1,通用 UI,imageBuilding,形象经营,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line157.1,通用 UI,restAndReflect,休整沉淀,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line158.1,通用 UI,stableOperation,稳定运营,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line159.1,通用 UI,specialSoloWork,个人外务,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line160.1,通用 UI,specialIntensiveTraining,高强度集训,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line161.1,通用 UI,specialBirthdaySupport,生日应援筹备,,疑似硬编码，修改前确认上下文
+ui,src/utils/unlockLogic.ts,ui.utils.unlockLogic.line162.1,通用 UI,specialStyleShift,风格转型,,疑似硬编码，修改前确认上下文
+ui,src/utils/workLogic.ts,ui.utils.workLogic.line110.1,通用 UI,stringLiteral,年度作品高光,,疑似硬编码，修改前确认上下文
+ui,src/utils/workLogic.ts,ui.utils.workLogic.line110.2,通用 UI,stringLiteral,代表作成形,,疑似硬编码，修改前确认上下文
+ui,src/utils/workLogic.ts,ui.utils.workLogic.line114.1,通用 UI,stringLiteral,这一作品成为本阶段的关键记忆点。,,疑似硬编码，修改前确认上下文
+ui,src/utils/workLogic.ts,ui.utils.workLogic.line115.1,通用 UI,stringLiteral,这一阶段的作品开始被粉丝稳定记住。,,疑似硬编码，修改前确认上下文

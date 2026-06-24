@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HomePage } from './pages/HomePage';
 import { GamePage } from './pages/GamePage';
 import { GalleryPage } from './pages/GalleryPage';
@@ -29,13 +29,12 @@ import {
   resolveNoEventAfterPlan,
   resolveB50Node,
   resolveElectionNode,
+  resolveFinalElectionNode,
   sameGalleryIds,
 } from './utils/gameLogic';
 import { getEventById, pickMonthlyEvent } from './utils/eventLogic';
-import { getEndingForState } from './utils/endingLogic';
 import { formatYearMonth } from './utils/dateDisplay';
 import { runAutoAdvanceStep, mergeStatChanges } from './utils/autoAdvanceLogic';
-import { shouldPauseForEvent, shouldUseModalForEvent } from './utils/flowImportance';
 import {
   clearGameSnapshot,
   loadGameSnapshot,
@@ -65,11 +64,6 @@ function App() {
   );
   const [showGuide, setShowGuide] = useState(false);
 
-  const ending = useMemo(
-    () => (gameState ? getEndingForState(gameState) : null),
-    [gameState],
-  );
-
   useEffect(() => {
     if (!gameState) {
       return;
@@ -79,6 +73,8 @@ function App() {
     const stateForSave: GameState = {
       ...gameState,
       unlockedGallery: nextUnlocked,
+      unlockedGalleryIds: nextUnlocked.filter((id) => id !== 'base'),
+      pendingEventId: pendingEvent?.id ?? null,
     };
     const snapshotForSave: GameSnapshot = {
       state: stateForSave,
@@ -92,7 +88,10 @@ function App() {
 
     if (!sameGalleryIds(nextUnlocked, unlockedGallery)) {
       const newUnlocks = nextUnlocked.filter(
-        (id) => id !== 'base' && !unlockedGallery.includes(id),
+        (id) =>
+          id !== 'base' &&
+          id !== stateForSave.pendingVisualUnlock?.galleryId &&
+          !unlockedGallery.includes(id),
       );
       if (newUnlocks.length > 0) {
         setQueuedGalleryUnlocks((current) =>
@@ -149,7 +148,7 @@ function App() {
     setIsAutoAdvancing(false);
     setGalleryUnlockId(null);
     setQueuedGalleryUnlocks([]);
-    setPage(snapshot.state.phase === 'finalEnding' ? 'ending' : 'game');
+    setPage(shouldShowEndingPage(snapshot.state) ? 'ending' : 'game');
   }
 
   function handleAdvancePhase() {
@@ -179,7 +178,7 @@ function App() {
     commitSnapshot(snapshot, nextEvent, false);
     setFlowPanel({
       type: 'inlineActionResult',
-      continueLabel: '查看本月后续',
+      continueLabel: '继续',
       summary: {
         kind: 'manual',
         title: '本月行动完成',
@@ -195,10 +194,18 @@ function App() {
     }
 
     const snapshot = applyEventChoice(gameState, pendingEvent, choice);
-    const showFeedback = shouldUseModalForEvent(pendingEvent);
 
-    commitSnapshot(snapshot, null, showFeedback);
-    setFlowPanel(null);
+    commitSnapshot(snapshot, null, false);
+    setFlowPanel({
+      type: 'inlineEventSummary',
+      continueLabel: getPostEventContinueLabel(snapshot.state.phase),
+      summary: {
+        kind: 'manual',
+        title: '事件处理完成',
+        eventFeedback: snapshot.lastResult,
+        changes: snapshot.lastResult?.changes ?? [],
+      },
+    });
   }
 
   function handleContinueFlow() {
@@ -223,23 +230,7 @@ function App() {
     const actionFeedback = flowPanel?.summary.actionFeedback ?? lastResult;
 
     if (pendingEvent) {
-      if (shouldPauseForEvent(pendingEvent, gameState)) {
-        setFlowPanel(null);
-        return;
-      }
-
-      const snapshot = applyEventChoice(gameState, pendingEvent, pendingEvent.choices[0]);
-      commitSnapshot(snapshot, null, false);
-      setFlowPanel({
-        type: 'inlineEventSummary',
-        continueLabel: '进入下个月',
-        summary: {
-          kind: 'manual',
-          title: '本月小插曲',
-          eventFeedback: snapshot.lastResult,
-          changes: mergeStatChanges(actionFeedback?.changes, snapshot.lastResult?.changes),
-        },
-      });
+      setFlowPanel(null);
       return;
     }
 
@@ -279,6 +270,12 @@ function App() {
     if (gameState.phase === 'election') {
       setFlowPanel(null);
       commitSnapshot(resolveElectionNode(gameState), null, true);
+      return;
+    }
+
+    if (gameState.phase === 'finalElection') {
+      setFlowPanel(null);
+      commitSnapshot(resolveFinalElectionNode(gameState), null, true);
     }
   }
 
@@ -341,6 +338,20 @@ function App() {
       }
 
       if (result.type === 'stopped') {
+        if (nextPendingEvent) {
+          setIsAutoAdvancing(false);
+          setFlowPanel(null);
+          commitSnapshot(snapshot, nextPendingEvent, false);
+          return;
+        }
+
+        if (snapshot.state.phase === 'themeNode' || snapshot.state.phase === 'workNode') {
+          setIsAutoAdvancing(false);
+          setFlowPanel(null);
+          commitSnapshot(snapshot, null, false);
+          return;
+        }
+
         stopReason = result.stopReason ?? stopReason;
         break;
       }
@@ -383,13 +394,17 @@ function App() {
     event: RandomEventConfig | null,
     showFeedback: boolean,
   ) {
-    setGameState(snapshot.state);
+    const stateWithPendingEvent: GameState = {
+      ...snapshot.state,
+      pendingEventId: event?.id ?? null,
+    };
+    setGameState(stateWithPendingEvent);
     setLastPlanId(snapshot.lastPlanId);
     setLastResult(snapshot.lastResult);
     setPendingEvent(event);
     setActiveFeedback(showFeedback ? snapshot.lastResult : null);
 
-    if (snapshot.state.phase === 'finalEnding') {
+    if (shouldShowEndingPage(stateWithPendingEvent) && !showFeedback) {
       setPage('ending');
     } else {
       setPage('game');
@@ -427,7 +442,12 @@ function App() {
           onAutoAdvance={handleAutoAdvance}
           onEventChoice={handleEventChoice}
           onResolveNode={handleResolveNode}
-          onCloseFeedback={() => setActiveFeedback(null)}
+          onCloseFeedback={() => {
+            setActiveFeedback(null);
+            if (gameState && shouldShowEndingPage(gameState)) {
+              setPage('ending');
+            }
+          }}
           onContinueFlow={handleContinueFlow}
           onHome={goHome}
           onRestart={startNewGame}
@@ -438,9 +458,9 @@ function App() {
         <GalleryPage unlockedIds={unlockedGallery} onHome={goHome} />
       ) : null}
 
-      {page === 'ending' && gameState && ending ? (
+      {page === 'ending' && gameState && gameState.endingResult ? (
         <EndingPage
-          ending={ending}
+          ending={gameState.endingResult}
           state={gameState}
           unlockedCount={unlockedGallery.length}
           onHome={goHome}
@@ -461,7 +481,8 @@ function App() {
             <h2 id="guide-title">11 年偶像生涯</h2>
             <p>
               从 2015 年 1 月开始，每个月安排一次行动、处理一次事件，并在配置月份结算总选或 B50。
-              年度总结会记录这一年的路线，完成 2025 年 12 月后进入终章结算。
+              年度总结会记录这一年的路线。2025 年 12 月后进入 2026 FLAME 终章，
+              完成 FLAME、最终总选与结局判定后即可通关。
             </p>
             <button className="button button--primary" type="button" onClick={() => setShowGuide(false)}>
               知道了
@@ -489,15 +510,27 @@ function GalleryUnlockModal({
     return null;
   }
   const categoryLabel =
-    item.category === 'ending' ? '结局 CG 解锁' : item.category === 'event' ? '事件 CG 解锁' : '图鉴解锁';
+    item.category === 'ending'
+      ? '结局 CG 解锁'
+      : item.category === 'timeline'
+        ? '年度主题 CG 解锁'
+        : item.category === 'event'
+          ? '事件 CG 解锁'
+          : '图鉴解锁';
   const unlockMessage =
     item.category === 'ending' ? `${item.name} 已加入结局相册。` : item.description;
 
   return (
     <div className="modal-backdrop" role="presentation">
-      <section className="modal-card result-modal" role="dialog" aria-modal="true">
+      <section className="modal-card result-modal gallery-unlock-modal" role="dialog" aria-modal="true">
         <p className="eyebrow">{categoryLabel}</p>
-        <CharacterDisplay image={getVisualAsset(item.visual.type, item.visual.key)} compact />
+        <CharacterDisplay
+          image={getVisualAsset(item.visual.type, item.visual.key)}
+          zoomable
+          zoomTitle={item.name}
+          zoomDescription={unlockMessage}
+          showZoomHint
+        />
         <h2>{item.name}</h2>
         <p>{unlockMessage}</p>
         <button className="button button--primary" type="button" onClick={onClose}>
@@ -513,7 +546,7 @@ function loadNormalizedSnapshot(): GameSnapshot | null {
 }
 
 function resolvePendingEvent(snapshot: GameSnapshot): RandomEventConfig | null {
-  const storedEvent = getEventById(snapshot.pendingEventId);
+  const storedEvent = getEventById(snapshot.pendingEventId ?? snapshot.state.pendingEventId);
   if (storedEvent) {
     return storedEvent;
   }
@@ -524,6 +557,42 @@ function resolvePendingEvent(snapshot: GameSnapshot): RandomEventConfig | null {
   }
 
   return null;
+}
+
+function getPostEventContinueLabel(phase: GameState['phase']): string {
+  if (phase === 'election') {
+    return '继续到总选';
+  }
+
+  if (phase === 'b50') {
+    return '继续到 B50';
+  }
+
+  if (phase === 'yearSummary') {
+    return '继续到年度总结';
+  }
+
+  if (phase === 'finalElection') {
+    return '继续到最终总选';
+  }
+
+  return '进入下个月';
+}
+
+function resolveAutoAnnualNodeSnapshot(state: GameState): GameSnapshot | null {
+  if (state.phase === 'election') {
+    return resolveElectionNode(state);
+  }
+
+  if (state.phase === 'b50') {
+    return resolveB50Node(state);
+  }
+
+  return null;
+}
+
+function shouldShowEndingPage(state: GameState): boolean {
+  return state.phase === 'finalEnding' && Boolean(state.endingResult) && !state.pendingVisualUnlock;
 }
 
 function wait(ms: number): Promise<void> {

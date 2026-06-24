@@ -1,10 +1,10 @@
 import {
-  CAREER_END_YEAR,
+  CAREER_MAX_YEAR,
   CAREER_START_YEAR,
   MONTHS_PER_YEAR,
 } from '../config/annualCalendar';
 
-export const CAREER_TOTAL_YEARS = CAREER_END_YEAR - CAREER_START_YEAR + 1;
+export const CAREER_TOTAL_YEARS = CAREER_MAX_YEAR - CAREER_START_YEAR + 1;
 
 export function formatGameYearLabel(yearIndex: number, totalYears = CAREER_TOTAL_YEARS): string {
   return `第 ${yearIndex} 年 / 共 ${totalYears} 年`;
